@@ -98,11 +98,23 @@ timer_sleep (int64_t ticks)
 {
   int64_t start = timer_ticks ();
 
+  /* OUR IMPLEMENTATION*/
+
+  if (ticks < 0)
+    return;
+  ASSERT (intr_get_level () == INTR_ON);
+  enum intr_level old_level = intr_disable();
+  struct thread *c_thread = thread_current ();
+
+
+  //*******************//
+
+/*
   ASSERT (intr_get_level () == INTR_ON);
   while (timer_elapsed (start) < ticks) 
     thread_yield ();
+  /*
 }
-
 /* Suspends execution for approximately MS milliseconds. */
 void
 timer_msleep (int64_t ms) 
