@@ -29,6 +29,11 @@ static bool too_many_loops (unsigned loops);
 static void busy_wait (int64_t loops);
 static void real_time_sleep (int64_t num, int32_t denom);
 
+/* ADDED FUNCTIONS */
+static bool sleep_less_func(const struct list_elem *a,
+			    const struct list_elem *b,
+			    void *aux);
+
 /* Sets up the 8254 Programmable Interval Timer (PIT) to
    interrupt PIT_FREQ times per second, and registers the
    corresponding interrupt. */
@@ -98,9 +103,25 @@ timer_sleep (int64_t ticks)
 {
   int64_t start = timer_ticks ();
 
+  /* OUR IMPLEMENTATION*/
+
+  if (ticks < 0)
+    return;
+  ASSERT (intr_get_level () == INTR_ON);
+  enum intr_level old_level = intr_disable();
+  struct thread *current_thread = thread_current();
+  current_thread -> wakeup_time = start + ticks;
+  list_insert_ordered(&sleep_list, &(current_thread -> elem), (list_less_func *) &sleep_less_func, 
+    NULL);
+  thread_block();
+  intr_set_level(old_level);
+  /*******************/
+
+/* DELEDTED 
   ASSERT (intr_get_level () == INTR_ON);
   while (timer_elapsed (start) < ticks) 
     thread_yield ();
+  */
 }
 
 /* Suspends execution for approximately MS milliseconds. */
@@ -135,7 +156,29 @@ timer_print_stats (void)
 static void
 timer_interrupt (struct intr_frame *args UNUSED)
 {
+  struct thread *sleeptemp; //added
+  struct list_elem *iter; // added
   ticks++;
+
+  // Inserted code
+  //sleep_list
+  for(iter = list_begin(&sleep_list);
+      iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
+    {
+      sleeptemp = list_entry(list_front(&sleep_list), struct thread, elem);
+      if (sleeptemp->wakeup_time <= ticks)
+	{
+	  list_pop_front(&sleep_list);
+	  thread_unblock(sleeptemp);
+	}
+      else
+	{
+	  break;
+	}
+      
+    }
+  
+
   thread_tick ();
 }
 
@@ -202,3 +245,20 @@ real_time_sleep (int64_t num, int32_t denom)
     }
 }
 
+static bool
+sleep_less_func(const struct list_elem *a, const struct list_elem *b, void *aux)
+{
+  struct thread *alpha = list_entry(a, struct thread, elem);
+  struct thread *beta = list_entry(a, struct thread, elem);
+
+  if (alpha->wakeup_time < beta->wakeup_time)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+
+
+}

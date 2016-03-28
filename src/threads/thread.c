@@ -87,10 +87,12 @@ static tid_t allocate_tid (void);
 void
 thread_init (void) 
 {
+  // aaaaaaaa
   ASSERT (intr_get_level () == INTR_OFF);
 
   lock_init (&tid_lock);
   list_init (&ready_list);
+  list_init (&sleep_list);
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
