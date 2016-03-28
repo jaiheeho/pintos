@@ -1,9 +1,4 @@
-hihihih
-team 01
-this is for OS project in KAIST
-jaihee branch added
-
-Yang Branch Added
+This is OS project of Team 01 junyong & jaihee
 
 
-test
+Jaihee branch added this line
