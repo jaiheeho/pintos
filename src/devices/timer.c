@@ -104,17 +104,21 @@ timer_sleep (int64_t ticks)
     return;
   ASSERT (intr_get_level () == INTR_ON);
   enum intr_level old_level = intr_disable();
-  struct thread *c_thread = thread_current ();
+  struct thread *current_thread = thread_current();
+  current_thread -> ticks = timer_ticks() + ticks;
+  list_insert_ordered(&list_insert_ordered, current_thread -> elem, (list_less_func *) &wakeup_time, 
+    NULL);
+  thread_block();
+  intr_set_level(old_level);
+  /*******************/
 
-
-  //*******************//
-
-/*
+/* DELEDTED 
   ASSERT (intr_get_level () == INTR_ON);
   while (timer_elapsed (start) < ticks) 
     thread_yield ();
-  /*
+  */
 }
+
 /* Suspends execution for approximately MS milliseconds. */
 void
 timer_msleep (int64_t ms) 
