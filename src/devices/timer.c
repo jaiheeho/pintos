@@ -29,6 +29,11 @@ static bool too_many_loops (unsigned loops);
 static void busy_wait (int64_t loops);
 static void real_time_sleep (int64_t num, int32_t denom);
 
+/* ADDED FUNCTIONS */
+static bool sleep_less_func(const struct list_elem *a,
+			    const struct list_elem *b,
+			    void *aux);
+
 /* Sets up the 8254 Programmable Interval Timer (PIT) to
    interrupt PIT_FREQ times per second, and registers the
    corresponding interrupt. */
@@ -135,7 +140,28 @@ timer_print_stats (void)
 static void
 timer_interrupt (struct intr_frame *args UNUSED)
 {
+  struct thread *sleeptemp; //added
   ticks++;
+
+  // Inserted code
+  //sleep_list
+  for(sleeptemp = list_begin(&sleep_list);
+      sleeptemp != list_tail(&sleep_list); sleeptemp = list_next(sleeptemp))
+    {
+      sleeptemp = list_entry(list_front(&sleep_list), struct thread, elem);
+      if (sleeptemp->wakeup_time <= ticks)
+	{
+	  list_pop_front(&sleep_list);
+	  thread_unblock(sleeptemp);
+	}
+      else
+	{
+	  break;
+	}
+      
+    }
+  
+
   thread_tick ();
 }
 
@@ -202,3 +228,20 @@ real_time_sleep (int64_t num, int32_t denom)
     }
 }
 
+static bool
+sleep_less_func(const struct list_elem *a, const struct list_elem *b, void *aux)
+{
+  struct thread *alpha = list_entry(a, struct thread, elem);
+  struct thread *beta = list_entry(a, struct thread, elem);
+
+  if (alpha->wakeup_time < beta->wakeup_time)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+
+
+}
