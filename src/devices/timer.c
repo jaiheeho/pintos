@@ -99,14 +99,13 @@ timer_sleep (int64_t ticks)
   int64_t start = timer_ticks ();
 
   /* OUR IMPLEMENTATION*/
-
   if (ticks < 0)
     return;
   ASSERT (intr_get_level () == INTR_ON);
   enum intr_level old_level = intr_disable();
   struct thread *current_thread = thread_current();
   current_thread -> ticks = timer_ticks() + ticks;
-  list_insert_ordered(&list_insert_ordered, current_thread -> elem, (list_less_func *) &wakeup_time, 
+  list_insert_ordered(&ready_list, current_thread -> elem, (list_less_func *) &sleep_less_func, 
     NULL);
   thread_block();
   intr_set_level(old_level);
