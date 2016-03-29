@@ -99,7 +99,6 @@ static bool priority_less_func(const struct list_elem *a,
 void
 thread_init (void) 
 {
-  // aaaaaaaa
   ASSERT (intr_get_level () == INTR_OFF);
 
   lock_init (&tid_lock);
@@ -183,7 +182,7 @@ thread_print_stats (void)
 tid_t
 thread_create (const char *name, int priority,
                thread_func *function, void *aux) 
-{
+{  
   struct thread *t;
   struct kernel_thread_frame *kf;
   struct switch_entry_frame *ef;
@@ -191,8 +190,14 @@ thread_create (const char *name, int priority,
   tid_t tid;
 
   ASSERT (function != NULL);
+<<<<<<< HEAD:src/threads/thread.c
   //printf("THREAD_CREATE :: %s\n", name);
   /* Allocate thread. */
+=======
+  printf("THREAD_CREATE : %s\n", name);
+  
+	/* Allocate thread. */
+>>>>>>> 08d29e43a9a1e3648272d5bc0c0d87e73e1cb567:src/threads/thread.c
   t = palloc_get_page (PAL_ZERO);
   if (t == NULL)
     return TID_ERROR;
@@ -231,7 +236,6 @@ thread_block (void)
 {
   ASSERT (!intr_context ());
   ASSERT (intr_get_level () == INTR_OFF);
-
   thread_current ()->status = THREAD_BLOCKED;
   schedule ();
 }
@@ -248,7 +252,11 @@ void
 thread_unblock (struct thread *t) 
 {
   enum intr_level old_level;
+<<<<<<< HEAD:src/threads/thread.c
   //printf("THREAD_UNBLOCK: %s\n", t->name);
+=======
+  printf("THREAD_UNBLOCK : %s\n", t->name);
+>>>>>>> 08d29e43a9a1e3648272d5bc0c0d87e73e1cb567:src/threads/thread.c
   ASSERT (is_thread (t));
 
   old_level = intr_disable ();

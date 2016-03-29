@@ -1,23 +1,28 @@
-Writing command line to /tmp/PGQy4mTsta.dsk...
+Writing command line to /tmp/FQ0pic1UTq.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run priority-donate-lower
 Pintos booting with 4,096 kB RAM...
 374 pages available in kernel pool.
 374 pages available in user pool.
+THREAD_CREATE : idle
+THREAD_UNBLOCK : idle
+THREAD_BLOCK : main
+THREAD_UNBLOCK : main
+THREAD_BLOCK : idle
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'priority-donate-lower':
 (priority-donate-lower) begin
-(priority-donate-lower) Main thread should have priority 41.  Actual priority: 31.
-(priority-donate-lower) Lowering base priority...
-(priority-donate-lower) Main thread should have priority 41.  Actual priority: 21.
-(priority-donate-lower) acquire must already have finished.
-(priority-donate-lower) Main thread should have priority 21.  Actual priority: 21.
-(priority-donate-lower) end
-Execution of 'priority-donate-lower' complete.
-Timer: 97 ticks
-Thread: 0 idle ticks, 100 kernel ticks, 0 user ticks
-Console: 778 characters output
+THREAD_CREATE : acquire
+THREAD_UNBLOCK : acquire
+(priority-donate-lower) Kernel PANIC at ../../threads/thread.c:269 in thread_current(): assertion `is_thread (t)' failed.
+Call stack: 0xc010749c 0xc0100ac5 0xc010252f 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc010a992 0xc0100cc3.
+The `backtrace' program can make call stacks useful.
+Read "Backtraces" in the "Debugging Tools" chapter
+of the Pintos documentation for more information.
+Timer: 54 ticks
+Thread: 1 idle ticks, 53 kernel ticks, 0 user ticks
+Console: 2304 characters output
 Keyboard: 0 keys pressed
 Powering off...

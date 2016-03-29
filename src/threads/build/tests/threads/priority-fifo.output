@@ -1,36 +1,73 @@
-Writing command line to /tmp/1YQZwXEdOl.dsk...
+Writing command line to /tmp/e2x5OWhjDg.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run priority-fifo
 Pintos booting with 4,096 kB RAM...
 374 pages available in kernel pool.
 374 pages available in user pool.
+THREAD_CREATE : idle
+THREAD_UNBLOCK : idle
+THREAD_BLOCK : main
+THREAD_UNBLOCK : main
+THREAD_BLOCK : idle
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'priority-fifo':
 (priority-fifo) begin
 (priority-fifo) 16 threads will iterate 16 times in the same order each time.
 (priority-fifo) If the order varies then there is a bug.
-(priority-fifo) iteration: 0 0 1 2 0 1 2 3 0 1 2 3 4 5 0 1
-(priority-fifo) iteration: 2 3 4 5 6 0 1 2 3 4 5 6 7 0 1 2
-(priority-fifo) iteration: 3 4 5 6 7 8 0 1 2 3 4 5 6 7 8 9
-(priority-fifo) iteration: 0 1 2 3 4 5 6 7 8 9 10 0 1 2 3 4
-(priority-fifo) iteration: 5 6 7 8 9 10 11 12 0 1 2 3 4 5 6 7
-(priority-fifo) iteration: 8 9 10 11 12 13 0 1 2 3 4 5 6 7 8 9
-(priority-fifo) iteration: 10 11 12 13 14 0 1 2 3 4 5 6 7 8 9 10
-(priority-fifo) iteration: 11 12 13 14 15 0 1 2 3 4 5 6 7 8 9 10
-(priority-fifo) iteration: 11 12 13 14 15 0 1 2 3 4 5 6 7 8 9 10
-(priority-fifo) iteration: 11 12 13 14 15 0 1 2 3 4 5 6 7 8 9 10
-(priority-fifo) iteration: 11 12 13 14 15 1 2 3 4 5 6 7 8 9 10 11
-(priority-fifo) iteration: 12 13 14 15 3 4 5 6 7 8 9 10 11 12 13 14
-(priority-fifo) iteration: 15 4 5 6 7 8 9 10 11 12 13 14 15 6 7 8
-(priority-fifo) iteration: 9 10 11 12 13 14 15 7 8 9 10 11 12 13 14 15
-(priority-fifo) iteration: 8 9 10 11 12 13 14 15 9 10 11 12 13 14 15 10
-(priority-fifo) iteration: 11 12 13 14 15 11 12 13 14 15 13 14 15 14 15 15
+THREAD_CREATE : 0
+THREAD_UNBLOCK : 0
+THREAD_CREATE : 1
+THREAD_UNBLOCK : 1
+THREAD_CREATE : 2
+THREAD_UNBLOCK : 2
+THREAD_CREATE : 3
+THREAD_UNBLOCK : 3
+THREAD_CREATE : 4
+THREAD_UNBLOCK : 4
+THREAD_CREATE : 5
+THREAD_UNBLOCK : 5
+THREAD_CREATE : 6
+THREAD_UNBLOCK : 6
+THREAD_CREATE : 7
+THREAD_UNBLOCK : 7
+THREAD_CREATE : 8
+THREAD_UNBLOCK : 8
+THREAD_CREATE : 9
+THREAD_UNBLOCK : 9
+THREAD_CREATE : 10
+THREAD_UNBLOCK : 10
+THREAD_CREATE : 11
+THREAD_UNBLOCK : 11
+THREAD_CREATE : 12
+THREAD_UNBLOCK : 12
+THREAD_CREATE : 13
+THREAD_UNBLOCK : 13
+THREAD_CREATE : 14
+THREAD_UNBLOCK : 14
+THREAD_CREATE : 15
+THREAD_UNBLOCK : 15
+(priority-fifo) iteration: 0 0 0 0 1 0 1 0 1 2 0 1 2 0 1 2
+(priority-fifo) iteration: 3 0 1 2 3 0 1 2 3 0 1 2 3 4 0 1
+(priority-fifo) iteration: 2 3 4 0 1 2 3 4 5 0 1 2 3 4 5 0
+(priority-fifo) iteration: 1 2 3 4 5 6 0 1 2 3 4 5 6 1 2 3
+(priority-fifo) iteration: 4 5 6 1 2 3 4 5 6 7 1 2 3 4 5 6
+(priority-fifo) iteration: 7 2 3 4 5 6 7 8 2 3 4 5 6 7 8 3
+(priority-fifo) iteration: 4 5 6 7 8 3 4 5 6 7 8 9 4 5 6 7
+(priority-fifo) iteration: 8 9 4 5 6 7 8 9 10 4 5 6 7 8 9 10
+(priority-fifo) iteration: 5 6 7 8 9 10 5 6 7 8 9 10 11 6 7 8
+(priority-fifo) iteration: 9 10 11 6 7 8 9 10 11 12 7 8 9 10 11 12
+(priority-fifo) iteration: 7 8 9 10 11 12 13 7 8 9 10 11 12 13 8 9
+(priority-fifo) iteration: 10 11 12 13 8 9 10 11 12 13 14 9 10 11 12 13
+(priority-fifo) iteration: 14 9 10 11 12 13 14 15 9 10 11 12 13 14 15 10
+(priority-fifo) iteration: 11 12 13 14 15 10 11 12 13 14 15 11 12 13 14 15
+(priority-fifo) iteration: 11 12 13 14 15 11 12 13 14 15 12 13 14 15 12 13
+(priority-fifo) iteration: 14 15 13 14 15 13 14 15 14 15 14 15 14 15 15 15
 (priority-fifo) end
 Execution of 'priority-fifo' complete.
-Timer: 302 ticks
-Thread: 0 idle ticks, 305 kernel ticks, 0 user ticks
-Console: 1555 characters output
+Timer: 410 ticks
+Thread: 1 idle ticks, 412 kernel ticks, 0 user ticks
+Console: 2264 characters output
 Keyboard: 0 keys pressed
 Powering off...
