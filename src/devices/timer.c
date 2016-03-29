@@ -109,19 +109,9 @@ timer_sleep (int64_t ticks)
   ASSERT (intr_get_level () == INTR_ON);
   enum intr_level old_level = intr_disable();
   struct thread *current_thread = thread_current();
-<<<<<<< HEAD:src/devices/timer.c
   current_thread -> wakeup_time = start + ticks;
-<<<<<<< HEAD:src/devices/timer.c
   list_insert_ordered(&sleep_list, &(current_thread -> elem),
 		      (list_less_func *) &sleep_less_func, NULL);
-=======
-  list_insert_ordered(&sleep_list, &(current_thread -> elem), (list_less_func *) &sleep_less_func, 
-=======
-  current_thread -> ticks = timer_ticks() + ticks;
-  list_insert_ordered(&ready_list, current_thread -> elem, (list_less_func *) &sleep_less_func, 
->>>>>>> 4a921cd59217463e24a17075459093b99f48211f:src/devices/timer.c
-    NULL);
->>>>>>> 08d29e43a9a1e3648272d5bc0c0d87e73e1cb567:src/devices/timer.c
   thread_block();
   //printf("BLOCKING TIMER %s\n", current_thread->name);
   intr_set_level(old_level);
@@ -190,10 +180,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
 	{
 	  break;
 	}
-      
     }
-
-
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer
