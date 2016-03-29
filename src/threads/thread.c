@@ -90,7 +90,6 @@ static tid_t allocate_tid (void);
 void
 thread_init (void) 
 {
-  // aaaaaaaa
   ASSERT (intr_get_level () == INTR_OFF);
 
   lock_init (&tid_lock);
