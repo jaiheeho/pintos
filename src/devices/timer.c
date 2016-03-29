@@ -115,6 +115,8 @@ timer_sleep (int64_t ticks)
     NULL);
   thread_block();
   intr_set_level(old_level);
+
+
   /*******************/
 
 /* DELEDTED 
@@ -156,8 +158,8 @@ timer_print_stats (void)
 static void
 timer_interrupt (struct intr_frame *args UNUSED)
 {
-  struct thread *sleeptemp; //added
-  struct list_elem *iter; // added
+  struct thread *sleeptemp = NULL; //added
+  struct list_elem *iter = NULL; // added
   ticks++;
 
   // Inserted code
@@ -177,7 +179,6 @@ timer_interrupt (struct intr_frame *args UNUSED)
 	}
       
     }
-  
 
   thread_tick ();
 }
@@ -249,7 +250,7 @@ static bool
 sleep_less_func(const struct list_elem *a, const struct list_elem *b, void *aux)
 {
   struct thread *alpha = list_entry(a, struct thread, elem);
-  struct thread *beta = list_entry(a, struct thread, elem);
+  struct thread *beta = list_entry(b, struct thread, elem);
 
   if (alpha->wakeup_time < beta->wakeup_time)
     {
