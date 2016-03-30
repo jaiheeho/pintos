@@ -174,8 +174,10 @@ timer_interrupt (struct intr_frame *args UNUSED)
   {
     //recent_cpu of current thread add one in fixed point0
     //printf("increment START\n");
+    printf("incremnet START\n");
 
     increment_recent_cpu(thread_current());
+    printf("incremnet START\n");
 
     //printf("increment END\n");
     // For every second update load_avg and recent_cpu of current_thread
@@ -217,7 +219,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
       break;
     }
   }
-
+      printf("Timer_interrupt END\n");
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer
