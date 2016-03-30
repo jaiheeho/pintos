@@ -421,7 +421,7 @@ thread_set_nice (int nice)
   t->nice = nice;
   t->priority = priority;
 
-  printf("load_avg : %d, recent_cpu:%d\n",load_avg,t->recent_cpu);
+  //printf("load_avg : %d, recent_cpu:%d\n",load_avg,t->recent_cpu)
 
   if( list_empty(&ready_list) == false)
   {
