@@ -412,17 +412,13 @@ thread_set_nice (int nice)
 
   printf("thread : %s : %d %d %d\n", t->name, t->nice,nice, t->priority);
   int recent = t->recent_cpu;
-  int coeff = (((int64_t)(2*load_avg)) * FP )/ (2*load_avg + FP);
-  t -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
-
 
   int priority = calc_priority(t->recent_cpu, nice);
   t->nice = nice;
   t->priority = priority;
-  printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
 
-  update_recent_cpus();
-  update_priorities();
+  printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
+  //update_priorities();
   if( list_empty(&ready_list) == false)
   {
     struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
