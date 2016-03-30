@@ -510,7 +510,7 @@ void update_recent_cpus(){
   }
   /* update for sleep list*/
   for(iter = list_begin(&sleep_list);
-    iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
+    iter != list_tail(&sleep_list); iter = iter->next)
   {
 
     t = list_entry(iter, struct thread, elem);
@@ -522,7 +522,7 @@ void update_recent_cpus(){
 
   /* update for ready list*/
   for(iter = list_begin(&sleep_list);
-    iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
+    iter != list_tail(&sleep_list); iter = iter->next)
   {
     t = list_entry(iter, struct thread, elem);
     recent = t->recent_cpu;
@@ -546,7 +546,7 @@ void update_priorities(void)
   struct thread *t;
   struct list_elem *iter;
 
-  //printf("Priority START \n");
+
   t = thread_current();
 
   if (t != idle_thread)

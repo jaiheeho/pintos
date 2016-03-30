@@ -184,7 +184,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
       update_load_avg();
 
       //Calculate recent_cpu fo all threads
-      //update_recent_cpus();
+      update_recent_cpus();
       //printf("recent_cpu END\n");
     }
     if (timer_ticks() % TIME_SLICE == 0)
