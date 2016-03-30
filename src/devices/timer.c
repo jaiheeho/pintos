@@ -164,7 +164,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
   struct thread *sleeptemp = NULL; //added
   struct list_elem *iter = NULL; // added
   ticks++;
-
+  int a=0;
 
   //WHERE I ADDED
 
@@ -186,7 +186,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
     if (timer_ticks() % TIME_SLICE == 0)
     {
       //Calculate Priority
-      
+      a++;
     }
   }
   for(iter = list_begin(&sleep_list);
