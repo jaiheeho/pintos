@@ -422,7 +422,7 @@ thread_set_nice (int nice)
   t->priority = priority;
 
   //printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
-  //update_priorities();
+  update_priorities();
   //printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
   if( list_empty(&ready_list) == false)
   {
