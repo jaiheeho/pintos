@@ -558,7 +558,7 @@ void update_priorities(void)
   printf("Priority START 1\n");
   /* update for sleep list*/
   for(iter = list_begin(&sleep_list);
-    iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
+    iter != list_tail(&sleep_list); iter = iter->next)
   {
 
     t = list_entry(iter, struct thread, elem);
@@ -571,7 +571,7 @@ void update_priorities(void)
 
   /* update for ready list*/
   for(iter = list_begin(&ready_list);
-    iter != list_tail(&ready_list); iter = list_begin(&ready_list))
+    iter != list_tail(&ready_list); iter = iter = iter->next)
   {
     recent = t->recent_cpu;
     nice = t->nice;
