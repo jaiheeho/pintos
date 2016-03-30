@@ -268,11 +268,11 @@ thread_unblock (struct thread *t)
 
   list_insert_ordered(&ready_list, &t->elem,
 		      (list_less_func *) &priority_less_func, NULL); 
-
   if (thread_mlfqs)
   {
-    intr_set_level (old_level);
-    return;
+    update_priorities();
+    //intr_set_level (old_level);
+    //return;
   }
   
   if(thread_start_complete == 1)
