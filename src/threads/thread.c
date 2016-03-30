@@ -598,7 +598,6 @@ void update_priorities(void)
   for(iter = list_begin(&sleep_list);
     iter != list_tail(&sleep_list); iter = iter->next)
   {
-
     t = list_entry(iter, struct thread, elem);
     recent = t->recent_cpu;
     nice = t->nice;
@@ -611,6 +610,9 @@ void update_priorities(void)
   for(iter = list_begin(&ready_list);
     iter != list_tail(&ready_list); iter = iter = iter->next)
   {
+
+    t = list_entry(iter, struct thread, elem);
+
     recent = t->recent_cpu;
     nice = t->nice;
     priority = calc_priority(recent, nice);
