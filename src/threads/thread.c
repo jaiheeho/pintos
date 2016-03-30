@@ -588,10 +588,10 @@ int calc_priority(int recent_cpu, int nice)
 {
   int priority;
 
-  priority = PRI_MAX*f - recent_cpu/4 - nice*2*f;
-  priority /= f;
+  priority = PRI_MAX*FP - recent_cpu/4 - nice*2*FP;
+  priority /= FP;
 
-  if (prioity < PRI_MIN)
+  if (priority < PRI_MIN)
     priority = PRI_MIN;
   else if (priority > PRI_MAX)
     priority = PRI_MAX;
