@@ -221,6 +221,9 @@ thread_create (const char *name, int priority,
   sf = alloc_frame (t, sizeof *sf);
   sf->eip = switch_entry;
 
+  /* NICE */
+  t->nice = thread_current()->nice;
+
   /* Add to run queue. */
   thread_unblock (t);
   return tid;
@@ -266,7 +269,7 @@ thread_unblock (struct thread *t)
   t->status = THREAD_READY;
   if(thread_start_complete == 1)
     {
-      if (t->priority > thread_current()->priority)
+      if (t->priority >= thread_current()->priority)
 	{
 	  if(intr_context() == false)
 	    {
@@ -397,7 +400,7 @@ thread_get_priority (void)
 
 /* Sets the current thread's nice value to NICE. */
 void
-thread_set_nice (int nice UNUSED) 
+thread_set_nice (int nice) 
 {
   /* Not yet implemented. */
   ///WHERE WE ADDED/////////
@@ -478,8 +481,8 @@ void update_load_avg()
   //load_avg = (59/60) * load_avg + (1/60) *ready_threads;
   //printf("load_avg before: %d\n", (load_avg *100 + FP/2)/ FP);
   load_avg = (59*load_avg)/60 + (ready_threads * FP)/60;
-  //printf("ready_thread :%d\n", ready_threads);
-  //printf("load_avg aftr: %d\n", (load_avg * 100 + FP/2)/ FP);
+  printf("ready_thread :%d\n", ready_threads);
+  printf("load_avg aftr: %d\n", (load_avg * 100 + FP/2)/ FP);
   intr_set_level (old_level);
 }
 
@@ -703,7 +706,7 @@ init_thread (struct thread *t, const char *name, int priority)
 
   ///WHERE WE ADDED/////////
   t->recent_cpu = 0;
-  t->nice = 0;
+  //t->nice = 0;
   ///WHERE WE ADDED END/////
 }
 
