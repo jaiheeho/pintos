@@ -553,7 +553,7 @@ void update_priorities(void)
     nice = t->nice;
     priority = calc_priority(recent, nice);
     t-> priority = priority;
-    printf("priority of current : %d\n", priority)
+    printf("priority of current : %d\n", priority);
   }
   printf("Priority START 1\n");
   /* update for sleep list*/
