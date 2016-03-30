@@ -429,7 +429,7 @@ thread_get_load_avg (void)
   /* Not yet implemented. */
   ///WHERE WE ADDED/////////
   enum intr_level old_level = intr_disable ();
-  int temp_load_avg = load_avg
+  int temp_load_avg = load_avg;
   intr_set_level (old_level);
   return (temp_load_avg * 100 + FP/2) /FP ;
   ///WHERE WE ADDED END/////
@@ -479,6 +479,7 @@ void update_load_avg()
     ready_threads++;
   //load_avg = (59/60) * load_avg + (1/60) *ready_threads;
   load_avg = ((59 *FP)/60)  * load_avg / FP +  ((FP)/60)  * ready_threads;
+
 }
 
 /************************************************************************
