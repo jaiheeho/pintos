@@ -544,6 +544,7 @@ void update_priorities(void)
   struct thread *t;
   struct list_elem *iter;
 
+  printf("Priority START \n");
   t = thread_current();
 
   if (t != idle_thread)
@@ -553,6 +554,7 @@ void update_priorities(void)
     priority = calc_priority(recent, nice);
     t-> priority = priority;
   }
+  printf("Priority START 1\n");
   /* update for sleep list*/
   for(iter = list_begin(&sleep_list);
     iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
@@ -564,6 +566,7 @@ void update_priorities(void)
     priority = calc_priority(recent, nice);
     t-> priority = priority;
   }
+  printf("Priority START 2\n");
 
   /* update for ready list*/
   for(iter = list_begin(&ready_list);
@@ -574,9 +577,11 @@ void update_priorities(void)
     priority = calc_priority(recent, nice);
     t-> priority = priority;
   }
+  printf("Priority START 3\n");
 
   list_sort(&ready_list, (list_less_func *) &priority_less_func, NULL);
   list_sort(&sleep_list, (list_less_func *) &priority_less_func, NULL);
+  printf("Priority END \n");
 
   intr_set_level (old_level);  
 }
