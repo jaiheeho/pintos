@@ -214,7 +214,6 @@ timer_interrupt (struct intr_frame *args UNUSED)
       break;
     }
   }
-  printf("Timer_interrup END\n");
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer
