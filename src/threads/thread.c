@@ -410,7 +410,7 @@ thread_set_nice (int nice)
   //enum intr_level old_level = intr_disable ();
   struct thread *t = thread_current();
 
-  printf("thread : %s : %d\n", t->name, t->nice);
+  printf("thread : %s : %d %d\n", t->name, t->nice,nice);
   int recent = t->recent_cpu;
   int coeff = (((int64_t)(2*load_avg)) * FP )/ (2*load_avg + FP);
   t -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
