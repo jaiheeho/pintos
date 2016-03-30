@@ -475,13 +475,13 @@ void increment_recent_cpu(struct thread *t)
 ************************************************************************/
 void update_load_avg()
 {
-  //enum intr_level old_level = intr_disable ();
+  enum intr_level old_level = intr_disable ();
   int ready_threads = list_size(&ready_list);
   if (thread_current() != idle_thread)
     ready_threads++;
   //load_avg = (59/60) * load_avg + (1/60) *ready_threads;
   load_avg = ((59 *FP)/60)  * load_avg / FP +  ((FP)/60)  * ready_threads;
-  //intr_set_level (old_level);
+  intr_set_level (old_level);
 }
 
 /************************************************************************
