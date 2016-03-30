@@ -237,7 +237,7 @@ thread_block (void)
   schedule ();
 }
 
-/* Transitions a blocked thread T to the ready-to-run state.
+/* Transitions a blocked thread T to the -to-run state.
    This is an error if T is not blocked.  (Use thread_yield() to
    make the running thread ready.)
 
@@ -423,7 +423,7 @@ thread_get_load_avg (void)
   /* Not yet implemented. */
   ///WHERE WE ADDED/////////
   enum intr_level old_level = intr_disable ();
-  f = 0x8000;
+  int f = 0x8000;
   intr_set_level (old_level);
   return (load_avg * 100 + f/2) /f ;
 
@@ -438,6 +438,7 @@ thread_get_recent_cpu (void)
   /* Not yet implemented. */
   ///WHERE WE ADDED/////////
   enum intr_level old_level = intr_disable ();
+  int f = 0x8000;
   intr_set_level (old_level);
   return (recent_cpu * 100 + f/2) /f;
   ///WHERE WE ADDED END/////

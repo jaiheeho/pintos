@@ -174,7 +174,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
     //recent_cpu of current thread add one in fixed point0
     if (thread_current() != idle_thread)
     {
-      thread_current()->recent_cpu += 0x800;
+      thread_current()->recent_cpu += 0x8000;
     }
 
     // For every second update load_avg and recent_cpu of current_thread
@@ -190,9 +190,6 @@ timer_interrupt (struct intr_frame *args UNUSED)
       //Calculate Priority
       
     }
-
-
-
 
 
   }

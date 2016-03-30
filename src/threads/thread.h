@@ -90,8 +90,8 @@ struct thread
     int priority;                       /* Priority. */
     /* IMPELMENTATION */
     int64_t wakeup_time;                /* wakeup time in ticks*/
-    int recent_cpu = 0;                 /* recent_cpu */
-    int nice = 0;                       /* nice */
+    int recent_cpu;                 /* recent_cpu */
+    int nice;                       /* nice */
 
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
@@ -145,7 +145,7 @@ bool priority_less_func(const struct list_elem *a,
 extern struct list sleep_list; // added
 
 /*IMPLEMENTAION FOR MLFQS*/
-void update_load_avg();
+void update_load_avg(void);
 void update_recent_cpu(struct thread *);
 
 
