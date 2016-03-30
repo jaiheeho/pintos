@@ -136,6 +136,10 @@ int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
 
+bool priority_less_func(const struct list_elem *a,
+			       const struct list_elem *b,
+			       void *aux);
+
 extern struct list sleep_list; // added
 
 

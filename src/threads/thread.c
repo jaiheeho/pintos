@@ -79,9 +79,7 @@ void schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
 
 /* ADDED FUNCTIONS */
-static bool priority_less_func(const struct list_elem *a,
-			       const struct list_elem *b,
-			       void *aux);
+
 
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
@@ -359,7 +357,7 @@ thread_set_priority (int new_priority)
   t = thread_current();
   old_priority = t->priority;
   t->priority = new_priority;
-  if ( new_priority < old_priority)
+  if (!list_empty(&ready_list) && (new_priority < old_priority))
     {
       struct thread *front_of_q;
       front_of_q = list_entry(list_front(&ready_list), struct thread, elem);
@@ -627,7 +625,7 @@ uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 
 
 /* Function to compare priorities inside ready_list(Added) */
-static bool
+bool
 priority_less_func(const struct list_elem *a, const struct list_elem *b, void *aux)
 {
   struct thread *alpha = list_entry(a, struct thread, elem);
