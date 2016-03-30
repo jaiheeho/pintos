@@ -458,9 +458,9 @@ thread_get_recent_cpu (void)
 void increment_recent_cpu(struct thread *t)
 {
   enum intr_level old_level = intr_disable ();
-  if (thread_current() != idle_thread)
+  if (t != idle_thread)
   {
-    thread_current()->recent_cpu += 0x8000;
+    t->recent_cpu += 0x8000;
   }
   intr_set_level (old_level);
 }
@@ -494,7 +494,8 @@ void update_recent_cpus(){
   //recent_cpu = coeff * recent_cpu + nice
   enum intr_level old_level = intr_disable ();
   int coeff, nice, recent;
-  struct thread *t, iter;
+  struct thread *t;
+  struct list_elem *iter;
 
   t = thread_current();
 
