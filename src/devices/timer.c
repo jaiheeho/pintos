@@ -173,30 +173,30 @@ timer_interrupt (struct intr_frame *args UNUSED)
   if(thread_mlfqs)
   {
     //recent_cpu of current thread add one in fixed point0
-    printf("increment START\n");
+    //printf("increment START\n");
 
     increment_recent_cpu(thread_current());
 
-    printf("increment END\n");
+    //printf("increment END\n");
     // For every second update load_avg and recent_cpu of current_thread
     if (timer_ticks() % TIMER_FREQ == 0)
     {
-      printf("loada_avg START\n");
+      //printf("loada_avg START\n");
       //Update load_avg
       update_load_avg();
-      printf("loada_avg END\n");
+      //printf("loada_avg END\n");
 
       //Calculate recent_cpu fo all threads
       update_recent_cpus();
-      printf("recent_cpu END\n");
+      //printf("recent_cpu END\n");
 
     }
     if (timer_ticks() % TIME_SLICE == 0)
     {
       //Calculate Priority 
-      printf("Priority START\n");
+      //printf("Priority START\n");
       update_priorities();
-      printf("Priority END\n");
+      //printf("Priority END\n");
     }
   }
 
@@ -214,7 +214,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
       break;
     }
   }
-  printf("Timer_interrup END\n");
+  //printf("Timer_interrup END\n");
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer
