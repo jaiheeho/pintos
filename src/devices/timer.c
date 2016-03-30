@@ -190,7 +190,6 @@ timer_interrupt (struct intr_frame *args UNUSED)
     {
       //Calculate Priority 
       update_priorities();
-      //intr_yield_on_return();
     }
   }
 

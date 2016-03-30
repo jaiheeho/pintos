@@ -414,35 +414,28 @@ thread_set_nice (int nice)
   enum intr_level old_level = intr_disable ();
   struct thread *t = thread_current();
 
-  //printf("thread : %s : %d %d %d\n", t->name, t->nice,nice, t->priority);
-
   int priority = calc_priority(t->recent_cpu, nice);
   t->nice = nice;
   t->priority = priority;
 
-  //printf("load_avg : %d, recent_cpu:%d\n",load_avg,t->recent_cpu)
+  // if( list_empty(&ready_list) == false)
+  // {
+  //   update_priorities();
+  //   struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
+  //   printf ("t vs front : %d vs %d\n",t->priority ,front_of_ready->priority);
 
-  if( list_empty(&ready_list) == false)
-  {
-
-    //printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
-    update_priorities();
-    //printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
-    struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
-    //printf ("t vs front : %d vs %d\n",t->priority ,front_of_ready->priority);
-
-    // if (t->priority <= front_of_ready->priority)
-    // {
-      if(intr_context() == false)
-      {
-        thread_yield();
-      }
-      else if (intr_context() == true)
-      {
-        intr_yield_on_return();
-      }
-    // }
-  }
+  //    if (t->priority <= front_of_ready->priority)
+  //   {
+  //     if(intr_context() == false)
+  //     {
+  //       thread_yield();
+  //     }
+  //     else if (intr_context() == true)
+  //     {
+  //       intr_yield_on_return();
+  //     }
+  //   // }
+  // }
   intr_set_level (old_level);
   ///WHERE WE ADDED END/////
 }
@@ -556,8 +549,8 @@ void update_recent_cpus(){
   }
 
   /* update for ready list*/
-  for(iter = list_begin(&sleep_list);
-    iter != list_tail(&sleep_list); iter = iter->next)
+  for(iter = list_begin(&ready_list);
+    iter != list_tail(&ready_list); iter = iter->next)
   {
     t = list_entry(iter, struct thread, elem);
     recent = t->recent_cpu;
