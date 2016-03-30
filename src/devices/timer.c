@@ -206,14 +206,18 @@ timer_interrupt (struct intr_frame *args UNUSED)
     sleeptemp = list_entry(list_front(&sleep_list), struct thread, elem);
     if (sleeptemp->wakeup_time <= ticks)
     {
+      printf("here START\n");
+
       list_pop_front(&sleep_list);
       thread_unblock(sleeptemp);
+      printf("here END\n");
     }
     else
     {
       break;
     }
   }
+
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer
