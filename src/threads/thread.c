@@ -414,7 +414,7 @@ thread_set_nice (int nice)
   int recent = t->recent_cpu;
 
   int priority = calc_priority(t->recent_cpu, nice);
-  t->nice += nice;
+  t->nice = nice;
   t->priority = priority;
 
   printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
