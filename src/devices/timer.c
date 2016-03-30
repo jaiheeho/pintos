@@ -172,26 +172,21 @@ timer_interrupt (struct intr_frame *args UNUSED)
   if(thread_mlfqs){
 
     //recent_cpu of current thread add one in fixed point0
-    if (thread_current() != idle_thread)
-    {
-      thread_current()->recent_cpu += 0x8000;
-    }
+    increment_recent_cpu(thread_current())
 
     // For every second update load_avg and recent_cpu of current_thread
     if (ticks % TIMER_FREQ == 0)
     {
       //Update load_avg
       update_load_avg();
-      //Calculate recent_cpu
-      update_recent_cpu(current_thread());
+      //Calculate recent_cpu fo all threads
+      update_recent_cpus();
     }
     if (ticks % TIME_SLICE == 0)
     {
       //Calculate Priority
       
     }
-
-
   }
 
   for(iter = list_begin(&sleep_list);

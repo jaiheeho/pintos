@@ -42,6 +42,7 @@ static struct lock tid_lock;
 
 /* IMPLEMENTATAION */
 static int load_avg = 0;
+#define FP 0x8000
 
 /* Stack frame for kernel_thread(). */
 struct kernel_thread_frame 
@@ -111,6 +112,11 @@ thread_init (void)
   init_thread (initial_thread, "main", PRI_DEFAULT);
   initial_thread->status = THREAD_RUNNING;
   initial_thread->tid = allocate_tid ();
+
+  ///WHERE WE ADDED/////////
+  initial_thread->recent_cpu = 0;
+  initial_thread->nice = 0;
+  ///WHERE WE ADDED END/////
 }
 
 /* Starts preemptive thread scheduling by enabling interrupts.
@@ -423,12 +429,10 @@ thread_get_load_avg (void)
   /* Not yet implemented. */
   ///WHERE WE ADDED/////////
   enum intr_level old_level = intr_disable ();
-  int f = 0x8000;
+  int temp_load_avg = load_avg
   intr_set_level (old_level);
-  return (load_avg * 100 + f/2) /f ;
-
+  return (temp_load * 100 + FP/2) /FP ;
   ///WHERE WE ADDED END/////
-
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
@@ -438,11 +442,86 @@ thread_get_recent_cpu (void)
   /* Not yet implemented. */
   ///WHERE WE ADDED/////////
   enum intr_level old_level = intr_disable ();
-  int f = 0x8000;
+  int temp_recent_cpu = thread_current()->recent_cpu;
   intr_set_level (old_level);
-  return (thread_current()->recent_cpu * 100 + f/2) /f;
+  return (temp_recent_cpu * 100 + FP/2) /FP;
   ///WHERE WE ADDED END/////
 }
+///WHERE WE ADDED/////////
+void increment_recent_cpu(struct thread *t)
+{
+  enum intr_level old_level = intr_disable ();
+  if (thread_current() != idle_thread)
+  {
+    thread_current()->recent_cpu += 0x8000;
+  }
+  intr_set_level (old_level);
+}
+
+ 
+/************************************************************************
+* FUNCTION : update_load_avg                                            *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update load_avg when function is Called                    *
+************************************************************************/
+void update_load_avg(){
+
+
+  int ready_threads = list_size(&ready_list);
+  if (thread_current() != idle_thread)
+    ready_threads++;
+  //load_avg = (59/60) * load_avg + (1/60) *ready_threads;
+  load_avg = ((59 *f)/60)  * load_avg / FP +  ((FP)/60)  * ready_threads;
+}
+
+/************************************************************************
+* FUNCTION : update_recent_cpus                                         *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update Recent_cpu values of all threads                    *
+* when function is Called                                               *
+************************************************************************/
+void update_recent_cpus(){
+
+  //recent_cpu = (2*load_avg)/2*load_avg + 1) * recent_cpu + nice
+  //recent_cpu = coeff * recent_cpu + nice
+  enum intr_level old_level = intr_disable ();
+  int coeff, nice, recent;
+  struct thread *t, iter;
+
+  t = thread_current();
+
+  if (t != idle_thread)
+  {
+    recent = t->recent_cpu;
+    nict = t->nice;
+    coeff = (((int64_t)(2*load_avg)) * FP )/ (2*load_avg + FP);
+    t -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
+  }
+  /* update for sleep list*/
+  for(iter = list_begin(&sleep_list);
+    iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
+  {
+    recent = iter->recent_cpu;
+    nict = iter->nice;
+    coeff = (((int64_t)(2*load_avg)) * FP )/ (2*load_avg + FP);
+    iter -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
+  }
+
+  /* update for ready list*/
+  for(iter = list_begin(&sleep_list);
+    iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
+  {
+    recent = iter->recent_cpu;
+    nict = iter->nice;
+    coeff = (((int64_t)(2*load_avg)) * FP )/ (2*load_avg + FP);
+    iter -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
+  }
+  intr_set_level (old_level);
+}
+///WHERE WE ADDED END/////
+
 
 /* Idle thread.  Executes when no other thread is ready to run.
 
@@ -529,6 +608,11 @@ init_thread (struct thread *t, const char *name, int priority)
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
   t->magic = THREAD_MAGIC;
+
+  ///WHERE WE ADDED/////////
+  t->recent_cpu = 0;
+  t->nice = 0;
+  ///WHERE WE ADDED END/////
 }
 
 /* Allocates a SIZE-byte frame at the top of thread T's stack and

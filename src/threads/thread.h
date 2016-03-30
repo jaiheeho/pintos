@@ -146,8 +146,8 @@ extern struct list sleep_list; // added
 
 /*IMPLEMENTAION FOR MLFQS*/
 void update_load_avg(void);
-void update_recent_cpu(struct thread *);
-
+void update_recent_cpus();
+void increment_recent_cpu(struct thread *);
 
 
 #endif /* threads/thread.h */
