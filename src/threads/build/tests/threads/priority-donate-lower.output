@@ -1,4 +1,4 @@
-Writing command line to /tmp/PGQy4mTsta.dsk...
+Writing command line to /tmp/hOPySY3no0.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run priority-donate-lower
@@ -11,13 +11,13 @@ Executing 'priority-donate-lower':
 (priority-donate-lower) begin
 (priority-donate-lower) Main thread should have priority 41.  Actual priority: 31.
 (priority-donate-lower) Lowering base priority...
-(priority-donate-lower) Main thread should have priority 41.  Actual priority: 21.
-(priority-donate-lower) acquire must already have finished.
-(priority-donate-lower) Main thread should have priority 21.  Actual priority: 21.
-(priority-donate-lower) end
-Execution of 'priority-donate-lower' complete.
-Timer: 97 ticks
-Thread: 0 idle ticks, 100 kernel ticks, 0 user ticks
-Console: 778 characters output
+Kernel PANIC at ../../lib/kernel/list.c:290 in list_front(): assertion `!list_empty (list)' failed.
+Call stack: 0xc01074e8 0xc0107ae4 0xc0100c19 0xc010a978 0xc01095ae 0xc0100535 0xc0100601 0xc0100094.
+The `backtrace' program can make call stacks useful.
+Read "Backtraces" in the "Debugging Tools" chapter
+of the Pintos documentation for more information.
+Timer: 58 ticks
+Thread: 0 idle ticks, 58 kernel ticks, 0 user ticks
+Console: 831 characters output
 Keyboard: 0 keys pressed
 Powering off...

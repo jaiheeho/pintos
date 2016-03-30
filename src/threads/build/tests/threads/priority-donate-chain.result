@@ -1,95 +1,12 @@
 FAIL
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (priority-donate-chain) begin
-  (priority-donate-chain) main got lock.
-  (priority-donate-chain) main should have priority 3.  Actual priority: 3.
-  (priority-donate-chain) main should have priority 6.  Actual priority: 6.
-  (priority-donate-chain) main should have priority 9.  Actual priority: 9.
-  (priority-donate-chain) main should have priority 12.  Actual priority: 12.
-  (priority-donate-chain) main should have priority 15.  Actual priority: 15.
-  (priority-donate-chain) main should have priority 18.  Actual priority: 18.
-  (priority-donate-chain) main should have priority 21.  Actual priority: 21.
-  (priority-donate-chain) thread 1 got lock
-  (priority-donate-chain) thread 1 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 2 got lock
-  (priority-donate-chain) thread 2 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 3 got lock
-  (priority-donate-chain) thread 3 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 4 got lock
-  (priority-donate-chain) thread 4 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 5 got lock
-  (priority-donate-chain) thread 5 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 6 got lock
-  (priority-donate-chain) thread 6 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 7 got lock
-  (priority-donate-chain) thread 7 should have priority 21. Actual priority: 21
-  (priority-donate-chain) thread 7 finishing with priority 21.
-  (priority-donate-chain) interloper 7 finished.
-  (priority-donate-chain) thread 6 finishing with priority 18.
-  (priority-donate-chain) interloper 6 finished.
-  (priority-donate-chain) thread 5 finishing with priority 15.
-  (priority-donate-chain) interloper 5 finished.
-  (priority-donate-chain) thread 4 finishing with priority 12.
-  (priority-donate-chain) interloper 4 finished.
-  (priority-donate-chain) thread 3 finishing with priority 9.
-  (priority-donate-chain) interloper 3 finished.
-  (priority-donate-chain) thread 2 finishing with priority 6.
-  (priority-donate-chain) interloper 2 finished.
-  (priority-donate-chain) thread 1 finishing with priority 3.
-  (priority-donate-chain) interloper 1 finished.
-  (priority-donate-chain) main finishing with priority 0.
-  (priority-donate-chain) end
-Differences in `diff -u' format:
-  (priority-donate-chain) begin
-  (priority-donate-chain) main got lock.
-- (priority-donate-chain) main should have priority 3.  Actual priority: 3.
-- (priority-donate-chain) main should have priority 6.  Actual priority: 6.
-- (priority-donate-chain) main should have priority 9.  Actual priority: 9.
-- (priority-donate-chain) main should have priority 12.  Actual priority: 12.
-- (priority-donate-chain) main should have priority 15.  Actual priority: 15.
-- (priority-donate-chain) main should have priority 18.  Actual priority: 18.
-- (priority-donate-chain) main should have priority 21.  Actual priority: 21.
-- (priority-donate-chain) thread 1 got lock
-- (priority-donate-chain) thread 1 should have priority 21. Actual priority: 21
-- (priority-donate-chain) thread 2 got lock
-- (priority-donate-chain) thread 2 should have priority 21. Actual priority: 21
-- (priority-donate-chain) thread 3 got lock
-- (priority-donate-chain) thread 3 should have priority 21. Actual priority: 21
-- (priority-donate-chain) thread 4 got lock
-- (priority-donate-chain) thread 4 should have priority 21. Actual priority: 21
-- (priority-donate-chain) thread 5 got lock
-- (priority-donate-chain) thread 5 should have priority 21. Actual priority: 21
-- (priority-donate-chain) thread 6 got lock
-- (priority-donate-chain) thread 6 should have priority 21. Actual priority: 21
-- (priority-donate-chain) thread 7 got lock
-- (priority-donate-chain) thread 7 should have priority 21. Actual priority: 21
-- (priority-donate-chain) thread 7 finishing with priority 21.
-- (priority-donate-chain) interloper 7 finished.
-- (priority-donate-chain) thread 6 finishing with priority 18.
-- (priority-donate-chain) interloper 6 finished.
-- (priority-donate-chain) thread 5 finishing with priority 15.
-- (priority-donate-chain) interloper 5 finished.
-- (priority-donate-chain) thread 4 finishing with priority 12.
-- (priority-donate-chain) interloper 4 finished.
-- (priority-donate-chain) thread 3 finishing with priority 9.
-- (priority-donate-chain) interloper 3 finished.
-- (priority-donate-chain) thread 2 finishing with priority 6.
-- (priority-donate-chain) interloper 2 finished.
-- (priority-donate-chain) thread 1 finishing with priority 3.
-+ (priority-donate-chain) main should have priority 3.  Actual priority: 0.
-  (priority-donate-chain) interloper 1 finished.
-+ (priority-donate-chain) main should have priority 6.  Actual priority: 0.
-+ (priority-donate-chain) main should have priority 9.  Actual priority: 0.
-+ (priority-donate-chain) interloper 2 finished.
-+ (priority-donate-chain) interloper 3 finished.
-+ (priority-donate-chain) main should have priority 12.  Actual priority: 0.
-+ (priority-donate-chain) interloper 4 finished.
-+ (priority-donate-chain) main should have priority 15.  Actual priority: 0.
-+ (priority-donate-chain) main should have priority 18.  Actual priority: 0.
-+ (priority-donate-chain) interloper 5 finished.
-+ (priority-donate-chain) interloper 6 finished.
-+ (priority-donate-chain) main should have priority 21.  Actual priority: 0.
-  (priority-donate-chain) main finishing with priority 0.
-  (priority-donate-chain) end
+Kernel panic in run: PANIC at ../../lib/kernel/list.c:290 in list_front(): assertion `!list_empty (list)' failed.
+Call stack: 0xc01074e8 0xc0107ae4 0xc0100c19 0xc010b092 0xc01095ae 0xc0100535 0xc0100601 0xc0100094
+Translation of call stack:
+0xc01074e8: debug_panic (.../../lib/kernel/debug.c:34)
+0xc0107ae4: list_front (.../../lib/kernel/list.c:291)
+0xc0100c19: thread_set_priority (..../../threads/thread.c:366)
+0xc010b092: test_priority_donate_chain (...riority-donate-chain.c:56)
+0xc01095ae: run_test (.../tests/threads/tests.c:57)
+0xc0100535: run_task (.../../../threads/init.c:270)
+0xc0100601: run_actions (.../../../threads/init.c:319)
+0xc0100094: main (.../../../threads/init.c:124)

@@ -1,25 +1,12 @@
 FAIL
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (priority-donate-lower) begin
-  (priority-donate-lower) Main thread should have priority 41.  Actual priority: 41.
-  (priority-donate-lower) Lowering base priority...
-  (priority-donate-lower) Main thread should have priority 41.  Actual priority: 41.
-  (priority-donate-lower) acquire: got the lock
-  (priority-donate-lower) acquire: done
-  (priority-donate-lower) acquire must already have finished.
-  (priority-donate-lower) Main thread should have priority 21.  Actual priority: 21.
-  (priority-donate-lower) end
-Differences in `diff -u' format:
-  (priority-donate-lower) begin
-- (priority-donate-lower) Main thread should have priority 41.  Actual priority: 41.
-+ (priority-donate-lower) Main thread should have priority 41.  Actual priority: 31.
-  (priority-donate-lower) Lowering base priority...
-- (priority-donate-lower) Main thread should have priority 41.  Actual priority: 41.
-- (priority-donate-lower) acquire: got the lock
-- (priority-donate-lower) acquire: done
-+ (priority-donate-lower) Main thread should have priority 41.  Actual priority: 21.
-  (priority-donate-lower) acquire must already have finished.
-  (priority-donate-lower) Main thread should have priority 21.  Actual priority: 21.
-  (priority-donate-lower) end
+Kernel panic in run: PANIC at ../../lib/kernel/list.c:290 in list_front(): assertion `!list_empty (list)' failed.
+Call stack: 0xc01074e8 0xc0107ae4 0xc0100c19 0xc010a978 0xc01095ae 0xc0100535 0xc0100601 0xc0100094
+Translation of call stack:
+0xc01074e8: debug_panic (.../../lib/kernel/debug.c:34)
+0xc0107ae4: list_front (.../../lib/kernel/list.c:291)
+0xc0100c19: thread_set_priority (..../../threads/thread.c:366)
+0xc010a978: test_priority_donate_lower (...riority-donate-lower.c:34)
+0xc01095ae: run_test (.../tests/threads/tests.c:57)
+0xc0100535: run_task (.../../../threads/init.c:270)
+0xc0100601: run_actions (.../../../threads/init.c:319)
+0xc0100094: main (.../../../threads/init.c:124)
