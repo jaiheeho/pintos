@@ -156,11 +156,9 @@ thread_tick (void)
     kernel_ticks++;
 
   /* Enforce preemption. */
-  /* REMOVED BY US */
-  /*
   if (++thread_ticks >= TIME_SLICE)
     intr_yield_on_return ();
-  */
+
 }
 
 /* Prints thread statistics. */
