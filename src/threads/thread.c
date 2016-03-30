@@ -500,10 +500,7 @@ void update_load_avg()
   if (thread_current() != idle_thread)
     ready_threads++;
   //load_avg = (59/60) * load_avg + (1/60) *ready_threads;
-  //printf("load_avg before: %d\n", (load_avg *100 + FP/2)/ FP);
   load_avg = (59*load_avg)/60 + (ready_threads * FP)/60;
-  printf("ready_thread :%d\n", ready_threads);
-  printf("load_avg aftr: %d\n", (load_avg * 100 + FP/2)/ FP);
   intr_set_level (old_level);
 }
 
