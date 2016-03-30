@@ -413,7 +413,7 @@ thread_set_nice (int nice)
   int priority = calc_priority(t->recent_cpu, nice);
   t->nice = nice;
   t->priority = priority;
-  if(list_front(&ready_list) != NULL)
+  if( list_empty(&ready_list) != NULL)
   {
     struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
     if (t->priority < front_of_ready->priority)
