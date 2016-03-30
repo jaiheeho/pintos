@@ -34,6 +34,9 @@ static bool sleep_less_func(const struct list_elem *a,
 			    const struct list_elem *b,
 			    void *aux);
 
+/* ADDED DEFINITIONA */
+#define TIME_SLICE 4            /* # of timer ticks to give each thread. */
+
 /* Sets up the 8254 Programmable Interval Timer (PIT) to
    interrupt PIT_FREQ times per second, and registers the
    corresponding interrupt. */
@@ -162,11 +165,9 @@ timer_interrupt (struct intr_frame *args UNUSED)
   struct list_elem *iter = NULL; // added
   ticks++;
 
-  // Inserted code
-  //sleep_list
-
 
   //WHERE I ADDED
+
   thread_tick ();
 
   if(thread_mlfqs){
@@ -175,14 +176,14 @@ timer_interrupt (struct intr_frame *args UNUSED)
     increment_recent_cpu(thread_current())
 
     // For every second update load_avg and recent_cpu of current_thread
-    if (ticks % TIMER_FREQ == 0)
+    if (timer_ticks() % TIMER_FREQ == 0)
     {
       //Update load_avg
       update_load_avg();
       //Calculate recent_cpu fo all threads
       update_recent_cpus();
     }
-    if (ticks % TIME_SLICE == 0)
+    if (timer_ticks() % TIME_SLICE == 0)
     {
       //Calculate Priority
       
@@ -191,18 +192,18 @@ timer_interrupt (struct intr_frame *args UNUSED)
 
   for(iter = list_begin(&sleep_list);
       iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
+  {
+    leeptemp = list_entry(list_front(&sleep_list), struct thread, elem);
+    if (sleeptemp->wakeup_time <= ticks)
     {
-      sleeptemp = list_entry(list_front(&sleep_list), struct thread, elem);
-      if (sleeptemp->wakeup_time <= ticks)
-	{
-	  list_pop_front(&sleep_list);
-	  thread_unblock(sleeptemp);
-	}
-      else
-	{
-	  break;
-	}
+      list_pop_front(&sleep_list);
+      thread_unblock(sleeptemp);
     }
+    else
+    {
+      break;
+    }
+  }
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer
