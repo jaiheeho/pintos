@@ -417,7 +417,7 @@ thread_set_nice (int nice)
 
   printf("thread : %s : %d %d %d\n", t->name, t->nice,nice, t->priority);
 
-  int priority = calc_priority(t->recent_cpu, t->nice);
+  int priority = calc_priority(t->recent_cpu, nice);
   t->nice = nice;
   t->priority = priority;
 
@@ -432,14 +432,14 @@ thread_set_nice (int nice)
 
     // if (t->priority <= front_of_ready->priority)
     // {
-    //   if(intr_context() == false)
-    //   {
-    //     thread_yield();
-    //   }
-    //   else if (intr_context() == true)
-    //   {
-    //     intr_yield_on_return();
-    //   }
+      if(intr_context() == false)
+      {
+        thread_yield();
+      }
+      else if (intr_context() == true)
+      {
+        intr_yield_on_return();
+      }
     // }
   }
   intr_set_level (old_level);
