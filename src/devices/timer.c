@@ -173,8 +173,11 @@ timer_interrupt (struct intr_frame *args UNUSED)
   if(thread_mlfqs)
   {
     //recent_cpu of current thread add one in fixed point0
+    printf("increment START\n")
+
     increment_recent_cpu(thread_current());
 
+    printf("increment END\n")
     // For every second update load_avg and recent_cpu of current_thread
     if (timer_ticks() % TIMER_FREQ == 0)
     {
