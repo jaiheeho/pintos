@@ -434,7 +434,6 @@ thread_get_load_avg (void)
   return (temp_load_avg * 100 + FP/2) /FP ;
   ///WHERE WE ADDED END/////
 }
-
 /* Returns 100 times the current thread's recent_cpu value. */
 int
 thread_get_recent_cpu (void) 
@@ -465,7 +464,6 @@ void increment_recent_cpu(struct thread *t)
   intr_set_level (old_level);
 }
 
- 
 /************************************************************************
 * FUNCTION : update_load_avg                                            *
 * Input : NONE                                                          *
@@ -479,7 +477,6 @@ void update_load_avg()
     ready_threads++;
   //load_avg = (59/60) * load_avg + (1/60) *ready_threads;
   load_avg = ((59 *FP)/60)  * load_avg / FP +  ((FP)/60)  * ready_threads;
-
 }
 
 /************************************************************************
@@ -530,6 +527,80 @@ void update_recent_cpus(){
   }
   intr_set_level (old_level);
 }
+/************************************************************************
+* FUNCTION : updates_priorities                                         *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+void update_priorities(void)
+{
+  enum intr_level old_level = intr_disable ();
+  int nice, recent, priority;
+  struct thread *t;
+  struct list_elem *iter;
+
+  t = thread_current();
+
+  if (t != idle_thread)
+  {
+    recent = t->recent_cpu;
+    nice = t->nice;
+    priority = calc_priority(recent, nice);
+    t-> priority = priority;
+  }
+  /* update for sleep list*/
+  for(iter = list_begin(&sleep_list);
+    iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
+  {
+
+    t = list_entry(iter, struct thread, elem);
+    recent = t->recent_cpu;
+    nice = t->nice;
+    priority = calc_priority(recent, nice);
+    t-> priority = priority;
+  }
+
+  /* update for ready list*/
+  for(iter = list_begin(&ready_list);
+    iter != list_tail(&ready_list); iter = list_begin(&ready_list))
+  {
+    recent = t->recent_cpu;
+    nice = t->nice;
+    priority = calc_priority(recent, nice);
+    t-> priority = priority;
+  }
+
+  list_sort(&ready_list, (list_less_func *) &priority_less_func, NULL);
+  list_sort(&sleep_list, (list_less_func *) &priority_less_func, NULL);
+
+  intr_set_level (old_level);  
+}
+/************************************************************************
+* FUNCTION : calc_priority                                              *
+* Input : recent_cpu,  nice                                             *
+* Output : priority                                                     *
+* Purporse : return priority calculate by recent_cpu                    * 
+*           and nice of a thread                                        *             
+************************************************************************/
+int calc_priority(int recent_cpu, int nice)
+{
+  int priority;
+
+  priority = PRI_MAX*f - recent_cpu/4 - nice*2*f;
+  priority /= f;
+
+  if (prioity < PRI_MIN)
+    priority = PRI_MIN;
+  else if (priority > PRI_MAX)
+    priority = PRI_MAX;
+  else
+    priority = priority;
+
+  return priority;
+}
+
 ///WHERE WE ADDED END/////
 
 

@@ -145,9 +145,10 @@ bool priority_less_func(const struct list_elem *a,
 extern struct list sleep_list; // added
 
 /*IMPLEMENTAION FOR MLFQS*/
+void increment_recent_cpu(struct thread *);
 void update_load_avg(void);
 void update_recent_cpus(void);
-void increment_recent_cpu(struct thread *);
-
+void update_priorities(void);
+int calc_priority(int, int);
 
 #endif /* threads/thread.h */

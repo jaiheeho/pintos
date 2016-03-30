@@ -185,8 +185,8 @@ timer_interrupt (struct intr_frame *args UNUSED)
     }
     if (timer_ticks() % TIME_SLICE == 0)
     {
-      //Calculate Priority
-      a++;
+      //Calculate Priority    
+      update_priorities();
     }
   }
   for(iter = list_begin(&sleep_list);
