@@ -1,156 +1,79 @@
 FAIL
-<<<<<<< HEAD
-Kernel panic in run: PANIC at ../../lib/kernel/list.c:290 in list_front(): assertion `!list_empty (list)' failed.
-Call stack: 0xc01074e8 0xc0107ae4 0xc0100c19 0xc010ae03 0xc01095ae 0xc0100535 0xc0100601 0xc0100094
-Translation of call stack:
-0xc01074e8: debug_panic (.../../lib/kernel/debug.c:34)
-0xc0107ae4: list_front (.../../lib/kernel/list.c:291)
-0xc0100c19: thread_set_priority (..../../threads/thread.c:366)
-0xc010ae03: test_priority_sema (...hreads/priority-sema.c:25)
-0xc01095ae: run_test (.../tests/threads/tests.c:57)
-0xc0100535: run_task (.../../../threads/init.c:270)
-0xc0100601: run_actions (.../../../threads/init.c:319)
-0xc0100094: main (.../../../threads/init.c:124)
-=======
-Kernel panic in run: PANIC at ../../threads/thread.c:269 in thread_current(): assertion `is_thread (t)' failed.
-Call stack: 0xc010749c 0xc0100ac5 0xc010098e 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010ae62 0xc0100cc3
-Translation of call stack:
-0xc010749c: debug_panic (.../../lib/kernel/debug.c:34)
-0xc0100ac5: thread_current (..../../threads/thread.c:270)
-0xc010098e: thread_block (..../../threads/thread.c:222)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010ae62: priority_sema_thread (...hreads/priority-sema.c:44)
-0xc0100cc3: kernel_thread (..../../threads/thread.c:410)
->>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (priority-sema) begin
+  (priority-sema) Thread priority 30 woke up.
+  (priority-sema) Back in main thread.
+  (priority-sema) Thread priority 29 woke up.
+  (priority-sema) Back in main thread.
+  (priority-sema) Thread priority 28 woke up.
+  (priority-sema) Back in main thread.
+  (priority-sema) Thread priority 27 woke up.
+  (priority-sema) Back in main thread.
+  (priority-sema) Thread priority 26 woke up.
+  (priority-sema) Back in main thread.
+  (priority-sema) Thread priority 25 woke up.
+  (priority-sema) Back in main thread.
+  (priority-sema) Thread priority 24 woke up.
+  (priority-sema) Back in main thread.
+  (priority-sema) Thread priority 23 woke up.
+  (priority-sema) Back in main thread.
+  (priority-sema) Thread priority 22 woke up.
+  (priority-sema) Back in main thread.
+  (priority-sema) Thread priority 21 woke up.
+  (priority-sema) Back in main thread.
+  (priority-sema) end
+Differences in `diff -u' format:
+  (priority-sema) begin
++ THREAD_CREATE : priority 27
++ THREAD_UNBLOCK : priority 27
++ THREAD_CREATE : priority 26
++ THREAD_UNBLOCK : priority 26
++ THREAD_CREATE : priority 25
++ THREAD_UNBLOCK : priority 25
++ THREAD_CREATE : priority 24
++ THREAD_UNBLOCK : priority 24
++ THREAD_CREATE : priority 23
++ THREAD_UNBLOCK : priority 23
++ THREAD_CREATE : priority 22
++ THREAD_UNBLOCK : priority 22
++ THREAD_CREATE : priority 21
++ THREAD_UNBLOCK : priority 21
++ THREAD_CREATE : priority 30
++ THREAD_UNBLOCK : priority 30
++ THREAD_CREATE : priority 29
++ THREAD_UNBLOCK : priority 29
++ THREAD_CREATE : priority 28
++ THREAD_UNBLOCK : priority 28
++ THREAD_UNBLOCK : priority 30
+  (priority-sema) Thread priority 30 woke up.
+  (priority-sema) Back in main thread.
++ THREAD_UNBLOCK : priority 29
+  (priority-sema) Thread priority 29 woke up.
+  (priority-sema) Back in main thread.
++ THREAD_UNBLOCK : priority 28
+  (priority-sema) Thread priority 28 woke up.
+  (priority-sema) Back in main thread.
++ THREAD_UNBLOCK : priority 27
+  (priority-sema) Thread priority 27 woke up.
+  (priority-sema) Back in main thread.
++ THREAD_UNBLOCK : priority 26
+  (priority-sema) Thread priority 26 woke up.
+  (priority-sema) Back in main thread.
++ THREAD_UNBLOCK : priority 25
+  (priority-sema) Thread priority 25 woke up.
+  (priority-sema) Back in main thread.
++ THREAD_UNBLOCK : priority 24
+  (priority-sema) Thread priority 24 woke up.
+  (priority-sema) Back in main thread.
++ THREAD_UNBLOCK : priority 23
+  (priority-sema) Thread priority 23 woke up.
+  (priority-sema) Back in main thread.
++ THREAD_UNBLOCK : priority 22
+  (priority-sema) Thread priority 22 woke up.
+  (priority-sema) Back in main thread.
++ THREAD_UNBLOCK : priority 21
+  (priority-sema) Thread priority 21 woke up.
+  (priority-sema) Back in main thread.
+  (priority-sema) end

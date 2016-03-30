@@ -198,9 +198,7 @@ thread_create (const char *name, int priority,
 
   ASSERT (function != NULL);
   /* Allocate thread. */
-  printf("THREAD_CREATE : %s\n", name);
   
-	/* Allocate thread. */
   t = palloc_get_page (PAL_ZERO);
   if (t == NULL)
     return TID_ERROR;
@@ -255,9 +253,7 @@ void
 thread_unblock (struct thread *t) 
 {
   enum intr_level old_level;
-  //printf("THREAD_UNBLOCK: %s\n", t->name);
 
-  printf("THREAD_UNBLOCK : %s\n", t->name);
   ASSERT (is_thread (t));
 
   old_level = intr_disable ();

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-Writing command line to /tmp/ZZ5eJNCy0Y.dsk...
-=======
-Writing command line to /tmp/9J8imDlTh7.dsk...
->>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
+Writing command line to /tmp/m177SgvWyg.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q -mlfqs run mlfqs-nice-10
@@ -11,18 +7,68 @@ Pintos booting with 4,096 kB RAM...
 374 pages available in user pool.
 THREAD_CREATE : idle
 THREAD_UNBLOCK : idle
-THREAD_BLOCK : main
 THREAD_UNBLOCK : main
-THREAD_BLOCK : idle
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'mlfqs-nice-10':
 (mlfqs-nice-10) begin
 (mlfqs-nice-10) Starting 10 threads...
-<<<<<<< HEAD
-(mlfqs-nice-10) Starting threads took 33 ticks.
+THREAD_CREATE : load 0
+THREAD_UNBLOCK : load 0
+THREAD_CREATE : load 1
+THREAD_UNBLOCK : load 1
+THREAD_CREATE : load 2
+THREAD_UNBLOCK : load 2
+THREAD_CREATE : load 3
+THREAD_UNBLOCK : load 3
+THREAD_CREATE : load 4
+THREAD_UNBLOCK : load 4
+THREAD_CREATE : load 5
+THREAD_UNBLOCK : load 5
+THREAD_CREATE : load 6
+THREAD_UNBLOCK : load 6
+THREAD_CREATE : load 7
+THREAD_UNBLOCK : load 7
+THREAD_CREATE : load 8
+THREAD_UNBLOCK : load 8
+THREAD_CREATE : load 9
+THREAD_UNBLOCK : load 9
+(mlfqs-nice-10) Starting threads took 112 ticks.
 (mlfqs-nice-10) Sleeping 40 seconds to let threads run, please wait...
-(mlfqs-nice-10) Thread 0 received 3000 ticks.
+here START
+THREAD_UNBLOCK : load 0
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 1
+here END
+here START
+THREAD_UNBLOCK : load 2
+here END
+here START
+THREAD_UNBLOCK : load 3
+here END
+here START
+THREAD_UNBLOCK : load 4
+here END
+here START
+THREAD_UNBLOCK : load 5
+here END
+here START
+THREAD_UNBLOCK : load 6
+here END
+here START
+THREAD_UNBLOCK : load 7
+here END
+here START
+THREAD_UNBLOCK : load 8
+here END
+here START
+THREAD_UNBLOCK : load 9
+here END
+(mlfqs-nice-10) Thread 0 received 2998 ticks.
 (mlfqs-nice-10) Thread 1 received 0 ticks.
 (mlfqs-nice-10) Thread 2 received 0 ticks.
 (mlfqs-nice-10) Thread 3 received 0 ticks.
@@ -34,21 +80,8 @@ Executing 'mlfqs-nice-10':
 (mlfqs-nice-10) Thread 9 received 0 ticks.
 (mlfqs-nice-10) end
 Execution of 'mlfqs-nice-10' complete.
-Timer: 4151 ticks
-Thread: 990 idle ticks, 3164 kernel ticks, 0 user ticks
-Console: 982 characters output
-=======
-THREAD_CREATE : load 0
-THREAD_UNBLOCK : load 0
-THREAD_CREATE : load 1
-Kernel PANIC at ../../threads/thread.c:270 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
-Call stack: 0xc010749c 0xc0100af8 0xc0102995 0xc01092f7 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0103883 0xc010bda5 0xc0100cc3.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 58 ticks
-Thread: 1 idle ticks, 57 kernel ticks, 0 user ticks
-Console: 2381 characters output
->>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
+Timer: 4242 ticks
+Thread: 999 idle ticks, 3246 kernel ticks, 0 user ticks
+Console: 2000 characters output
 Keyboard: 0 keys pressed
 Powering off...

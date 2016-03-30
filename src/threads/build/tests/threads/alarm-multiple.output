@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-Writing command line to /tmp/7boxarp31t.dsk...
-=======
-Writing command line to /tmp/1f46mey5ax.dsk...
->>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
+Writing command line to /tmp/MPnuukorEJ.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run alarm-multiple
@@ -11,9 +7,7 @@ Pintos booting with 4,096 kB RAM...
 374 pages available in user pool.
 THREAD_CREATE : idle
 THREAD_UNBLOCK : idle
-THREAD_BLOCK : main
 THREAD_UNBLOCK : main
-THREAD_BLOCK : idle
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'alarm-multiple':
@@ -23,7 +17,124 @@ Executing 'alarm-multiple':
 (alarm-multiple) thread 1 sleeps 20 ticks each time, and so on.
 (alarm-multiple) If successful, product of iteration count and
 (alarm-multiple) sleep duration will appear in nondescending order.
-<<<<<<< HEAD
+THREAD_CREATE : thread 0
+THREAD_UNBLOCK : thread 0
+THREAD_CREATE : thread 1
+THREAD_UNBLOCK : thread 1
+THREAD_CREATE : thread 2
+THREAD_UNBLOCK : thread 2
+THREAD_CREATE : thread 3
+THREAD_UNBLOCK : thread 3
+THREAD_CREATE : thread 4
+THREAD_UNBLOCK : thread 4
+here START
+THREAD_UNBLOCK : thread 0
+here END
+here START
+THREAD_UNBLOCK : thread 1
+here END
+here START
+THREAD_UNBLOCK : thread 0
+here END
+here START
+THREAD_UNBLOCK : thread 2
+here END
+here START
+THREAD_UNBLOCK : thread 0
+here END
+here START
+THREAD_UNBLOCK : thread 3
+here END
+here START
+THREAD_UNBLOCK : thread 1
+here END
+here START
+THREAD_UNBLOCK : thread 0
+here END
+here START
+THREAD_UNBLOCK : thread 4
+here END
+here START
+THREAD_UNBLOCK : thread 0
+here END
+here START
+THREAD_UNBLOCK : thread 2
+here END
+here START
+THREAD_UNBLOCK : thread 1
+here END
+here START
+THREAD_UNBLOCK : thread 0
+here END
+here START
+THREAD_UNBLOCK : thread 0
+here END
+here START
+THREAD_UNBLOCK : thread 3
+here END
+here START
+THREAD_UNBLOCK : thread 1
+here END
+here START
+THREAD_UNBLOCK : thread 2
+here END
+here START
+THREAD_UNBLOCK : thread 4
+here END
+here START
+THREAD_UNBLOCK : thread 1
+here END
+here START
+THREAD_UNBLOCK : thread 3
+here END
+here START
+THREAD_UNBLOCK : thread 2
+here END
+here START
+THREAD_UNBLOCK : thread 1
+here END
+here START
+THREAD_UNBLOCK : thread 1
+here END
+here START
+THREAD_UNBLOCK : thread 4
+here END
+here START
+THREAD_UNBLOCK : thread 2
+here END
+here START
+THREAD_UNBLOCK : thread 3
+here END
+here START
+THREAD_UNBLOCK : thread 2
+here END
+here START
+THREAD_UNBLOCK : thread 4
+here END
+here START
+THREAD_UNBLOCK : thread 3
+here END
+here START
+THREAD_UNBLOCK : thread 2
+here END
+here START
+THREAD_UNBLOCK : thread 3
+here END
+here START
+THREAD_UNBLOCK : thread 4
+here END
+here START
+THREAD_UNBLOCK : thread 3
+here END
+here START
+THREAD_UNBLOCK : thread 4
+here END
+here START
+THREAD_UNBLOCK : thread 4
+here END
+here START
+THREAD_UNBLOCK : main
+here END
 (alarm-multiple) thread 0: duration=10, iteration=1, product=10
 (alarm-multiple) thread 1: duration=20, iteration=1, product=20
 (alarm-multiple) thread 0: duration=10, iteration=2, product=20
@@ -61,20 +172,8 @@ Executing 'alarm-multiple':
 (alarm-multiple) thread 4: duration=50, iteration=7, product=350
 (alarm-multiple) end
 Execution of 'alarm-multiple' complete.
-Timer: 946 ticks
-Thread: 550 idle ticks, 399 kernel ticks, 0 user ticks
-Console: 2952 characters output
-=======
-THREAD_CREATE : thread 0
-THREAD_UNBLOCK : thread 0
-THREAD_CREATE : thread Kernel PANIC at ../../threads/thread.c:269 in thread_current(): assertion `is_thread (t)' failed.
-Call stack: 0xc010749c 0xc0100ac5 0xc010252f 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0103883 0xc01099ad 0xc0100cc3.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 94 ticks
-Thread: 1 idle ticks, 93 kernel ticks, 0 user ticks
-Console: 2580 characters output
->>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
+Timer: 991 ticks
+Thread: 503 idle ticks, 491 kernel ticks, 0 user ticks
+Console: 4924 characters output
 Keyboard: 0 keys pressed
 Powering off...

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-Writing command line to /tmp/ZDI6QuVy0l.dsk...
-=======
-Writing command line to /tmp/O4iuUVgKvQ.dsk...
->>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
+Writing command line to /tmp/goOxUNC0Vh.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run priority-condvar
@@ -11,33 +7,85 @@ Pintos booting with 4,096 kB RAM...
 374 pages available in user pool.
 THREAD_CREATE : idle
 THREAD_UNBLOCK : idle
-THREAD_BLOCK : main
 THREAD_UNBLOCK : main
-THREAD_BLOCK : idle
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'priority-condvar':
 (priority-condvar) begin
-<<<<<<< HEAD
-Kernel PANIC at ../../lib/kernel/list.c:290 in list_front(): assertion `!list_empty (list)' failed.
-Call stack: 0xc01074e8 0xc0107ae4 0xc0100c19 0xc010af2b 0xc01095ae 0xc0100535 0xc0100601 0xc0100094.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 35 ticks
-Thread: 0 idle ticks, 35 kernel ticks, 0 user ticks
-Console: 683 characters output
-=======
 THREAD_CREATE : priority 23
 THREAD_UNBLOCK : priority 23
-THREAD_CREATE : priorityKernel PANIC at ../../threads/thread.c:269 in thread_current(): assertion `is_thread (t)' failed.
-Call stack: 0xc010749c 0xc0100ac5 0xc0102995 0xc01092f7 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc0109590 0xc010afb3 0xc0100cc3.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 54 ticks
-Thread: 1 idle ticks, 53 kernel ticks, 0 user ticks
-Console: 2330 characters output
->>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
+(priority-condvar) Thread priority 23 starting.
+THREAD_CREATE : priority 22
+THREAD_UNBLOCK : priority 22
+(priority-condvar) Thread priority 22 starting.
+THREAD_CREATE : priority 21
+THREAD_UNBLOCK : priority 21
+(priority-condvar) Thread priority 21 starting.
+THREAD_CREATE : priority 30
+THREAD_UNBLOCK : priority 30
+(priority-condvar) Thread priority 30 starting.
+THREAD_CREATE : priority 29
+THREAD_UNBLOCK : priority 29
+(priority-condvar) Thread priority 29 starting.
+THREAD_CREATE : priority 28
+THREAD_UNBLOCK : priority 28
+(priority-condvar) Thread priority 28 starting.
+THREAD_CREATE : priority 27
+THREAD_UNBLOCK : priority 27
+(priority-condvar) Thread priority 27 starting.
+THREAD_CREATE : priority 26
+THREAD_UNBLOCK : priority 26
+(priority-condvar) Thread priority 26 starting.
+THREAD_CREATE : priority 25
+THREAD_UNBLOCK : priority 25
+(priority-condvar) Thread priority 25 starting.
+THREAD_CREATE : priority 24
+THREAD_UNBLOCK : priority 24
+(priority-condvar) Thread priority 24 starting.
+(priority-condvar) Signaling...
+THREAD_UNBLOCK : priority 23
+THREAD_UNBLOCK : priority 23
+(priority-condvar) Thread priority 23 woke up.
+(priority-condvar) Signaling...
+THREAD_UNBLOCK : priority 22
+THREAD_UNBLOCK : priority 22
+(priority-condvar) Thread priority 22 woke up.
+(priority-condvar) Signaling...
+THREAD_UNBLOCK : priority 21
+THREAD_UNBLOCK : priority 21
+(priority-condvar) Thread priority 21 woke up.
+(priority-condvar) Signaling...
+THREAD_UNBLOCK : priority 30
+THREAD_UNBLOCK : priority 30
+(priority-condvar) Thread priority 30 woke up.
+(priority-condvar) Signaling...
+THREAD_UNBLOCK : priority 29
+THREAD_UNBLOCK : priority 29
+(priority-condvar) Thread priority 29 woke up.
+(priority-condvar) Signaling...
+THREAD_UNBLOCK : priority 28
+THREAD_UNBLOCK : priority 28
+(priority-condvar) Thread priority 28 woke up.
+(priority-condvar) Signaling...
+THREAD_UNBLOCK : priority 27
+THREAD_UNBLOCK : priority 27
+(priority-condvar) Thread priority 27 woke up.
+(priority-condvar) Signaling...
+THREAD_UNBLOCK : priority 26
+THREAD_UNBLOCK : priority 26
+(priority-condvar) Thread priority 26 woke up.
+(priority-condvar) Signaling...
+THREAD_UNBLOCK : priority 25
+THREAD_UNBLOCK : priority 25
+(priority-condvar) Thread priority 25 woke up.
+(priority-condvar) Signaling...
+THREAD_UNBLOCK : priority 24
+THREAD_UNBLOCK : priority 24
+(priority-condvar) Thread priority 24 woke up.
+(priority-condvar) end
+Execution of 'priority-condvar' complete.
+Timer: 369 ticks
+Thread: 0 idle ticks, 372 kernel ticks, 0 user ticks
+Console: 2880 characters output
 Keyboard: 0 keys pressed
 Powering off...

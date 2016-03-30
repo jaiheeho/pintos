@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-Writing command line to /tmp/kzov8HEQBL.dsk...
-=======
-Writing command line to /tmp/JbzX38WjCR.dsk...
->>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
+Writing command line to /tmp/r4DR9v1muj.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run priority-donate-nest
@@ -11,39 +7,31 @@ Pintos booting with 4,096 kB RAM...
 374 pages available in user pool.
 THREAD_CREATE : idle
 THREAD_UNBLOCK : idle
-THREAD_BLOCK : main
 THREAD_UNBLOCK : main
-THREAD_BLOCK : idle
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'priority-donate-nest':
 (priority-donate-nest) begin
 THREAD_CREATE : medium
 THREAD_UNBLOCK : medium
-THREAD_BLOCK : medium
 (priority-donate-nest) Low thread should have priority 32.  Actual priority: 31.
 THREAD_CREATE : high
 THREAD_UNBLOCK : high
-THREAD_BLOCK : high
 (priority-donate-nest) Low thread should have priority 33.  Actual priority: 31.
-<<<<<<< HEAD
+THREAD_UNBLOCK : medium
+(priority-donate-nest) Medium thread should have priority 33.  Actual priority: 32.
+(priority-donate-nest) Medium thread got the lock.
+THREAD_UNBLOCK : high
+(priority-donate-nest) High thread got the lock.
+(priority-donate-nest) High thread finished.
+(priority-donate-nest) High thread should have just finished.
+(priority-donate-nest) Middle thread finished.
 (priority-donate-nest) Medium thread should just have finished.
 (priority-donate-nest) Low thread should have priority 31.  Actual priority: 31.
 (priority-donate-nest) end
 Execution of 'priority-donate-nest' complete.
-Timer: 94 ticks
-Thread: 0 idle ticks, 97 kernel ticks, 0 user ticks
-Console: 720 characters output
-=======
-THREAD_UNBLOCK : medium
-(priority-donate-nest) Medium Kernel PANIC at ../../threads/thread.c:269 in thread_current(): assertion `is_thread (t)' failed.
-Call stack: 0xc010749c 0xc0100ac5 0xc0102995 0xc01092f7 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc0109590 0xc010a5a9 0xc0109562 0xc0100535 0xc0100601 0xc0100094.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 92 ticks
-Thread: 1 idle ticks, 91 kernel ticks, 0 user ticks
-Console: 2576 characters output
->>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
+Timer: 160 ticks
+Thread: 0 idle ticks, 163 kernel ticks, 0 user ticks
+Console: 1261 characters output
 Keyboard: 0 keys pressed
 Powering off...

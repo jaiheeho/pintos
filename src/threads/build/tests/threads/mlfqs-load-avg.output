@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-Writing command line to /tmp/SPNOI7Ofz0.dsk...
-=======
-Writing command line to /tmp/QhzLKXForm.dsk...
->>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
+Writing command line to /tmp/PGWWHkrFIM.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q -mlfqs run mlfqs-load-avg
@@ -11,122 +7,581 @@ Pintos booting with 4,096 kB RAM...
 374 pages available in user pool.
 THREAD_CREATE : idle
 THREAD_UNBLOCK : idle
-THREAD_BLOCK : main
 THREAD_UNBLOCK : main
-THREAD_BLOCK : idle
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'mlfqs-load-avg':
 (mlfqs-load-avg) begin
 (mlfqs-load-avg) Starting 60 load threads...
-<<<<<<< HEAD
-(mlfqs-load-avg) Starting threads took 1 seconds.
-(mlfqs-load-avg) After 0 seconds, load average=0.00.
-(mlfqs-load-avg) After 2 seconds, load average=0.00.
-(mlfqs-load-avg) After 4 seconds, load average=0.00.
-(mlfqs-load-avg) After 6 seconds, load average=0.00.
-(mlfqs-load-avg) After 8 seconds, load average=0.00.
-(mlfqs-load-avg) After 10 seconds, load average=0.00.
-(mlfqs-load-avg) After 12 seconds, load average=0.00.
-(mlfqs-load-avg) After 14 seconds, load average=0.00.
-(mlfqs-load-avg) After 16 seconds, load average=0.00.
-(mlfqs-load-avg) After 18 seconds, load average=0.00.
-(mlfqs-load-avg) After 20 seconds, load average=0.00.
-(mlfqs-load-avg) After 22 seconds, load average=0.00.
-(mlfqs-load-avg) After 24 seconds, load average=0.00.
-(mlfqs-load-avg) After 26 seconds, load average=0.00.
-(mlfqs-load-avg) After 28 seconds, load average=0.00.
-(mlfqs-load-avg) After 30 seconds, load average=0.00.
-(mlfqs-load-avg) After 32 seconds, load average=0.00.
-(mlfqs-load-avg) After 34 seconds, load average=0.00.
-(mlfqs-load-avg) After 36 seconds, load average=0.00.
-(mlfqs-load-avg) After 38 seconds, load average=0.00.
-(mlfqs-load-avg) After 40 seconds, load average=0.00.
-(mlfqs-load-avg) After 42 seconds, load average=0.00.
-(mlfqs-load-avg) After 44 seconds, load average=0.00.
-(mlfqs-load-avg) After 46 seconds, load average=0.00.
-(mlfqs-load-avg) After 48 seconds, load average=0.00.
-(mlfqs-load-avg) After 50 seconds, load average=0.00.
-(mlfqs-load-avg) After 52 seconds, load average=0.00.
-(mlfqs-load-avg) After 54 seconds, load average=0.00.
-(mlfqs-load-avg) After 56 seconds, load average=0.00.
-(mlfqs-load-avg) After 58 seconds, load average=0.00.
-(mlfqs-load-avg) After 60 seconds, load average=0.00.
-(mlfqs-load-avg) After 62 seconds, load average=0.00.
-(mlfqs-load-avg) After 64 seconds, load average=0.00.
-(mlfqs-load-avg) After 66 seconds, load average=0.00.
-(mlfqs-load-avg) After 68 seconds, load average=0.00.
-(mlfqs-load-avg) After 70 seconds, load average=0.00.
-(mlfqs-load-avg) After 72 seconds, load average=0.00.
-(mlfqs-load-avg) After 74 seconds, load average=0.00.
-(mlfqs-load-avg) After 76 seconds, load average=0.00.
-(mlfqs-load-avg) After 78 seconds, load average=0.00.
-(mlfqs-load-avg) After 80 seconds, load average=0.00.
-(mlfqs-load-avg) After 82 seconds, load average=0.00.
-(mlfqs-load-avg) After 84 seconds, load average=0.00.
-(mlfqs-load-avg) After 86 seconds, load average=0.00.
-(mlfqs-load-avg) After 88 seconds, load average=0.00.
-(mlfqs-load-avg) After 90 seconds, load average=0.00.
-(mlfqs-load-avg) After 92 seconds, load average=0.00.
-(mlfqs-load-avg) After 94 seconds, load average=0.00.
-(mlfqs-load-avg) After 96 seconds, load average=0.00.
-(mlfqs-load-avg) After 98 seconds, load average=0.00.
-(mlfqs-load-avg) After 100 seconds, load average=0.00.
-(mlfqs-load-avg) After 102 seconds, load average=0.00.
-(mlfqs-load-avg) After 104 seconds, load average=0.00.
-(mlfqs-load-avg) After 106 seconds, load average=0.00.
-(mlfqs-load-avg) After 108 seconds, load average=0.00.
-(mlfqs-load-avg) After 110 seconds, load average=0.00.
-(mlfqs-load-avg) After 112 seconds, load average=0.00.
-(mlfqs-load-avg) After 114 seconds, load average=0.00.
-(mlfqs-load-avg) After 116 seconds, load average=0.00.
-(mlfqs-load-avg) After 118 seconds, load average=0.00.
-(mlfqs-load-avg) After 120 seconds, load average=0.00.
-(mlfqs-load-avg) After 122 seconds, load average=0.00.
-(mlfqs-load-avg) After 124 seconds, load average=0.00.
-(mlfqs-load-avg) After 126 seconds, load average=0.00.
-(mlfqs-load-avg) After 128 seconds, load average=0.00.
-(mlfqs-load-avg) After 130 seconds, load average=0.00.
-(mlfqs-load-avg) After 132 seconds, load average=0.00.
-(mlfqs-load-avg) After 134 seconds, load average=0.00.
-(mlfqs-load-avg) After 136 seconds, load average=0.00.
-(mlfqs-load-avg) After 138 seconds, load average=0.00.
-(mlfqs-load-avg) After 140 seconds, load average=0.00.
-(mlfqs-load-avg) After 142 seconds, load average=0.00.
-(mlfqs-load-avg) After 144 seconds, load average=0.00.
-(mlfqs-load-avg) After 146 seconds, load average=0.00.
-(mlfqs-load-avg) After 148 seconds, load average=0.00.
-(mlfqs-load-avg) After 150 seconds, load average=0.00.
-(mlfqs-load-avg) After 152 seconds, load average=0.00.
-(mlfqs-load-avg) After 154 seconds, load average=0.00.
-(mlfqs-load-avg) After 156 seconds, load average=0.00.
-(mlfqs-load-avg) After 158 seconds, load average=0.00.
-(mlfqs-load-avg) After 160 seconds, load average=0.00.
-(mlfqs-load-avg) After 162 seconds, load average=0.00.
-(mlfqs-load-avg) After 164 seconds, load average=0.00.
-(mlfqs-load-avg) After 166 seconds, load average=0.00.
-(mlfqs-load-avg) After 168 seconds, load average=0.00.
-(mlfqs-load-avg) After 170 seconds, load average=0.00.
-(mlfqs-load-avg) After 172 seconds, load average=0.00.
-(mlfqs-load-avg) After 174 seconds, load average=0.00.
-(mlfqs-load-avg) After 176 seconds, load average=0.00.
-(mlfqs-load-avg) After 178 seconds, load average=0.00.
-(mlfqs-load-avg) end
-Execution of 'mlfqs-load-avg' complete.
-Timer: 18849 ticks
-Thread: 6233 idle ticks, 12619 kernel ticks, 0 user ticks
-Console: 5389 characters output
-=======
 THREAD_CREATE : load 0
 THREAD_UNBLOCK : load 0
-THRKernel PANIC at ../../threads/thread.c:270 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
-Call stack: 0xc010749c 0xc0100af8 0xc0102995 0xc01092f7 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0103883 0xc010b87f 0xc0100cc3.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 58 ticks
-Thread: 1 idle ticks, 57 kernel ticks, 0 user ticks
-Console: 2370 characters output
->>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
+THREAD_CREATE : load 1
+THREAD_UNBLOCK : load 1
+THREAD_CREATE : load 2
+THREAD_UNBLOCK : load 2
+THREAD_CREATE : load 3
+THREAD_UNBLOCK : load 3
+THREAD_CREATE : load 4
+THREAD_UNBLOCK : load 4
+THREAD_CREATE : load 5
+THREAD_UNBLOCK : load 5
+THREAD_CREATE : load 6
+THREAD_UNBLOCK : load 6
+THREAD_CREATE : load 7
+THREAD_UNBLOCK : load 7
+THREAD_CREATE : load 8
+THREAD_UNBLOCK : load 8
+THREAD_CREATE : load 9
+THREAD_UNBLOCK : load 9
+THREAD_CREATE : load 10
+THREAD_UNBLOCK : load 10
+THREAD_CREATE : load 11
+THREAD_UNBLOCK : load 11
+THREAD_CREATE : load 12
+THREAD_UNBLOCK : load 12
+THREAD_CREATE : load 13
+THREAD_UNBLOCK : load 13
+THREAD_CREATE : load 14
+THREAD_UNBLOCK : load 14
+THREAD_CREATE : load 15
+THREAD_UNBLOCK : load 15
+THREAD_CREATE : load 16
+THREAD_UNBLOCK : load 16
+THREAD_CREATE : load 17
+THREAD_UNBLOCK : load 17
+THREAD_CREATE : load 18
+THREAD_UNBLOCK : load 18
+THREAD_CREATE : load 19
+THREAD_UNBLOCK : load 19
+THREAD_CREATE : load 20
+THREAD_UNBLOCK : load 20
+THREAD_CREATE : load 21
+THREAD_UNBLOCK : load 21
+THREAD_CREATE : load 22
+THREAD_UNBLOCK : load 22
+THREAD_CREATE : load 23
+THREAD_UNBLOCK : load 23
+THREAD_CREATE : load 24
+THREAD_UNBLOCK : load 24
+THREAD_CREATE : load 25
+THREAD_UNBLOCK : load 25
+THREAD_CREATE : load 26
+THREAD_UNBLOCK : load 26
+THREAD_CREATE : load 27
+THREAD_UNBLOCK : load 27
+THREAD_CREATE : load 28
+THREAD_UNBLOCK : load 28
+THREAD_CREATE : load 29
+THREAD_UNBLOCK : load 29
+THREAD_CREATE : load 30
+THREAD_UNBLOCK : load 30
+THREAD_CREATE : load 31
+THREAD_UNBLOCK : load 31
+THREAD_CREATE : load 32
+THREAD_UNBLOCK : load 32
+THREAD_CREATE : load 33
+THREAD_UNBLOCK : load 33
+THREAD_CREATE : load 34
+THREAD_UNBLOCK : load 34
+THREAD_CREATE : load 35
+THREAD_UNBLOCK : load 35
+THREAD_CREATE : load 36
+THREAD_UNBLOCK : load 36
+THREAD_CREATE : load 37
+THREAD_UNBLOCK : load 37
+THREAD_CREATE : load 38
+THREAD_UNBLOCK : load 38
+THREAD_CREATE : load 39
+THREAD_UNBLOCK : load 39
+THREAD_CREATE : load 40
+THREAD_UNBLOCK : load 40
+THREAD_CREATE : load 41
+THREAD_UNBLOCK : load 41
+THREAD_CREATE : load 42
+THREAD_UNBLOCK : load 42
+THREAD_CREATE : load 43
+THREAD_UNBLOCK : load 43
+THREAD_CREATE : load 44
+THREAD_UNBLOCK : load 44
+THREAD_CREATE : load 45
+THREAD_UNBLOCK : load 45
+THREAD_CREATE : load 46
+THREAD_UNBLOCK : load 46
+THREAD_CREATE : load 47
+THREAD_UNBLOCK : load 47
+THREAD_CREATE : load 48
+THREAD_UNBLOCK : load 48
+THREAD_CREATE : load 49
+THREAD_UNBLOCK : load 49
+THREAD_CREATE : load 50
+THREAD_UNBLOCK : load 50
+THREAD_CREATE : load 51
+THREAD_UNBLOCK : load 51
+THREAD_CREATE : load 52
+THREAD_UNBLOCK : load 52
+THREAD_CREATE : load 53
+THREAD_UNBLOCK : load 53
+THREAD_CREATE : load 54
+THREAD_UNBLOCK : load 54
+THREAD_CREATE : load 55
+THREAD_UNBLOCK : load 55
+THREAD_CREATE : load 56
+THREAD_UNBLOCK : load 56
+THREAD_CREATE : load 57
+THREAD_UNBLOCK : load 57
+THREAD_CREATE : load 58
+THREAD_UNBLOCK : load 58
+THREAD_CREATE : load 59
+THREAD_UNBLOCK : load 59
+(mlfqs-load-avg) Starting threads took 8 seconds.
+here START
+THREAD_UNBLOCK : load 0
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 1
+here END
+(mlfqs-load-avg) After 0 seconds, load average=0.42.
+here START
+THREAD_UNBLOCK : load 2
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 3
+here END
+(mlfqs-load-avg) After 2 seconds, load average=0.51.
+here START
+THREAD_UNBLOCK : load 4
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 6
+here END
+(mlfqs-load-avg) After 4 seconds, load average=0.75.
+(mlfqs-load-avg) After 6 seconds, load average=0.75.
+here START
+THREAD_UNBLOCK : load 7
+here END
+here START
+THREAD_UNBLOCK : load 8
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 9
+here END
+(mlfqs-load-avg) After 8 seconds, load average=1.07.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 10 seconds, load average=1.20.
+here START
+THREAD_UNBLOCK : load 11
+here END
+here START
+THREAD_UNBLOCK : load 12
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 13
+here END
+(mlfqs-load-avg) After 12 seconds, load average=1.65.
+here START
+THREAD_UNBLOCK : load 14
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 15
+here END
+(mlfqs-load-avg) After 14 seconds, load average=2.03.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 16 seconds, load average=2.23.
+here START
+THREAD_UNBLOCK : load 17
+here END
+here START
+THREAD_UNBLOCK : load 18
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 19
+here END
+(mlfqs-load-avg) After 18 seconds, load average=2.87.
+here START
+THREAD_UNBLOCK : load 20
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 21
+here END
+(mlfqs-load-avg) After 20 seconds, load average=3.37.
+here START
+THREAD_UNBLOCK : load 22
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 23
+here END
+(mlfqs-load-avg) After 22 seconds, load average=3.92.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 24 seconds, load average=4.21.
+here START
+THREAD_UNBLOCK : load 25
+here END
+here START
+THREAD_UNBLOCK : load 26
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 27
+here END
+(mlfqs-load-avg) After 26 seconds, load average=5.10.
+here START
+THREAD_UNBLOCK : load 28
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 29
+here END
+(mlfqs-load-avg) After 28 seconds, load average=5.76.
+here START
+THREAD_UNBLOCK : load 30
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 31
+here END
+(mlfqs-load-avg) After 30 seconds, load average=6.46.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 32 seconds, load average=6.82.
+here START
+THREAD_UNBLOCK : load 33
+here END
+here START
+THREAD_UNBLOCK : load 34
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 35
+here END
+(mlfqs-load-avg) After 34 seconds, load average=7.93.
+here START
+THREAD_UNBLOCK : load 36
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 37
+here END
+(mlfqs-load-avg) After 36 seconds, load average=8.72.
+here START
+THREAD_UNBLOCK : load 38
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 39
+here END
+(mlfqs-load-avg) After 38 seconds, load average=9.56.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 40 seconds, load average=9.98.
+here START
+THREAD_UNBLOCK : load 41
+here END
+here START
+THREAD_UNBLOCK : load 42
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 43
+here END
+(mlfqs-load-avg) After 42 seconds, load average=11.28.
+here START
+THREAD_UNBLOCK : load 44
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 45
+here END
+(mlfqs-load-avg) After 44 seconds, load average=12.20.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 46 seconds, load average=12.66.
+here START
+THREAD_UNBLOCK : load 47
+here END
+here START
+THREAD_UNBLOCK : load 48
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 49
+here END
+(mlfqs-load-avg) After 48 seconds, load average=14.07.
+here START
+THREAD_UNBLOCK : load 50
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 51
+here END
+(mlfqs-load-avg) After 50 seconds, load average=15.06.
+here START
+THREAD_UNBLOCK : load 52
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 54
+here END
+(mlfqs-load-avg) After 52 seconds, load average=16.60.
+(mlfqs-load-avg) After 54 seconds, load average=16.60.
+here START
+THREAD_UNBLOCK : load 55
+here END
+here START
+THREAD_UNBLOCK : load 5
+here END
+here START
+THREAD_UNBLOCK : load 10
+here END
+here START
+THREAD_UNBLOCK : load 16
+here END
+here START
+THREAD_UNBLOCK : load 56
+here END
+here START
+THREAD_UNBLOCK : main
+here END
+here START
+THREAD_UNBLOCK : load 57
+here END
+here START
+THREAD_UNBLOCK : load 59
+here END
+here START
+THREAD_UNBLOCK : load 24
+here END
+here START
+THREAD_UNBLOCK : load 32
+here END
+here START
+THREAD_UNBLOCK : load 40
+here END
+here START
+THREAD_UNBLOCK : load 46
+here END
+here START
+THREAD_UNBLOCK : load 53
+here END
+here START
+THREAD_UNBLOCK : load 58
+here END
+here START
+THREAD_UNBLOCK : load 16
+here END
+(mlfqs-load-avg) After 56 seconds, load average=44.66.
+(mlfqs-load-avg) After 58 seconds, load average=44.66.
+(mlfqs-load-avg) After 60 seconds, load average=44.66.
+(mlfqs-load-avg) After 62 seconds, load average=44.66.
+(mlfqs-load-avg) After 64 seconds, load average=44.66.
+(mlfqs-load-avg) After 66 seconds, load average=44.66.
+(mlfqs-load-avg) After 68 seconds, load average=44.92.
+(mlfqs-load-avg) After 70 seconds, load average=44.92.
+(mlfqs-load-avg) After 72 seconds, load average=44.92.
+(mlfqs-load-avg) After 74 seconds, load average=44.92.
+(mlfqs-load-avg) After 76 seconds, load average=44.92.
+(mlfqs-load-avg) After 78 seconds, load average=44.92.
+(mlfqs-load-avg) After 80 seconds, load average=44.92.
+(mlfqs-load-avg) After 82 seconds, load average=44.92.
+(mlfqs-load-avg) After 84 seconds, load average=44.92.
+(mlfqs-load-avg) After 86 seconds, load average=44.92.
+(mlfqs-load-avg) After 88 seconds, load average=45.17.
+(mlfqs-load-avg) After 90 seconds, load average=45.17.
+(mlfqs-load-avg) After 92 seconds, load average=45.17.
+(mlfqs-load-avg) After 94 seconds, load average=45.17.
+(mlfqs-load-avg) After 96 seconds, load average=45.17.
+(mlfqs-load-avg) After 98 seconds, load average=45.17.
+(mlfqs-load-avg) After 100 seconds, load average=45.17.
+(mlfqs-load-avg) After 102 seconds, load average=45.17.
+(mlfqs-load-avg) After 104 seconds, load average=45.17.
+(mlfqs-load-avg) After 106 seconds, load average=45.42.
+(mlfqs-load-avg) After 108 seconds, load average=45.42.
+(mlfqs-load-avg) After 110 seconds, load average=45.42.
+(mlfqs-load-avg) After 112 seconds, load average=45.42.
+(mlfqs-load-avg) After 114 seconds, load average=45.42.
+(mlfqs-load-avg) After 116 seconds, load average=45.42.
+(mlfqs-load-avg) After 118 seconds, load average=45.42.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 120 seconds, load average=45.51.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 122 seconds, load average=44.00.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 124 seconds, load average=42.55.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 126 seconds, load average=41.14.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 128 seconds, load average=39.78.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 130 seconds, load average=38.47.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 132 seconds, load average=37.20.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 134 seconds, load average=35.97.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 136 seconds, load average=34.78.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 138 seconds, load average=33.63.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 140 seconds, load average=32.52.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 142 seconds, load average=31.44.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 144 seconds, load average=30.40.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 146 seconds, load average=29.40.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 148 seconds, load average=28.43.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 150 seconds, load average=27.49.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 152 seconds, load average=26.58.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 154 seconds, load average=25.70.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 156 seconds, load average=24.85.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 158 seconds, load average=24.03.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 160 seconds, load average=23.23.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 162 seconds, load average=22.47.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 164 seconds, load average=21.72.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 166 seconds, load average=21.00.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 168 seconds, load average=20.31.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 170 seconds, load average=19.64.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 172 seconds, load average=18.99.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 174 seconds, load average=18.36.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 176 seconds, load average=17.75.
+here START
+THREAD_UNBLOCK : main
+here END
+(mlfqs-load-avg) After 178 seconds, load average=17.17.
+(mlfqs-load-avg) end
+Execution of 'mlfqs-load-avg' complete.
+Timer: 18857 ticks
+Thread: 5670 idle ticks, 13191 kernel ticks, 0 user ticks
+Console: 13572 characters output
 Keyboard: 0 keys pressed
 Powering off...

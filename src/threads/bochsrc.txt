@@ -6,10 +6,6 @@ megs: 4
 log: bochsout.txt
 panic: action=fatal
 clock: sync=none, time0=0
-<<<<<<< HEAD
-ata0-master: type=disk, path=/tmp/bUilHsUW84.dsk, mode=flat, cylinders=1, heads=16, spt=63, translation=none
-=======
-ata0-master: type=disk, path=/tmp/01kbARIqzt.dsk, mode=flat, cylinders=1, heads=16, spt=63, translation=none
->>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
+ata0-master: type=disk, path=/tmp/Kv5brB2bbQ.dsk, mode=flat, cylinders=1, heads=16, spt=63, translation=none
 com1: enabled=1, mode=file, dev=/dev/stdout
 display_library: nogui

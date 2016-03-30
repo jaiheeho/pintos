@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-Writing command line to /tmp/xmJufm6iXK.dsk...
-=======
-Writing command line to /tmp/VwsiBPzLFx.dsk...
->>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
+Writing command line to /tmp/N6DeOZpl4q.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run alarm-zero
@@ -11,27 +7,19 @@ Pintos booting with 4,096 kB RAM...
 374 pages available in user pool.
 THREAD_CREATE : idle
 THREAD_UNBLOCK : idle
-THREAD_BLOCK : main
 THREAD_UNBLOCK : main
-THREAD_BLOCK : idle
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'alarm-zero':
 (alarm-zero) begin
-THREAD_BLOCK : main
+here START
 THREAD_UNBLOCK : main
-THREAD_BLOCK : idle
+here END
 (alarm-zero) PASS
 (alarm-zero) end
 Execution of 'alarm-zero' complete.
-<<<<<<< HEAD
-Timer: 45 ticks
-Thread: 1 idle ticks, 47 kernel ticks, 0 user ticks
-Console: 381 characters output
-=======
-Timer: 54 ticks
-Thread: 3 idle ticks, 54 kernel ticks, 0 user ticks
-Console: 548 characters output
->>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
+Timer: 51 ticks
+Thread: 1 idle ticks, 53 kernel ticks, 0 user ticks
+Console: 488 characters output
 Keyboard: 0 keys pressed
 Powering off...

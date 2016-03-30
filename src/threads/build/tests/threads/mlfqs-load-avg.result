@@ -1,146 +1,93 @@
 FAIL
-Kernel panic in run: PANIC at ../../threads/thread.c:270 in thread_current(): assertion `t->status == THREAD_RUNNING' failed.
-Call stack: 0xc010749c 0xc0100af8 0xc0102995 0xc01092f7 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0102543 0xc010281e 0xc0109310 0xc0109399 0xc01058e4 0xc01009a1 0xc0103883 0xc010b87f 0xc0100cc3
-Translation of call stack:
-0xc010749c: debug_panic (.../../lib/kernel/debug.c:34)
-0xc0100af8: thread_current (..../../threads/thread.c:273)
-0xc0102995: lock_held_by_current_thread (...../../threads/synch.c:248)
-0xc01092f7: acquire_console (..../lib/kernel/console.c:92)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0102543: sema_down (.../../../threads/synch.c:73)
-0xc010281e: lock_acquire (...../../threads/synch.c:201)
-0xc0109310: acquire_console (..../lib/kernel/console.c:97)
-0xc0109399: vprintf (.../lib/kernel/console.c:131)
-0xc01058e4: printf (...uild/../../lib/stdio.c:89)
-0xc01009a1: thread_block (..../../threads/thread.c:223)
-0xc0103883: timer_sleep (...../../devices/timer.c:117)
-0xc010b87f: load_thread (...eads/mlfqs-load-avg.c:163)
-0xc0100cc3: kernel_thread (..../../threads/thread.c:410)
+Some load average values were missing or differed from those expected by more than 2.5.
+  time   actual <-> expected explanation
+------ -------- --- -------- ----------------------------------------
+     2     0.51  =  0.05     
+     4     0.75  =  0.16     
+     6     0.75  =  0.34     
+     8     1.07  =  0.58     
+    10     1.20  =  0.87     
+    12     1.65  =  1.22     
+    14     2.03  =  1.63     
+    16     2.23  =  2.09     
+    18     2.87  =  2.60     
+    20     3.37  =  3.16     
+    22     3.92  =  3.76     
+    24     4.21  =  4.42     
+    26     5.10  =  5.11     
+    28     5.76  =  5.85     
+    30     6.46  =  6.63     
+    32     6.82  =  7.46     
+    34     7.93  =  8.32     
+    36     8.72  =  9.22     
+    38     9.56  =  10.15    
+    40     9.98  =  11.12    
+    42    11.28  =  12.13    
+    44    12.20  =  13.16    
+    46    12.66  =  14.23    
+    48    14.07  =  15.33    
+    50    15.06  =  16.46    
+    52    16.60  =  17.62    
+    54    16.60  =  18.81    
+    56    44.66 >>> 20.02    Too big, by 22.14.
+    58    44.66 >>> 21.26    Too big, by 20.90.
+    60    44.66 >>> 22.52    Too big, by 19.64.
+    62    44.66 >>> 23.71    Too big, by 18.45.
+    64    44.66 >>> 24.80    Too big, by 17.36.
+    66    44.66 >>> 25.78    Too big, by 16.38.
+    68    44.92 >>> 26.66    Too big, by 15.76.
+    70    44.92 >>> 27.45    Too big, by 14.97.
+    72    44.92 >>> 28.14    Too big, by 14.28.
+    74    44.92 >>> 28.75    Too big, by 13.67.
+    76    44.92 >>> 29.27    Too big, by 13.15.
+    78    44.92 >>> 29.71    Too big, by 12.71.
+    80    44.92 >>> 30.06    Too big, by 12.36.
+    82    44.92 >>> 30.34    Too big, by 12.08.
+    84    44.92 >>> 30.55    Too big, by 11.87.
+    86    44.92 >>> 30.68    Too big, by 11.74.
+    88    45.17 >>> 30.74    Too big, by 11.93.
+    90    45.17 >>> 30.73    Too big, by 11.94.
+    92    45.17 >>> 30.66    Too big, by 12.01.
+    94    45.17 >>> 30.52    Too big, by 12.15.
+    96    45.17 >>> 30.32    Too big, by 12.35.
+    98    45.17 >>> 30.06    Too big, by 12.61.
+   100    45.17 >>> 29.74    Too big, by 12.93.
+   102    45.17 >>> 29.37    Too big, by 13.30.
+   104    45.17 >>> 28.95    Too big, by 13.72.
+   106    45.42 >>> 28.47    Too big, by 14.45.
+   108    45.42 >>> 27.94    Too big, by 14.98.
+   110    45.42 >>> 27.36    Too big, by 15.56.
+   112    45.42 >>> 26.74    Too big, by 16.18.
+   114    45.42 >>> 26.07    Too big, by 16.85.
+   116    45.42 >>> 25.36    Too big, by 17.56.
+   118    45.42 >>> 24.60    Too big, by 18.32.
+   120    45.51 >>> 23.81    Too big, by 19.20.
+   122    44.00 >>> 23.02    Too big, by 18.48.
+   124    42.55 >>> 22.26    Too big, by 17.79.
+   126    41.14 >>> 21.52    Too big, by 17.12.
+   128    39.78 >>> 20.81    Too big, by 16.47.
+   130    38.47 >>> 20.12    Too big, by 15.85.
+   132    37.20 >>> 19.46    Too big, by 15.24.
+   134    35.97 >>> 18.81    Too big, by 14.66.
+   136    34.78 >>> 18.19    Too big, by 14.09.
+   138    33.63 >>> 17.59    Too big, by 13.54.
+   140    32.52 >>> 17.01    Too big, by 13.01.
+   142    31.44 >>> 16.45    Too big, by 12.49.
+   144    30.40 >>> 15.90    Too big, by 12.00.
+   146    29.40 >>> 15.38    Too big, by 11.52.
+   148    28.43 >>> 14.87    Too big, by 11.06.
+   150    27.49 >>> 14.38    Too big, by 10.61.
+   152    26.58 >>> 13.90    Too big, by 10.18.
+   154    25.70 >>> 13.44    Too big, by 9.76.
+   156    24.85 >>> 13.00    Too big, by 9.35.
+   158    24.03 >>> 12.57    Too big, by 8.96.
+   160    23.23 >>> 12.15    Too big, by 8.58.
+   162    22.47 >>> 11.75    Too big, by 8.22.
+   164    21.72 >>> 11.36    Too big, by 7.86.
+   166    21.00 >>> 10.99    Too big, by 7.51.
+   168    20.31 >>> 10.62    Too big, by 7.19.
+   170    19.64 >>> 10.27    Too big, by 6.87.
+   172    18.99 >>> 9.93     Too big, by 6.56.
+   174    18.36 >>> 9.61     Too big, by 6.25.
+   176    17.75 >>> 9.29     Too big, by 5.96.
+   178    17.17 >>> 8.98     Too big, by 5.69.

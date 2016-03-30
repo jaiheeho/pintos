@@ -7,8 +7,8 @@ Acceptable output:
   (alarm-zero) end
 Differences in `diff -u' format:
   (alarm-zero) begin
-+ THREAD_BLOCK : main
++ here START
 + THREAD_UNBLOCK : main
-+ THREAD_BLOCK : idle
++ here END
   (alarm-zero) PASS
   (alarm-zero) end
