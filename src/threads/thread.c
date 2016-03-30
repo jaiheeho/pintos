@@ -40,6 +40,9 @@ static struct thread *initial_thread;
 /* Lock used by allocate_tid(). */
 static struct lock tid_lock;
 
+/* IMPLEMENTATAION */
+static int load_avg = 0;
+
 /* Stack frame for kernel_thread(). */
 struct kernel_thread_frame 
   {
@@ -375,11 +378,8 @@ thread_set_priority (int new_priority)
 	  else if (intr_context() == true)
 	    {
 	      intr_yield_on_return();
-	    }
-	  
+	    } 
 	}
-
-      
       
     }
   intr_set_level(old_level);
@@ -397,6 +397,11 @@ void
 thread_set_nice (int nice UNUSED) 
 {
   /* Not yet implemented. */
+  ///WHERE WE ADDED/////////
+  enum intr_level old_level = intr_disable ();
+  thread_current()->nice = nice;
+  intr_set_level (old_level);
+  ///WHERE WE ADDED END/////
 }
 
 /* Returns the current thread's nice value. */
@@ -404,7 +409,13 @@ int
 thread_get_nice (void) 
 {
   /* Not yet implemented. */
-  return 0;
+
+  ///WHERE WE ADDED/////////
+  enum intr_level old_level = intr_disable ();
+  int tmp = thread_current()->nice;
+  intr_set_level (old_level);
+  return tmp;
+  ///WHERE WE ADDED END/////
 }
 
 /* Returns 100 times the system load average. */
@@ -412,7 +423,14 @@ int
 thread_get_load_avg (void) 
 {
   /* Not yet implemented. */
-  return 0;
+  ///WHERE WE ADDED/////////
+  enum intr_level old_level = intr_disable ();
+  f = 0x8000;
+  intr_set_level (old_level);
+  return (load_avg * 100 + f/2) /f ;
+
+  ///WHERE WE ADDED END/////
+
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
@@ -420,7 +438,12 @@ int
 thread_get_recent_cpu (void) 
 {
   /* Not yet implemented. */
-  return 0;
+  ///WHERE WE ADDED/////////
+  enum intr_level old_level = intr_disable ();
+  intr_set_level (old_level);
+  return (recent_cpu * 100 + f/2) /f;
+  ///WHERE WE ADDED END/////
+
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
