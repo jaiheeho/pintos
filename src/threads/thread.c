@@ -421,8 +421,8 @@ thread_set_nice (int nice)
   t->priority = priority;
   printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
 
+  update_recent_cpus();
   update_priorities();
-
   if( list_empty(&ready_list) == false)
   {
     struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
