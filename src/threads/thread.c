@@ -431,7 +431,7 @@ thread_get_load_avg (void)
   enum intr_level old_level = intr_disable ();
   int temp_load_avg = load_avg
   intr_set_level (old_level);
-  return (temp_load * 100 + FP/2) /FP ;
+  return (temp_load_avg * 100 + FP/2) /FP ;
   ///WHERE WE ADDED END/////
 }
 
@@ -478,7 +478,7 @@ void update_load_avg()
   if (thread_current() != idle_thread)
     ready_threads++;
   //load_avg = (59/60) * load_avg + (1/60) *ready_threads;
-  load_avg = ((59 *f)/60)  * load_avg / FP +  ((FP)/60)  * ready_threads;
+  load_avg = ((59 *FP)/60)  * load_avg / FP +  ((FP)/60)  * ready_threads;
 }
 
 /************************************************************************
@@ -500,7 +500,7 @@ void update_recent_cpus(){
   if (t != idle_thread)
   {
     recent = t->recent_cpu;
-    nict = t->nice;
+    nice = t->nice;
     coeff = (((int64_t)(2*load_avg)) * FP )/ (2*load_avg + FP);
     t -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
   }
@@ -508,20 +508,23 @@ void update_recent_cpus(){
   for(iter = list_begin(&sleep_list);
     iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
   {
-    recent = iter->recent_cpu;
-    nict = iter->nice;
+
+    t = list_entry(iter, struct thread, elem);
+    recent = t->recent_cpu;
+    nict = t->nice;
     coeff = (((int64_t)(2*load_avg)) * FP )/ (2*load_avg + FP);
-    iter -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
+    t -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
   }
 
   /* update for ready list*/
   for(iter = list_begin(&sleep_list);
     iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
   {
-    recent = iter->recent_cpu;
-    nict = iter->nice;
+    t = list_entry(iter, struct thread, elem);
+    recent = t->recent_cpu;
+    nict = t->nice;
     coeff = (((int64_t)(2*load_avg)) * FP )/ (2*load_avg + FP);
-    iter -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
+    t -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
   }
   intr_set_level (old_level);
 }
