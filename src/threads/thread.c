@@ -421,11 +421,12 @@ thread_set_nice (int nice)
   t->nice = nice;
   t->priority = priority;
 
+  printf("load_avg : %d, recent_cpu:%d\n",load_avg,t->recent_cpu);
+
   if( list_empty(&ready_list) == false)
   {
 
     printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
-    update_recent_cpus();
     update_priorities();
     printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
     struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
