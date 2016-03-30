@@ -221,8 +221,11 @@ thread_create (const char *name, int priority,
   sf = alloc_frame (t, sizeof *sf);
   sf->eip = switch_entry;
 
+  ///WHERE WE ADDED/////////
   /* NICE */
   t->nice = thread_current()->nice;
+  ///WHERE WE ADDED END/////
+
 
   /* Add to run queue. */
   thread_unblock (t);
@@ -263,7 +266,7 @@ thread_unblock (struct thread *t)
   ASSERT (t->status == THREAD_BLOCKED);
 
   /*list_push_back (&ready_list, &t->elem);*/
-  /* ---------------ADDED CODE-------------- */
+  ///WHERE WE ADDED/////////
   list_insert_ordered(&ready_list, &t->elem,
 		      (list_less_func *) &priority_less_func, NULL); // ADDED
   t->status = THREAD_READY;
@@ -281,7 +284,7 @@ thread_unblock (struct thread *t)
 	    }
 	}
     }
-  /*-----------------------------------------*/
+  ///WHERE WE ADDED END/////
   intr_set_level (old_level);
 }
 
@@ -407,7 +410,7 @@ thread_set_nice (int nice)
   enum intr_level old_level = intr_disable ();
   struct thread *t = thread_current();
   struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
-  calc_priority(t->recent_cpu, nice);
+  int priority = calc_priority(t->recent_cpu, nice);
   t->nice = nice;
   t->priority = priority;
   if(thread_start_complete == 1)
@@ -629,7 +632,6 @@ int calc_priority(int recent_cpu, int nice)
 
   return priority;
 }
-
 ///WHERE WE ADDED END/////
 
 
@@ -721,7 +723,6 @@ init_thread (struct thread *t, const char *name, int priority)
 
   ///WHERE WE ADDED/////////
   t->recent_cpu = 0;
-  //t->nice = 0;
   ///WHERE WE ADDED END/////
 }
 
@@ -841,6 +842,8 @@ allocate_tid (void)
 uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 
 
+///WHERE WE ADDED/////////
+///WHERE WE ADDED END/////
 /* Function to compare priorities inside ready_list(Added) */
 bool
 priority_less_func(const struct list_elem *a, const struct list_elem *b, void *aux)
