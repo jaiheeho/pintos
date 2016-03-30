@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 pass tests/threads/alarm-single
 pass tests/threads/alarm-multiple
 pass tests/threads/alarm-simultaneous
 pass tests/threads/alarm-priority
 pass tests/threads/alarm-zero
+=======
+FAIL tests/threads/alarm-single
+FAIL tests/threads/alarm-multiple
+FAIL tests/threads/alarm-simultaneous
+FAIL tests/threads/alarm-priority
+FAIL tests/threads/alarm-zero
+>>>>>>> 3937a44ce4f583d6a617742ae6ae6350763c5164
 pass tests/threads/alarm-negative
 pass tests/threads/priority-change
 FAIL tests/threads/priority-donate-one

@@ -88,8 +88,10 @@ struct thread
     char name[16];                      /* Name (for debugging purposes). */
     uint8_t *stack;                     /* Saved stack pointer. */
     int priority;                       /* Priority. */
-
-    int64_t wakeup_time;                        // Added by us
+    /* IMPELMENTATION */
+    int64_t wakeup_time;                /* wakeup time in ticks*/
+    int recent_cpu = 0;                 /* recent_cpu */
+    int nice = 0;                       /* nice */
 
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
@@ -141,6 +143,10 @@ bool priority_less_func(const struct list_elem *a,
 			       void *aux);
 
 extern struct list sleep_list; // added
+
+/*IMPLEMENTAION FOR MLFQS*/
+void update_load_avg();
+void update_recent_cpu(struct thread *);
 
 
 
