@@ -182,7 +182,6 @@ timer_interrupt (struct intr_frame *args UNUSED)
     {
       //Update load_avg
       update_load_avg();
-
       //Calculate recent_cpu fo all threads
       update_recent_cpus();
       //printf("recent_cpu END\n");
