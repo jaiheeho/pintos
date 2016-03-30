@@ -440,7 +440,7 @@ thread_get_recent_cpu (void)
   enum intr_level old_level = intr_disable ();
   int f = 0x8000;
   intr_set_level (old_level);
-  return (current_thread()->recent_cpu * 100 + f/2) /f;
+  return (thread_current()->recent_cpu * 100 + f/2) /f;
   ///WHERE WE ADDED END/////
 }
 
@@ -645,8 +645,6 @@ allocate_tid (void)
 /* Offset of `stack' member within `struct thread'.
    Used by switch.S, which can't figure it out on its own. */
 uint32_t thread_stack_ofs = offsetof (struct thread, stack);
-
-
 
 
 /* Function to compare priorities inside ready_list(Added) */
