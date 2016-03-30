@@ -181,6 +181,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
     // For every second update load_avg and recent_cpu of current_thread
     if (timer_ticks() % TIMER_FREQ == 0)
     {
+      printf("loada_avg START\n");
       //Update load_avg
       update_load_avg();
       printf("loada_avg END\n");
@@ -192,10 +193,10 @@ timer_interrupt (struct intr_frame *args UNUSED)
     }
     if (timer_ticks() % TIME_SLICE == 0)
     {
-      //Calculate Priority    
+      //Calculate Priority 
+      printf("Priority START\n");
       update_priorities();
       printf("Priority END\n");
-
     }
   }
 
@@ -213,6 +214,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
       break;
     }
   }
+  printf("Timer_interrup END\n");
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer
