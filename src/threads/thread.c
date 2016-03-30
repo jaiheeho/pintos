@@ -267,8 +267,7 @@ thread_unblock (struct thread *t)
   old_level = intr_disable ();
 
   list_insert_ordered(&ready_list, &t->elem,
-		      (list_less_func *) &priority_less_func, NULL); // ADDED
-  t->status = THREAD_READY;
+		      (list_less_func *) &priority_less_func, NULL); 
 
   if (thread_mlfqs)
   {
