@@ -440,9 +440,8 @@ thread_get_recent_cpu (void)
   enum intr_level old_level = intr_disable ();
   int f = 0x8000;
   intr_set_level (old_level);
-  return (recent_cpu * 100 + f/2) /f;
+  return (current_thread()->recent_cpu * 100 + f/2) /f;
   ///WHERE WE ADDED END/////
-
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
