@@ -260,28 +260,31 @@ thread_unblock (struct thread *t)
 
   ASSERT (is_thread (t));
 
-  old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
 
-  /*list_push_back (&ready_list, &t->elem);*/
   ///WHERE WE ADDED/////////
+
+  if (thread_mlfqs)
+    return;
+  old_level = intr_disable ();
+
   list_insert_ordered(&ready_list, &t->elem,
 		      (list_less_func *) &priority_less_func, NULL); // ADDED
   t->status = THREAD_READY;
- //  if(thread_start_complete == 1)
- //    {
- //      if (t->priority >= thread_current()->priority)
-	// {
-	//   if(intr_context() == false)
-	//     {
-	//       thread_yield();
-	//     }
-	//   else if (intr_context() == true)
-	//     {
-	//       intr_yield_on_return();
-	//     }
-	// }
- //    }
+  if(thread_start_complete == 1)
+    {
+      if (t->priority >= thread_current()->priority)
+	{
+	  if(intr_context() == false)
+	    {
+	      thread_yield();
+	    }
+	  else if (intr_context() == true)
+	    {
+	      intr_yield_on_return();
+	    }
+	}
+    }
   ///WHERE WE ADDED END/////
   intr_set_level (old_level);
 }
