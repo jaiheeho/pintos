@@ -410,6 +410,10 @@ thread_set_nice (int nice)
   //enum intr_level old_level = intr_disable ();
   struct thread *t = thread_current();
 
+  int recent = t->recent_cpu;
+  int coeff = (((int64_t)(2*load_avg)) * FP )/ (2*load_avg + FP);
+  t -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
+
   int priority = calc_priority(t->recent_cpu, nice);
   t->nice = nice;
   t->priority = priority;
