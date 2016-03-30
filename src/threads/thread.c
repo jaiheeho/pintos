@@ -495,13 +495,13 @@ void increment_recent_cpu(struct thread *t)
 ************************************************************************/
 void update_load_avg()
 {
-  enum intr_level old_level = intr_disable ();
+  //enum intr_level old_level = intr_disable ();
   int ready_threads = list_size(&ready_list);
   if (thread_current() != idle_thread)
     ready_threads++;
   //load_avg = (59/60) * load_avg + (1/60) *ready_threads;
   load_avg = (59*load_avg)/60 + (ready_threads * FP)/60;
-  intr_set_level (old_level);
+  //intr_set_level (old_level);
 }
 
 /************************************************************************
@@ -514,7 +514,7 @@ void update_load_avg()
 void update_recent_cpus(){
   //recent_cpu = (2*load_avg)/2*load_avg + 1) * recent_cpu + nice
   //recent_cpu = coeff * recent_cpu + nice
-  enum intr_level old_level = intr_disable ();
+  //enum intr_level old_level = intr_disable ();
   int coeff, nice, recent;
   struct thread *t;
   struct list_elem *iter;
@@ -550,7 +550,7 @@ void update_recent_cpus(){
     coeff = (((int64_t)(2*load_avg)) * FP )/ (2*load_avg + FP);
     t -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
   }
-  intr_set_level (old_level);
+  //intr_set_level (old_level);
 }
 /************************************************************************
 * FUNCTION : update_priorities                                          *
@@ -561,7 +561,7 @@ void update_recent_cpus(){
 ************************************************************************/
 void update_priorities(void)
 {
-  enum intr_level old_level = intr_disable ();
+  //enum intr_level old_level = intr_disable ();
   int nice, recent, priority;
   struct thread *t;
   struct list_elem *iter;
@@ -607,7 +607,7 @@ void update_priorities(void)
   list_sort(&sleep_list, (list_less_func *) &priority_less_func, NULL);
   //printf("Priority END \n");
 
-  intr_set_level (old_level);  
+  //intr_set_level (old_level);  
 }
 /************************************************************************
 * FUNCTION : calc_priority                                              *
