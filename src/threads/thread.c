@@ -413,20 +413,20 @@ thread_set_nice (int nice)
   int priority = calc_priority(t->recent_cpu, nice);
   t->nice = nice;
   t->priority = priority;
-  if(thread_start_complete == 1)
-  {
-    if (t->priority < front_of_ready->priority)
-    {
-    if(intr_context() == false)
-    {
-      thread_yield();
-    }
-    else if (intr_context() == true)
-    {
-      intr_yield_on_return();
-    }
-    }
-  }
+  // if(thread_start_complete == 1)
+  // {
+  //   if (t->priority < front_of_ready->priority)
+  //   {
+  //     if(intr_context() == false)
+  //     {
+  //       thread_yield();
+  //     }
+  //    else if (intr_context() == true)
+  //    {
+  //      intr_yield_on_return();
+  //    }
+  //   }
+  // }
   intr_set_level (old_level);
   ///WHERE WE ADDED END/////
 }
