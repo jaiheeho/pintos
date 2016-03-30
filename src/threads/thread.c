@@ -415,31 +415,31 @@ thread_set_nice (int nice)
   enum intr_level old_level = intr_disable ();
   struct thread *t = thread_current();
 
-  //printf("thread : %s : %d %d %d\n", t->name, t->nice,nice, t->priority);
+  printf("thread : %s : %d %d %d\n", t->name, t->nice,nice, t->priority);
 
   int priority = calc_priority(t->recent_cpu, nice);
   t->nice = nice;
   t->priority = priority;
 
-  //printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
+  printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
   update_priorities();
-  //printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
+  printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
   if( list_empty(&ready_list) == false)
   {
     struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
-    //printf ("t vs front : %d vs %d\n",t->priority ,front_of_ready->priority);
+    printf ("t vs front : %d vs %d\n",t->priority ,front_of_ready->priority);
 
-    if (t->priority <= front_of_ready->priority)
-    {
-      if(intr_context() == false)
-      {
-        thread_yield();
-      }
-      else if (intr_context() == true)
-      {
-        intr_yield_on_return();
-      }
-    }
+    // if (t->priority <= front_of_ready->priority)
+    // {
+    //   if(intr_context() == false)
+    //   {
+    //     thread_yield();
+    //   }
+    //   else if (intr_context() == true)
+    //   {
+    //     intr_yield_on_return();
+    //   }
+    // }
   }
   intr_set_level (old_level);
   ///WHERE WE ADDED END/////
