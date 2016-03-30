@@ -479,7 +479,7 @@ void update_load_avg()
   printf("load_avg before: %d\n", (load_avg *100 + FP/2)/ FP);
   load_avg = (59*load_avg)/60 + (ready_threads * FP)/60;
   printf("ready_thread :%d\n", ready_threads);
-  printf("load_avg after: %d\n", (load_avg * 100 + FP/2)/ FP);
+  printf("load_avg aftr: %d\n", (load_avg * 100 + FP/2)/ FP);
   intr_set_level (old_level);
 }
 
@@ -765,7 +765,7 @@ schedule_tail (struct thread *prev)
 
 #ifdef USERPROG
   /* Activate the new address space. */
-  process_activate ();
+  process_activate ();[]
 #endif
 
   /* If the thread we switched from is dying, destroy its struct
