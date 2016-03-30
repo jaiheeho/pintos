@@ -168,10 +168,10 @@ timer_interrupt (struct intr_frame *args UNUSED)
 
   //WHERE I ADDED
 
-  thread_tick ();
+  thread_tick();
 
-  if(thread_mlfqs){
-
+  if(thread_mlfqs)
+  {
     //recent_cpu of current thread add one in fixed point0
     increment_recent_cpu(thread_current())
 
@@ -189,9 +189,8 @@ timer_interrupt (struct intr_frame *args UNUSED)
       
     }
   }
-
   for(iter = list_begin(&sleep_list);
-      iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
+    iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
   {
     leeptemp = list_entry(list_front(&sleep_list), struct thread, elem);
     if (sleeptemp->wakeup_time <= ticks)
