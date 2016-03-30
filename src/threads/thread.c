@@ -513,7 +513,7 @@ void update_recent_cpus(){
 
     t = list_entry(iter, struct thread, elem);
     recent = t->recent_cpu;
-    nict = t->nice;
+    nice = t->nice;
     coeff = (((int64_t)(2*load_avg)) * FP )/ (2*load_avg + FP);
     t -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
   }
@@ -524,7 +524,7 @@ void update_recent_cpus(){
   {
     t = list_entry(iter, struct thread, elem);
     recent = t->recent_cpu;
-    nict = t->nice;
+    nice = t->nice;
     coeff = (((int64_t)(2*load_avg)) * FP )/ (2*load_avg + FP);
     t -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
   }
