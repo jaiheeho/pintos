@@ -409,24 +409,25 @@ thread_set_nice (int nice)
   ///WHERE WE ADDED/////////
   enum intr_level old_level = intr_disable ();
   struct thread *t = thread_current();
-  struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
+
   int priority = calc_priority(t->recent_cpu, nice);
   t->nice = nice;
-  //t->priority = priority;
-  // if(thread_start_complete == 1)
-  // {
-  //   if (t->priority < front_of_ready->priority)
-  //   {
-  //     if(intr_context() == false)
-  //     {
-  //       thread_yield();
-  //     }
-  //    else if (intr_context() == true)
-  //    {
-  //      intr_yield_on_return();
-  //    }
-  //   }
-  // }
+  t->priority = priority;
+  if(list_front(&ready_list) != NULL)
+  {
+    struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
+    if (t->priority < front_of_ready->priority)
+    {
+      if(intr_context() == false)
+      {
+        thread_yield();
+      }
+     else if (intr_context() == true)
+     {
+       intr_yield_on_return();
+     }
+    }
+  }
   intr_set_level (old_level);
   ///WHERE WE ADDED END/////
 }
