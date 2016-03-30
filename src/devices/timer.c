@@ -173,7 +173,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
   if(thread_mlfqs)
   {
     //recent_cpu of current thread add one in fixed point0
-    increment_recent_cpu(thread_current())
+    increment_recent_cpu(thread_current());
 
     // For every second update load_avg and recent_cpu of current_thread
     if (timer_ticks() % TIMER_FREQ == 0)
@@ -189,10 +189,11 @@ timer_interrupt (struct intr_frame *args UNUSED)
       update_priorities();
     }
   }
+
   for(iter = list_begin(&sleep_list);
     iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
   {
-    leeptemp = list_entry(list_front(&sleep_list), struct thread, elem);
+    sleeptemp = list_entry(list_front(&sleep_list), struct thread, elem);
     if (sleeptemp->wakeup_time <= ticks)
     {
       list_pop_front(&sleep_list);
