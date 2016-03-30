@@ -191,7 +191,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
     {
       //Calculate Priority 
       //printf("Priority START\n");
-      update_priorities();
+      //update_priorities();
       //printf("Priority END\n");
     }
   }
