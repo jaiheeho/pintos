@@ -425,6 +425,8 @@ thread_set_nice (int nice)
   {
 
     printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
+    update_load_avg();
+    update_recent_cpus();
     update_priorities();
     printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
     struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
