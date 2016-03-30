@@ -405,11 +405,27 @@ thread_set_nice (int nice)
   /* Not yet implemented. */
   ///WHERE WE ADDED/////////
   enum intr_level old_level = intr_disable ();
-  thread_current()->nice = nice;
+  struct thread *t = thread_current();
+  struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
+  calc_priority(t->recent_cpu, nice);
+  t->nice = nice;
+  t->priority = priority;
+  if(thread_start_complete == 1)
+  {
+    if (t->priority < front_of_ready->priority)
+    {
+    if(intr_context() == false)
+    {
+      thread_yield();
+    }
+    else if (intr_context() == true)
+    {
+      intr_yield_on_return();
+    }
+  }
   intr_set_level (old_level);
   ///WHERE WE ADDED END/////
 }
-
 /* Returns the current thread's nice value. */
 int
 thread_get_nice (void) 
@@ -423,7 +439,6 @@ thread_get_nice (void)
   return tmp;
   ///WHERE WE ADDED END/////
 }
-
 /* Returns 100 times the system load average. */
 int
 thread_get_load_avg (void) 
@@ -448,8 +463,8 @@ thread_get_recent_cpu (void)
   return (temp_recent_cpu * 100 + FP/2) /FP;
   ///WHERE WE ADDED END/////
 }
+
 ///WHERE WE ADDED/////////
- 
 /************************************************************************
 * FUNCTION : increment_recent_cpu                                       *
 * Input : thread* t                                                     *
@@ -535,7 +550,7 @@ void update_recent_cpus(){
   intr_set_level (old_level);
 }
 /************************************************************************
-* FUNCTION : updates_priorities                                         *
+* FUNCTION : update_priorities                                          *
 * Input : NONE                                                          *
 * Output : NONE                                                         *
 * Purporse : update priority values of all threads                      *

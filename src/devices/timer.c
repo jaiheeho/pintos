@@ -99,14 +99,17 @@ timer_elapsed (int64_t then)
 {
   return timer_ticks () - then;
 }
-
-/* Suspends execution for approximately TICKS timer ticks. */
+///WHERE WE ADDED/////////
+/************************************************************************
+* FUNCTION : timer_interrupt                                            *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : Suspends execution for approximately TICKS timer ticks.    *
+*************************************************************************/
 void
 timer_sleep (int64_t ticks) 
 {
   int64_t start = timer_ticks ();
-
-  /* OUR IMPLEMENTATION*/
   if (ticks < 0)
     return;
   ASSERT (intr_get_level () == INTR_ON);
@@ -116,18 +119,11 @@ timer_sleep (int64_t ticks)
   list_insert_ordered(&sleep_list, &(current_thread -> elem),
 		      (list_less_func *) &sleep_less_func, NULL);
   thread_block();
-  //printf("BLOCKING TIMER %s\n", current_thread->name);
   intr_set_level(old_level);
 
-
-  /*******************/
-
-/* DELEDTED 
-  ASSERT (intr_get_level () == INTR_ON);
-  while (timer_elapsed (start) < ticks) 
-    thread_yield ();
-  */
 }
+///WHERE WE ADDED END/////
+
 
 /* Suspends execution for approximately MS milliseconds. */
 void
@@ -157,7 +153,16 @@ timer_print_stats (void)
   printf ("Timer: %"PRId64" ticks\n", timer_ticks ());
 }
 
+
+///WHERE WE ADDED/////////
 /* Timer interrupt handler. */
+/************************************************************************
+* FUNCTION : timer_interrupt                                            *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : For Every Tick interrupt handler is activated             *
+* used for waking thread up or updating priority in mlfqs               *
+************************************************************************/
 static void
 timer_interrupt (struct intr_frame *args UNUSED)
 {
@@ -166,17 +171,13 @@ timer_interrupt (struct intr_frame *args UNUSED)
   ticks++;
   int a=0;
 
-  //WHERE I ADDED
-
   thread_tick();
 
   if(thread_mlfqs)
   {
     //recent_cpu of current thread add one in fixed point0
-    //printf("increment START\n");
     increment_recent_cpu(thread_current());
 
-    //printf("increment END\n");
     // For every second update load_avg and recent_cpu of current_thread
     if (timer_ticks() % TIMER_FREQ == 0)
     {
@@ -184,15 +185,12 @@ timer_interrupt (struct intr_frame *args UNUSED)
       update_load_avg();
       //Calculate recent_cpu fo all threads
       update_recent_cpus();
-      //printf("recent_cpu END\n");
     }
     if (timer_ticks() % TIME_SLICE == 0)
     {
       //Calculate Priority 
-      //printf("Priority START\n");
       update_priorities();
       intr_yield_on_return();
-      //printf("Priority END\n");
     }
   }
 
@@ -210,10 +208,8 @@ timer_interrupt (struct intr_frame *args UNUSED)
       break;
     }
   }
-
-
-      //printf("Timer_interrupt END\n");
 }
+///WHERE WE ADDED END/////
 
 /* Returns true if LOOPS iterations waits for more than one timer
    tick, otherwise false. */
@@ -292,6 +288,4 @@ sleep_less_func(const struct list_elem *a, const struct list_elem *b, void *aux)
     {
       return false;
     }
-
-
 }
