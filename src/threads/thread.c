@@ -420,7 +420,7 @@ thread_set_nice (int nice)
   if( list_empty(&ready_list) == false)
   {
     struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
-    if (t->priority < front_of_ready->priority)
+    if (t->priority <= front_of_ready->priority)
     {
       if(intr_context() == false)
       {
