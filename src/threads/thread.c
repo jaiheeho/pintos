@@ -612,7 +612,6 @@ void update_priorities(void)
   {
 
     t = list_entry(iter, struct thread, elem);
-
     recent = t->recent_cpu;
     nice = t->nice;
     priority = calc_priority(recent, nice);
