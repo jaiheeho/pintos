@@ -270,20 +270,20 @@ thread_unblock (struct thread *t)
   list_insert_ordered(&ready_list, &t->elem,
 		      (list_less_func *) &priority_less_func, NULL); // ADDED
   t->status = THREAD_READY;
-  if(thread_start_complete == 1)
-    {
-      if (t->priority >= thread_current()->priority)
-	{
-	  if(intr_context() == false)
-	    {
-	      thread_yield();
-	    }
-	  else if (intr_context() == true)
-	    {
-	      intr_yield_on_return();
-	    }
-	}
-    }
+ //  if(thread_start_complete == 1)
+ //    {
+ //      if (t->priority >= thread_current()->priority)
+	// {
+	//   if(intr_context() == false)
+	//     {
+	//       thread_yield();
+	//     }
+	//   else if (intr_context() == true)
+	//     {
+	//       intr_yield_on_return();
+	//     }
+	// }
+ //    }
   ///WHERE WE ADDED END/////
   intr_set_level (old_level);
 }
@@ -417,24 +417,24 @@ thread_set_nice (int nice)
   t->priority = priority;
 
   //printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
-  //update_priorities();
+  update_priorities();
   //printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
   if( list_empty(&ready_list) == false)
   {
     struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
     //printf ("t vs front : %d vs %d\n",t->priority ,front_of_ready->priority);
 
-    if (t->priority <= front_of_ready->priority)
-    {
-      if(intr_context() == false)
-      {
-        thread_yield();
-      }
-      else if (intr_context() == true)
-      {
-        intr_yield_on_return();
-      }
-    }
+    // if (t->priority <= front_of_ready->priority)
+    // {
+    //   if(intr_context() == false)
+    //   {
+    //     thread_yield();
+    //   }
+    //   else if (intr_context() == true)
+    //   {
+    //     intr_yield_on_return();
+    //   }
+    // }
   }
   intr_set_level (old_level);
   ///WHERE WE ADDED END/////
