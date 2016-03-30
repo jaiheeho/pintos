@@ -407,10 +407,10 @@ thread_set_nice (int nice)
 {
   /* Not yet implemented. */
   ///WHERE WE ADDED/////////
-  //enum intr_level old_level = intr_disable ();
+  enum intr_level old_level = intr_disable ();
   struct thread *t = thread_current();
 
-  //printf("thread : %s : %d %d\n", t->name, t->nice,nice);
+  printf("thread : %s : %d %d\n", t->name, t->nice,nice);
   int recent = t->recent_cpu;
   int coeff = (((int64_t)(2*load_avg)) * FP )/ (2*load_avg + FP);
   t -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
@@ -418,7 +418,7 @@ thread_set_nice (int nice)
   int priority = calc_priority(t->recent_cpu, nice);
   t->nice = nice;
   t->priority = priority;
-  //printf("thread : %s : %d\n", t->name, t->nice);
+  printf("thread : %s : %d\n", t->name, t->nice);
 
   if( list_empty(&ready_list) == false)
   {
@@ -435,7 +435,7 @@ thread_set_nice (int nice)
      }
     }
   }
-  //intr_set_level (old_level);
+  intr_set_level (old_level);
   ///WHERE WE ADDED END/////
 }
 
