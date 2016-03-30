@@ -101,7 +101,7 @@ timer_elapsed (int64_t then)
 }
 ///WHERE WE ADDED/////////
 /************************************************************************
-* FUNCTION : timer_interrupt                                            *
+* FUNCTION : timer_nsleep                                               *
 * Input : NONE                                                          *
 * Output : NONE                                                         *
 * Purporse : Suspends execution for approximately TICKS timer ticks.    *
@@ -172,7 +172,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
   int a=0;
 
   thread_tick();
-
+  /* for mlfqs*/
   if(thread_mlfqs)
   {
     //recent_cpu of current thread add one in fixed point0
@@ -193,6 +193,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
     }
   }
 
+  //unblock threads that has passed wakeup_time
   for(iter = list_begin(&sleep_list);
     iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))
   {

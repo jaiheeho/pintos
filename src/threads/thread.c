@@ -158,7 +158,6 @@ thread_tick (void)
   /* Enforce preemption. */
   if (++thread_ticks >= TIME_SLICE)
     intr_yield_on_return ();
-
 }
 
 /* Prints thread statistics. */
@@ -263,7 +262,6 @@ thread_unblock (struct thread *t)
   ASSERT (t->status == THREAD_BLOCKED);
 
   ///WHERE WE ADDED/////////
-
   old_level = intr_disable ();
 
   list_insert_ordered(&ready_list, &t->elem,
@@ -447,9 +445,7 @@ thread_get_nice (void)
   /* Not yet implemented. */
 
   ///WHERE WE ADDED/////////
-  //enum intr_level old_level = intr_disable ();
   int tmp = thread_current()->nice;
-  //intr_set_level (old_level);
   return tmp;
   ///WHERE WE ADDED END/////
 }
@@ -459,9 +455,7 @@ thread_get_load_avg (void)
 {
   /* Not yet implemented. */
   ///WHERE WE ADDED/////////
-  //enum intr_level old_level = intr_disable ();
   int temp_load_avg = load_avg;
-  //intr_set_level (old_level);
   return (temp_load_avg * 100 + FP/2) /FP ;
   ///WHERE WE ADDED END/////
 }
@@ -471,9 +465,7 @@ thread_get_recent_cpu (void)
 {
   /* Not yet implemented. */
   ///WHERE WE ADDED/////////
-  //enum intr_level old_level = intr_disable ();
   int temp_recent_cpu = thread_current()->recent_cpu;
-  //intr_set_level (old_level);
   return (temp_recent_cpu * 100 + FP/2) /FP;
   ///WHERE WE ADDED END/////
 }
@@ -487,12 +479,10 @@ thread_get_recent_cpu (void)
 ************************************************************************/
 void increment_recent_cpu(struct thread *t)
 {
-  //enum intr_level old_level = intr_disable ();
   if (t != idle_thread)
   {
     t->recent_cpu += 0x8000;
   }
-  //intr_set_level (old_level);
 }
 
 /************************************************************************
@@ -503,13 +493,11 @@ void increment_recent_cpu(struct thread *t)
 ************************************************************************/
 void update_load_avg()
 {
-  //enum intr_level old_level = intr_disable ();
   int ready_threads = list_size(&ready_list);
   if (thread_current() != idle_thread)
     ready_threads++;
   //load_avg = (59/60) * load_avg + (1/60) *ready_threads;
   load_avg = (59*load_avg)/60 + (ready_threads * FP)/60;
-  //intr_set_level (old_level);
 }
 
 /************************************************************************
@@ -522,7 +510,6 @@ void update_load_avg()
 void update_recent_cpus(){
   //recent_cpu = (2*load_avg)/2*load_avg + 1) * recent_cpu + nice
   //recent_cpu = coeff * recent_cpu + nice
-  //enum intr_level old_level = intr_disable ();
   int coeff, nice, recent;
   struct thread *t;
   struct list_elem *iter;
@@ -558,7 +545,6 @@ void update_recent_cpus(){
     coeff = (((int64_t)(2*load_avg)) * FP )/ (2*load_avg + FP);
     t -> recent_cpu = ((int64_t)coeff) * recent / FP + nice * FP;
   }
-  //intr_set_level (old_level);
 }
 /************************************************************************
 * FUNCTION : update_priorities                                          *
@@ -583,9 +569,7 @@ void update_priorities(void)
     nice = t->nice;
     priority = calc_priority(recent, nice);
     t-> priority = priority;
-    //printf("priority of current : %d\n", priority);
   }
-  //printf("Priority START 1\n");
   /* update for sleep list*/
   for(iter = list_begin(&sleep_list);
     iter != list_tail(&sleep_list); iter = iter->next)
@@ -596,27 +580,18 @@ void update_priorities(void)
     priority = calc_priority(recent, nice);
     t-> priority = priority;
   }
-  //printf("Priority START 2\n");
-
   /* update for ready list*/
   for(iter = list_begin(&ready_list);
     iter != list_tail(&ready_list); iter = iter = iter->next)
   {
-
     t = list_entry(iter, struct thread, elem);
     recent = t->recent_cpu;
     nice = t->nice;
     priority = calc_priority(recent, nice);
     t-> priority = priority;
-    ///printf("priority of current in ready_list: %d\n", priority);
   }
-  //printf("Priority START 3\n");
 
   list_sort(&ready_list, (list_less_func *) &priority_less_func, NULL);
-  //list_sort(&sleep_list, (list_less_func *) &priority_less_func, NULL);
-  //printf("Priority END \n");
-
-  //intr_set_level (old_level);  
 }
 /************************************************************************
 * FUNCTION : calc_priority                                              *
@@ -799,7 +774,7 @@ schedule_tail (struct thread *prev)
      pull out the rug under itself.  (We don't free
      initial_thread because its memory was not obtained via
      palloc().) */
-  if (prev != NULL && prev->status == THREAD_DYING && prev != initial_thread && thread_mlfqs)  
+  if (prev != NULL && prev->status == THREAD_DYING && prev != initial_thread)  
     {
       ASSERT (prev != curr);
       palloc_free_page (prev);
