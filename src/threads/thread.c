@@ -612,7 +612,7 @@ void update_priorities(void)
   //printf("Priority START 3\n");
 
   list_sort(&ready_list, (list_less_func *) &priority_less_func, NULL);
-  list_sort(&sleep_list, (list_less_func *) &priority_less_func, NULL);
+  //list_sort(&sleep_list, (list_less_func *) &priority_less_func, NULL);
   //printf("Priority END \n");
 
   //intr_set_level (old_level);  
