@@ -448,6 +448,13 @@ thread_get_recent_cpu (void)
   ///WHERE WE ADDED END/////
 }
 ///WHERE WE ADDED/////////
+ 
+/************************************************************************
+* FUNCTION : increment_recent_cpu                                       *
+* Input : thread* t                                                     *
+* Output : NONE                                                         *
+* Purporse : increment recent_cpu (recent_cpu ++)                       *
+************************************************************************/
 void increment_recent_cpu(struct thread *t)
 {
   enum intr_level old_level = intr_disable ();
@@ -465,9 +472,8 @@ void increment_recent_cpu(struct thread *t)
 * Output : NONE                                                         *
 * Purporse : update load_avg when function is Called                    *
 ************************************************************************/
-void update_load_avg(){
-
-
+void update_load_avg()
+{
   int ready_threads = list_size(&ready_list);
   if (thread_current() != idle_thread)
     ready_threads++;
@@ -483,7 +489,6 @@ void update_load_avg(){
 * when function is Called                                               *
 ************************************************************************/
 void update_recent_cpus(){
-
   //recent_cpu = (2*load_avg)/2*load_avg + 1) * recent_cpu + nice
   //recent_cpu = coeff * recent_cpu + nice
   enum intr_level old_level = intr_disable ();
