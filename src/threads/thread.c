@@ -421,11 +421,12 @@ thread_set_nice (int nice)
   t->nice = nice;
   t->priority = priority;
 
-  printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
-  update_priorities();
-  printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
   if( list_empty(&ready_list) == false)
   {
+
+    printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
+    pdate_priorities();
+    printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
     struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
     printf ("t vs front : %d vs %d\n",t->priority ,front_of_ready->priority);
 
