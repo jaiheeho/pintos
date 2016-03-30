@@ -417,7 +417,7 @@ thread_set_nice (int nice)
   int priority = calc_priority(t->recent_cpu, nice);
   t->nice = nice;
   t->priority = priority;
-
+  update_priorities();
   // if( list_empty(&ready_list) == false)
   // {
   //   update_priorities();
