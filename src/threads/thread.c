@@ -425,7 +425,6 @@ thread_set_nice (int nice)
   {
 
     printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
-    update_load_avg();
     update_recent_cpus();
     update_priorities();
     printf("thread : %s : %d %d\n", t->name, t->nice, t->priority);
