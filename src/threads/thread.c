@@ -411,7 +411,6 @@ thread_set_nice (int nice)
   struct thread *t = thread_current();
 
   printf("thread : %s : %d %d %d\n", t->name, t->nice,nice, t->priority);
-  int recent = t->recent_cpu;
 
   int priority = calc_priority(t->recent_cpu, nice);
   t->nice = nice;
