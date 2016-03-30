@@ -364,6 +364,9 @@ thread_set_priority (int new_priority)
   enum intr_level old_level;
   int old_priority;
   struct thread *t;
+
+  if (thread_mlfqs)
+    return;
   old_level = intr_disable();
   t = thread_current();
   old_priority = t->priority;
