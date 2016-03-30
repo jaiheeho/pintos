@@ -429,17 +429,17 @@ thread_set_nice (int nice)
     struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
     //printf ("t vs front : %d vs %d\n",t->priority ,front_of_ready->priority);
 
-    // if (t->priority <= front_of_ready->priority)
-    // {
-    //   if(intr_context() == false)
-    //   {
-    //     thread_yield();
-    //   }
-    //   else if (intr_context() == true)
-    //   {
-    //     intr_yield_on_return();
-    //   }
-    // }
+    if (t->priority <= front_of_ready->priority)
+    {
+      if(intr_context() == false)
+      {
+        thread_yield();
+      }
+      else if (intr_context() == true)
+      {
+        intr_yield_on_return();
+      }
+    }
   }
   intr_set_level (old_level);
   ///WHERE WE ADDED END/////
