@@ -427,7 +427,8 @@ thread_set_nice (int nice)
       {
         intr_yield_on_return();
       }
-    // }
+    
+   }
   }
   intr_set_level (old_level);
   ///WHERE WE ADDED END/////
