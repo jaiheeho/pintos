@@ -172,6 +172,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
   int a=0;
 
   thread_tick();
+
   /* for mlfqs*/
   if(thread_mlfqs)
   {
