@@ -156,8 +156,8 @@ thread_tick (void)
     kernel_ticks++;
 
   /* Enforce preemption. */
-  if (++thread_ticks >= TIME_SLICE)
-    intr_yield_on_return ();
+  // if (++thread_ticks >= TIME_SLICE)
+  //   intr_yield_on_return ();
 }
 
 /* Prints thread statistics. */
@@ -266,11 +266,11 @@ thread_unblock (struct thread *t)
 
   list_insert_ordered(&ready_list, &t->elem,
 		      (list_less_func *) &priority_less_func, NULL); 
-  if (thread_mlfqs)
-  {
-    intr_set_level (old_level);
-    return;
-  }
+  // if (thread_mlfqs)
+  // {
+  //   intr_set_level (old_level);
+  //   return;
+  // }
   
   if(thread_start_complete == 1)
     {
