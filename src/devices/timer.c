@@ -99,9 +99,9 @@ timer_elapsed (int64_t then)
 {
   return timer_ticks () - then;
 }
-///WHERE WE ADDED/////////
+
 /************************************************************************
-* FUNCTION : timer_nsleep                                               *
+* FUNCTION : timer_sleep                                               *
 * Input : NONE                                                          *
 * Output : NONE                                                         *
 * Purporse : Suspends execution for approximately TICKS timer ticks.    *
@@ -120,10 +120,7 @@ timer_sleep (int64_t ticks)
 		      (list_less_func *) &sleep_less_func, NULL);
   thread_block();
   intr_set_level(old_level);
-
 }
-///WHERE WE ADDED END/////
-
 
 /* Suspends execution for approximately MS milliseconds. */
 void
@@ -154,15 +151,14 @@ timer_print_stats (void)
 }
 
 
-///WHERE WE ADDED/////////
-/* Timer interrupt handler. */
 /************************************************************************
 * FUNCTION : timer_interrupt                                            *
 * Input : NONE                                                          *
 * Output : NONE                                                         *
-* Purporse : For Every Tick interrupt handler is activated             *
+* Purporse : For Every Tick interrupt handler is activated              *
 * used for waking thread up or updating priority in mlfqs               *
 ************************************************************************/
+/* Timer interrupt handler. */
 static void
 timer_interrupt (struct intr_frame *args UNUSED)
 {
@@ -211,7 +207,6 @@ timer_interrupt (struct intr_frame *args UNUSED)
     }
   }
 }
-///WHERE WE ADDED END/////
 
 /* Returns true if LOOPS iterations waits for more than one timer
    tick, otherwise false. */
@@ -276,6 +271,10 @@ real_time_sleep (int64_t num, int32_t denom)
     }
 }
 
+/************************************************************************
+* FUNCTION : sleep_less_func                                            *
+* Purporse : Used for list element comparison funcfion for Sleep list   * 
+************************************************************************/
 static bool
 sleep_less_func(const struct list_elem *a, const struct list_elem *b, void *aux)
 {

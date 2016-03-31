@@ -114,6 +114,7 @@ thread_init (void)
   initial_thread->tid = allocate_tid ();
 
   ///WHERE WE ADDED/////////
+  // initialize initial thread//
   initial_thread->recent_cpu = 0;
   initial_thread->nice = 0;
   ///WHERE WE ADDED END/////
@@ -135,7 +136,11 @@ thread_start (void)
 
   /* Wait for the idle thread to initialize idle_thread. */
   sema_down (&idle_started);
+  ///WHERE WE ADDED END/////
+  //TO CHECK if main thread start//
   thread_start_complete = 1;
+  ///WHERE WE ADDED END/////
+
 }
 
 /* Called by the timer interrupt handler at each timer tick.
@@ -156,8 +161,8 @@ thread_tick (void)
     kernel_ticks++;
 
   /* Enforce preemption. */
-  // if (++thread_ticks >= TIME_SLICE)
-  //   intr_yield_on_return ();
+  if (++thread_ticks >= TIME_SLICE)
+    intr_yield_on_return ();
 }
 
 /* Prints thread statistics. */
@@ -219,10 +224,9 @@ thread_create (const char *name, int priority,
   sf->eip = switch_entry;
 
   ///WHERE WE ADDED/////////
-  /* NICE */
+  /* NICE  INHERITENCE*/
   t->nice = thread_current()->nice;
   ///WHERE WE ADDED END/////
-
 
   /* Add to run queue. */
   thread_unblock (t);
@@ -268,21 +272,22 @@ thread_unblock (struct thread *t)
 		      (list_less_func *) &priority_less_func, NULL); 
 
   if(thread_start_complete == 1)
+  {
+    if (t->priority >= thread_current()->priority)
     {
-      if (t->priority >= thread_current()->priority)
-	{
-	  if(intr_context() == false)
+      if(intr_context() == false)
 	    {
 	      thread_yield();
 	    }
-	  else if (intr_context() == true)
+      else if (intr_context() == true)
 	    {
 	      intr_yield_on_return();
 	    }
-	}
     }
-  ///WHERE WE ADDED END/////
+  }
   intr_set_level (old_level);
+  ///WHERE WE ADDED END/////
+
 }
 
 /* Returns the name of the running thread. */
@@ -337,8 +342,11 @@ thread_exit (void)
   NOT_REACHED ();
 }
 
-/* Yields the CPU.  The current thread is not put to sleep and
-   may be scheduled again immediately at the scheduler's whim. */
+/************************************************************************
+* FUNCTION : thread_set_nice                                            *
+* Purporse :  Yields the CPU. The current thread is not put to sleep and
+   may be scheduled again immediately at the scheduler's whim.          *
+************************************************************************/
 void
 thread_yield (void) 
 {
@@ -356,7 +364,13 @@ thread_yield (void)
   intr_set_level (old_level);
 }
 
-/* Sets the current thread's priority to NEW_PRIORITY. */
+/************************************************************************
+* FUNCTION : thread_set_nice                                            *
+* INPUT    : new_priority                                               *
+* Purporse : Sets the current thread's priority to NEW_PRIORITY.        *
+            check priority of readylist  and preemp if priority is low  *
+************************************************************************/
+/*  */
 void
 thread_set_priority (int new_priority) 
 {
@@ -398,7 +412,11 @@ thread_get_priority (void)
   return thread_current ()->priority;
 }
 
-/* Sets the current thread's nice value to NICE. */
+/************************************************************************
+* FUNCTION : thread_set_nice                                            *
+* Purporse : Sets the current thread's nice value to NICE and           *
+*           update priorities and Yields                                *
+************************************************************************/
 void
 thread_set_nice (int nice) 
 {
@@ -438,8 +456,6 @@ thread_set_nice (int nice)
 int
 thread_get_nice (void) 
 {
-  /* Not yet implemented. */
-
   ///WHERE WE ADDED/////////
   int tmp = thread_current()->nice;
   return tmp;
@@ -449,7 +465,6 @@ thread_get_nice (void)
 int
 thread_get_load_avg (void) 
 {
-  /* Not yet implemented. */
   ///WHERE WE ADDED/////////
   int temp_load_avg = load_avg;
   return (temp_load_avg * 100 + FP/2) /FP ;
@@ -459,14 +474,12 @@ thread_get_load_avg (void)
 int
 thread_get_recent_cpu (void) 
 {
-  /* Not yet implemented. */
   ///WHERE WE ADDED/////////
   int temp_recent_cpu = thread_current()->recent_cpu;
   return (temp_recent_cpu * 100 + FP/2) /FP;
   ///WHERE WE ADDED END/////
 }
 
-///WHERE WE ADDED/////////
 /************************************************************************
 * FUNCTION : increment_recent_cpu                                       *
 * Input : thread* t                                                     *
@@ -556,7 +569,6 @@ void update_priorities(void)
   struct thread *t;
   struct list_elem *iter;
 
-
   t = thread_current();
 
   if (t != idle_thread)
@@ -610,7 +622,6 @@ int calc_priority(int recent_cpu, int nice)
 
   return priority;
 }
-///WHERE WE ADDED END/////
 
 
 /* Idle thread.  Executes when no other thread is ready to run.
@@ -700,6 +711,7 @@ init_thread (struct thread *t, const char *name, int priority)
   t->magic = THREAD_MAGIC;
 
   ///WHERE WE ADDED/////////
+  //IMLEMENTIAION TO INITIALIZE recent_cpu to 0//
   t->recent_cpu = 0;
   ///WHERE WE ADDED END/////
 }
@@ -819,10 +831,10 @@ allocate_tid (void)
    Used by switch.S, which can't figure it out on its own. */
 uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 
-
-///WHERE WE ADDED/////////
-///WHERE WE ADDED END/////
-/* Function to compare priorities inside ready_list(Added) */
+/************************************************************************
+* FUNCTION : priority_less_func                                         *
+* Purporse Function to compare priorities inside ready_list             *
+************************************************************************/
 bool
 priority_less_func(const struct list_elem *a, const struct list_elem *b, void *aux)
 {

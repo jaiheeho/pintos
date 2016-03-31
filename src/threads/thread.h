@@ -89,9 +89,11 @@ struct thread
     uint8_t *stack;                     /* Saved stack pointer. */
     int priority;                       /* Priority. */
     /* IMPELMENTATION */
+    ///WHERE WE ADDED/////////
     int64_t wakeup_time;                /* wakeup time in ticks*/
-    int recent_cpu;                 /* recent_cpu */
-    int nice;                       /* nice */
+    int recent_cpu;                     /* recent_cpu */
+    int nice;                           /* nice */
+    ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
@@ -137,18 +139,18 @@ void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
-
+///WHERE WE ADDED/////////
+/*IMPLEMENTAION FOR sleeplist(bloack & unblock) & comparision list elom*/
 bool priority_less_func(const struct list_elem *a,
 			       const struct list_elem *b,
 			       void *aux);
-
 extern struct list sleep_list; // added
 
-/*IMPLEMENTAION FOR MLFQS*/
 void increment_recent_cpu(struct thread *);
 void update_load_avg(void);
 void update_recent_cpus(void);
 void update_priorities(void);
 int calc_priority(int, int);
+///WHERE WE ADDED END/////
 
 #endif /* threads/thread.h */
