@@ -1,13 +1,10 @@
-Writing command line to /tmp/gDN9dI8CHN.dsk...
+Writing command line to /tmp/4iQKeQqqL3.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run alarm-negative
 Pintos booting with 4,096 kB RAM...
 374 pages available in kernel pool.
 374 pages available in user pool.
-THREAD_CREATE : idle
-THREAD_UNBLOCK : idle
-THREAD_UNBLOCK : main
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'alarm-negative':
@@ -15,8 +12,8 @@ Executing 'alarm-negative':
 (alarm-negative) PASS
 (alarm-negative) end
 Execution of 'alarm-negative' complete.
-Timer: 49 ticks
-Thread: 0 idle ticks, 52 kernel ticks, 0 user ticks
-Console: 470 characters output
+Timer: 46 ticks
+Thread: 0 idle ticks, 49 kernel ticks, 0 user ticks
+Console: 405 characters output
 Keyboard: 0 keys pressed
 Powering off...

@@ -1,13 +1,10 @@
-Writing command line to /tmp/89a1HA11cX.dsk...
+Writing command line to /tmp/oWmN7sHhBA.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run alarm-single
 Pintos booting with 4,096 kB RAM...
 374 pages available in kernel pool.
 374 pages available in user pool.
-THREAD_CREATE : idle
-THREAD_UNBLOCK : idle
-THREAD_UNBLOCK : main
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'alarm-single':
@@ -17,34 +14,6 @@ Executing 'alarm-single':
 (alarm-single) thread 1 sleeps 20 ticks each time, and so on.
 (alarm-single) If successful, product of iteration count and
 (alarm-single) sleep duration will appear in nondescending order.
-THREAD_CREATE : thread 0
-THREAD_UNBLOCK : thread 0
-THREAD_CREATE : thread 1
-THREAD_UNBLOCK : thread 1
-THREAD_CREATE : thread 2
-THREAD_UNBLOCK : thread 2
-THREAD_CREATE : thread 3
-THREAD_UNBLOCK : thread 3
-THREAD_CREATE : thread 4
-THREAD_UNBLOCK : thread 4
-here START
-THREAD_UNBLOCK : thread 0
-here END
-here START
-THREAD_UNBLOCK : thread 1
-here END
-here START
-THREAD_UNBLOCK : thread 2
-here END
-here START
-THREAD_UNBLOCK : thread 3
-here END
-here START
-THREAD_UNBLOCK : thread 4
-here END
-here START
-THREAD_UNBLOCK : main
-here END
 (alarm-single) thread 0: duration=10, iteration=1, product=10
 (alarm-single) thread 1: duration=20, iteration=1, product=20
 (alarm-single) thread 2: duration=30, iteration=1, product=30
@@ -52,8 +21,8 @@ here END
 (alarm-single) thread 4: duration=50, iteration=1, product=50
 (alarm-single) end
 Execution of 'alarm-single' complete.
-Timer: 435 ticks
-Thread: 240 idle ticks, 198 kernel ticks, 0 user ticks
-Console: 1576 characters output
+Timer: 394 ticks
+Thread: 250 idle ticks, 147 kernel ticks, 0 user ticks
+Console: 984 characters output
 Keyboard: 0 keys pressed
 Powering off...

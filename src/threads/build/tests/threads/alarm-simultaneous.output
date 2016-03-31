@@ -1,13 +1,10 @@
-Writing command line to /tmp/w4hgmBgllA.dsk...
+Writing command line to /tmp/roqhauanqz.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run alarm-simultaneous
 Pintos booting with 4,096 kB RAM...
 374 pages available in kernel pool.
 374 pages available in user pool.
-THREAD_CREATE : idle
-THREAD_UNBLOCK : idle
-THREAD_UNBLOCK : main
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'alarm-simultaneous':
@@ -15,70 +12,7 @@ Executing 'alarm-simultaneous':
 (alarm-simultaneous) Creating 3 threads to sleep 5 times each.
 (alarm-simultaneous) Each thread sleeps 10 ticks each time.
 (alarm-simultaneous) Within an iteration, all threads should wake up on the same tick.
-THREAD_CREATE : thread 0
-THREAD_UNBLOCK : thread 0
-THREAD_CREATE : thread 1
-THREAD_UNBLOCK : thread 1
-THREAD_CREATE : thread 2
-THREAD_UNBLOCK : thread 2
-here START
-THREAD_UNBLOCK : thread 0
-here END
-here START
-THREAD_UNBLOCK : thread 1
-here END
-here START
-THREAD_UNBLOCK : thread 2
-here END
-here START
-THREAD_UNBLOCK : thread 0
-here END
-here START
-THREAD_UNBLOCK : thread 1
-here END
-here START
-THREAD_UNBLOCK : thread 2
-here END
-here START
-THREAD_UNBLOCK : thread 0
-here END
-here START
-THREAD_UNBLOCK : thread 1
-here END
-here START
-THREAD_UNBLOCK : thread 2
-here END
-here START
-THREAD_UNBLOCK : thread 0
-here END
-here START
-THREAD_UNBLOCK : thread 1
-here END
-here START
-THREAD_UNBLOCK : thread 2
-here END
-here START
-THREAD_UNBLOCK : thread 0
-here END
-here START
-THREAD_UNBLOCK : thread 1
-here END
-here START
-THREAD_UNBLOCK : thread 2
-here END
-here START
-THREAD_UNBLOCK : thread 0
-here END
-here START
-THREAD_UNBLOCK : thread 1
-here END
-here START
-THREAD_UNBLOCK : thread 2
-here END
-here START
-THREAD_UNBLOCK : main
-here END
-(alarm-simultaneous) iteration 0, thread 0: woke up after 12 ticks
+(alarm-simultaneous) iteration 0, thread 0: woke up after 10 ticks
 (alarm-simultaneous) iteration 0, thread 1: woke up 0 ticks later
 (alarm-simultaneous) iteration 0, thread 2: woke up 0 ticks later
 (alarm-simultaneous) iteration 1, thread 0: woke up 10 ticks later
@@ -95,8 +29,8 @@ here END
 (alarm-simultaneous) iteration 4, thread 2: woke up 0 ticks later
 (alarm-simultaneous) end
 Execution of 'alarm-simultaneous' complete.
-Timer: 496 ticks
-Thread: 231 idle ticks, 268 kernel ticks, 0 user ticks
-Console: 2700 characters output
+Timer: 464 ticks
+Thread: 248 idle ticks, 220 kernel ticks, 0 user ticks
+Console: 1612 characters output
 Keyboard: 0 keys pressed
 Powering off...

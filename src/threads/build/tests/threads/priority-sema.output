@@ -1,71 +1,38 @@
-Writing command line to /tmp/AiNPGUsYDV.dsk...
+Writing command line to /tmp/tE3ZukZgrP.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run priority-sema
 Pintos booting with 4,096 kB RAM...
 374 pages available in kernel pool.
 374 pages available in user pool.
-THREAD_CREATE : idle
-THREAD_UNBLOCK : idle
-THREAD_UNBLOCK : main
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'priority-sema':
 (priority-sema) begin
-THREAD_CREATE : priority 27
-THREAD_UNBLOCK : priority 27
-THREAD_CREATE : priority 26
-THREAD_UNBLOCK : priority 26
-THREAD_CREATE : priority 25
-THREAD_UNBLOCK : priority 25
-THREAD_CREATE : priority 24
-THREAD_UNBLOCK : priority 24
-THREAD_CREATE : priority 23
-THREAD_UNBLOCK : priority 23
-THREAD_CREATE : priority 22
-THREAD_UNBLOCK : priority 22
-THREAD_CREATE : priority 21
-THREAD_UNBLOCK : priority 21
-THREAD_CREATE : priority 30
-THREAD_UNBLOCK : priority 30
-THREAD_CREATE : priority 29
-THREAD_UNBLOCK : priority 29
-THREAD_CREATE : priority 28
-THREAD_UNBLOCK : priority 28
-THREAD_UNBLOCK : priority 30
 (priority-sema) Thread priority 30 woke up.
 (priority-sema) Back in main thread.
-THREAD_UNBLOCK : priority 29
 (priority-sema) Thread priority 29 woke up.
 (priority-sema) Back in main thread.
-THREAD_UNBLOCK : priority 28
 (priority-sema) Thread priority 28 woke up.
 (priority-sema) Back in main thread.
-THREAD_UNBLOCK : priority 27
 (priority-sema) Thread priority 27 woke up.
 (priority-sema) Back in main thread.
-THREAD_UNBLOCK : priority 26
 (priority-sema) Thread priority 26 woke up.
 (priority-sema) Back in main thread.
-THREAD_UNBLOCK : priority 25
 (priority-sema) Thread priority 25 woke up.
 (priority-sema) Back in main thread.
-THREAD_UNBLOCK : priority 24
 (priority-sema) Thread priority 24 woke up.
 (priority-sema) Back in main thread.
-THREAD_UNBLOCK : priority 23
 (priority-sema) Thread priority 23 woke up.
 (priority-sema) Back in main thread.
-THREAD_UNBLOCK : priority 22
 (priority-sema) Thread priority 22 woke up.
 (priority-sema) Back in main thread.
-THREAD_UNBLOCK : priority 21
 (priority-sema) Thread priority 21 woke up.
 (priority-sema) Back in main thread.
 (priority-sema) end
 Execution of 'priority-sema' complete.
-Timer: 295 ticks
-Thread: 0 idle ticks, 298 kernel ticks, 0 user ticks
-Console: 2115 characters output
+Timer: 199 ticks
+Thread: 0 idle ticks, 202 kernel ticks, 0 user ticks
+Console: 1190 characters output
 Keyboard: 0 keys pressed
 Powering off...

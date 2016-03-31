@@ -1,91 +1,48 @@
-Writing command line to /tmp/goOxUNC0Vh.dsk...
+Writing command line to /tmp/5vW7GYcnGD.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run priority-condvar
 Pintos booting with 4,096 kB RAM...
 374 pages available in kernel pool.
 374 pages available in user pool.
-THREAD_CREATE : idle
-THREAD_UNBLOCK : idle
-THREAD_UNBLOCK : main
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'priority-condvar':
 (priority-condvar) begin
-THREAD_CREATE : priority 23
-THREAD_UNBLOCK : priority 23
 (priority-condvar) Thread priority 23 starting.
-THREAD_CREATE : priority 22
-THREAD_UNBLOCK : priority 22
 (priority-condvar) Thread priority 22 starting.
-THREAD_CREATE : priority 21
-THREAD_UNBLOCK : priority 21
 (priority-condvar) Thread priority 21 starting.
-THREAD_CREATE : priority 30
-THREAD_UNBLOCK : priority 30
 (priority-condvar) Thread priority 30 starting.
-THREAD_CREATE : priority 29
-THREAD_UNBLOCK : priority 29
 (priority-condvar) Thread priority 29 starting.
-THREAD_CREATE : priority 28
-THREAD_UNBLOCK : priority 28
 (priority-condvar) Thread priority 28 starting.
-THREAD_CREATE : priority 27
-THREAD_UNBLOCK : priority 27
 (priority-condvar) Thread priority 27 starting.
-THREAD_CREATE : priority 26
-THREAD_UNBLOCK : priority 26
 (priority-condvar) Thread priority 26 starting.
-THREAD_CREATE : priority 25
-THREAD_UNBLOCK : priority 25
 (priority-condvar) Thread priority 25 starting.
-THREAD_CREATE : priority 24
-THREAD_UNBLOCK : priority 24
 (priority-condvar) Thread priority 24 starting.
 (priority-condvar) Signaling...
-THREAD_UNBLOCK : priority 23
-THREAD_UNBLOCK : priority 23
-(priority-condvar) Thread priority 23 woke up.
-(priority-condvar) Signaling...
-THREAD_UNBLOCK : priority 22
-THREAD_UNBLOCK : priority 22
-(priority-condvar) Thread priority 22 woke up.
-(priority-condvar) Signaling...
-THREAD_UNBLOCK : priority 21
-THREAD_UNBLOCK : priority 21
-(priority-condvar) Thread priority 21 woke up.
-(priority-condvar) Signaling...
-THREAD_UNBLOCK : priority 30
-THREAD_UNBLOCK : priority 30
 (priority-condvar) Thread priority 30 woke up.
 (priority-condvar) Signaling...
-THREAD_UNBLOCK : priority 29
-THREAD_UNBLOCK : priority 29
 (priority-condvar) Thread priority 29 woke up.
 (priority-condvar) Signaling...
-THREAD_UNBLOCK : priority 28
-THREAD_UNBLOCK : priority 28
 (priority-condvar) Thread priority 28 woke up.
 (priority-condvar) Signaling...
-THREAD_UNBLOCK : priority 27
-THREAD_UNBLOCK : priority 27
 (priority-condvar) Thread priority 27 woke up.
 (priority-condvar) Signaling...
-THREAD_UNBLOCK : priority 26
-THREAD_UNBLOCK : priority 26
 (priority-condvar) Thread priority 26 woke up.
 (priority-condvar) Signaling...
-THREAD_UNBLOCK : priority 25
-THREAD_UNBLOCK : priority 25
 (priority-condvar) Thread priority 25 woke up.
 (priority-condvar) Signaling...
-THREAD_UNBLOCK : priority 24
-THREAD_UNBLOCK : priority 24
 (priority-condvar) Thread priority 24 woke up.
+(priority-condvar) Signaling...
+(priority-condvar) Thread priority 23 woke up.
+(priority-condvar) Signaling...
+(priority-condvar) Thread priority 22 woke up.
+(priority-condvar) Signaling...
+(priority-condvar) Thread priority 21 woke up.
 (priority-condvar) end
 Execution of 'priority-condvar' complete.
-Timer: 369 ticks
-Thread: 0 idle ticks, 372 kernel ticks, 0 user ticks
-Console: 2880 characters output
+Timer: 264 ticks
+Thread: 0 idle ticks, 267 kernel ticks, 0 user ticks
+Console: 1665 characters output
 Keyboard: 0 keys pressed
 Powering off...

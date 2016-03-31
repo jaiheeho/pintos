@@ -51,73 +51,38 @@ Differences in `diff -u' format:
 - (priority-donate-chain) main should have priority 15.  Actual priority: 15.
 - (priority-donate-chain) main should have priority 18.  Actual priority: 18.
 - (priority-donate-chain) main should have priority 21.  Actual priority: 21.
-+ THREAD_CREATE : thread 1
-+ THREAD_UNBLOCK : thread 1
 + (priority-donate-chain) main should have priority 3.  Actual priority: 0.
-+ THREAD_CREATE : interloper 1
-+ THREAD_UNBLOCK : interloper 1
 + (priority-donate-chain) interloper 1 finished.
-+ THREAD_CREATE : thread 2
-+ THREAD_UNBLOCK : thread 2
 + (priority-donate-chain) main should have priority 6.  Actual priority: 0.
-+ THREAD_CREATE : interloper 2
-+ THREAD_UNBLOCK : interloper 2
 + (priority-donate-chain) interloper 2 finished.
-+ THREAD_CREATE : thread 3
-+ THREAD_UNBLOCK : thread 3
 + (priority-donate-chain) main should have priority 9.  Actual priority: 0.
-+ THREAD_CREATE : interloper 3
-+ THREAD_UNBLOCK : interloper 3
 + (priority-donate-chain) interloper 3 finished.
-+ THREAD_CREATE : thread 4
-+ THREAD_UNBLOCK : thread 4
 + (priority-donate-chain) main should have priority 12.  Actual priority: 0.
-+ THREAD_CREATE : interloper 4
-+ THREAD_UNBLOCK : interloper 4
 + (priority-donate-chain) interloper 4 finished.
-+ THREAD_CREATE : thread 5
-+ THREAD_UNBLOCK : thread 5
 + (priority-donate-chain) main should have priority 15.  Actual priority: 0.
-+ THREAD_CREATE : interloper 5
-+ THREAD_UNBLOCK : interloper 5
 + (priority-donate-chain) interloper 5 finished.
-+ THREAD_CREATE : thread 6
-+ THREAD_UNBLOCK : thread 6
 + (priority-donate-chain) main should have priority 18.  Actual priority: 0.
-+ THREAD_CREATE : interloper 6
-+ THREAD_UNBLOCK : interloper 6
 + (priority-donate-chain) interloper 6 finished.
-+ THREAD_CREATE : thread 7
-+ THREAD_UNBLOCK : thread 7
 + (priority-donate-chain) main should have priority 21.  Actual priority: 0.
-+ THREAD_CREATE : interloper 7
-+ THREAD_UNBLOCK : interloper 7
 + (priority-donate-chain) interloper 7 finished.
-+ THREAD_UNBLOCK : thread 1
   (priority-donate-chain) thread 1 got lock
 - (priority-donate-chain) thread 1 should have priority 21. Actual priority: 21
 + (priority-donate-chain) thread 1 should have priority 21. Actual priority: 3
-+ THREAD_UNBLOCK : thread 2
   (priority-donate-chain) thread 2 got lock
 - (priority-donate-chain) thread 2 should have priority 21. Actual priority: 21
 + (priority-donate-chain) thread 2 should have priority 21. Actual priority: 6
-+ THREAD_UNBLOCK : thread 3
   (priority-donate-chain) thread 3 got lock
 - (priority-donate-chain) thread 3 should have priority 21. Actual priority: 21
 + (priority-donate-chain) thread 3 should have priority 21. Actual priority: 9
-+ THREAD_UNBLOCK : thread 4
   (priority-donate-chain) thread 4 got lock
 - (priority-donate-chain) thread 4 should have priority 21. Actual priority: 21
 + (priority-donate-chain) thread 4 should have priority 21. Actual priority: 12
-+ THREAD_UNBLOCK : thread 5
   (priority-donate-chain) thread 5 got lock
 - (priority-donate-chain) thread 5 should have priority 21. Actual priority: 21
 + (priority-donate-chain) thread 5 should have priority 21. Actual priority: 15
-+ THREAD_UNBLOCK : thread 6
   (priority-donate-chain) thread 6 got lock
 - (priority-donate-chain) thread 6 should have priority 21. Actual priority: 21
 + (priority-donate-chain) thread 6 should have priority 21. Actual priority: 18
-+ THREAD_UNBLOCK : thread 7
   (priority-donate-chain) thread 7 got lock
   (priority-donate-chain) thread 7 should have priority 21. Actual priority: 21
   (priority-donate-chain) thread 7 finishing with priority 21.

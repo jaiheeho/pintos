@@ -1,27 +1,18 @@
-Writing command line to /tmp/r4DR9v1muj.dsk...
+Writing command line to /tmp/D1Vz0Oqxi7.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run priority-donate-nest
 Pintos booting with 4,096 kB RAM...
 374 pages available in kernel pool.
 374 pages available in user pool.
-THREAD_CREATE : idle
-THREAD_UNBLOCK : idle
-THREAD_UNBLOCK : main
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'priority-donate-nest':
 (priority-donate-nest) begin
-THREAD_CREATE : medium
-THREAD_UNBLOCK : medium
 (priority-donate-nest) Low thread should have priority 32.  Actual priority: 31.
-THREAD_CREATE : high
-THREAD_UNBLOCK : high
 (priority-donate-nest) Low thread should have priority 33.  Actual priority: 31.
-THREAD_UNBLOCK : medium
 (priority-donate-nest) Medium thread should have priority 33.  Actual priority: 32.
 (priority-donate-nest) Medium thread got the lock.
-THREAD_UNBLOCK : high
 (priority-donate-nest) High thread got the lock.
 (priority-donate-nest) High thread finished.
 (priority-donate-nest) High thread should have just finished.
@@ -30,8 +21,8 @@ THREAD_UNBLOCK : high
 (priority-donate-nest) Low thread should have priority 31.  Actual priority: 31.
 (priority-donate-nest) end
 Execution of 'priority-donate-nest' complete.
-Timer: 160 ticks
-Thread: 0 idle ticks, 163 kernel ticks, 0 user ticks
-Console: 1261 characters output
+Timer: 146 ticks
+Thread: 0 idle ticks, 149 kernel ticks, 0 user ticks
+Console: 1060 characters output
 Keyboard: 0 keys pressed
 Powering off...

@@ -1,31 +1,25 @@
-Writing command line to /tmp/AFXqFRzwnn.dsk...
+Writing command line to /tmp/Bh3O73fBzl.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run priority-donate-lower
 Pintos booting with 4,096 kB RAM...
 374 pages available in kernel pool.
 374 pages available in user pool.
-THREAD_CREATE : idle
-THREAD_UNBLOCK : idle
-THREAD_UNBLOCK : main
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'priority-donate-lower':
 (priority-donate-lower) begin
-THREAD_CREATE : acquire
-THREAD_UNBLOCK : acquire
 (priority-donate-lower) Main thread should have priority 41.  Actual priority: 31.
 (priority-donate-lower) Lowering base priority...
 (priority-donate-lower) Main thread should have priority 41.  Actual priority: 21.
-THREAD_UNBLOCK : acquire
 (priority-donate-lower) acquire: got the lock
 (priority-donate-lower) acquire: done
 (priority-donate-lower) acquire must already have finished.
 (priority-donate-lower) Main thread should have priority 21.  Actual priority: 21.
 (priority-donate-lower) end
 Execution of 'priority-donate-lower' complete.
-Timer: 117 ticks
-Thread: 0 idle ticks, 120 kernel ticks, 0 user ticks
-Console: 1002 characters output
+Timer: 110 ticks
+Thread: 0 idle ticks, 113 kernel ticks, 0 user ticks
+Console: 863 characters output
 Keyboard: 0 keys pressed
 Powering off...

@@ -14,13 +14,10 @@ Acceptable output:
 Differences in `diff -u' format:
   (priority-donate-lower) begin
 - (priority-donate-lower) Main thread should have priority 41.  Actual priority: 41.
-+ THREAD_CREATE : acquire
-+ THREAD_UNBLOCK : acquire
 + (priority-donate-lower) Main thread should have priority 41.  Actual priority: 31.
   (priority-donate-lower) Lowering base priority...
 - (priority-donate-lower) Main thread should have priority 41.  Actual priority: 41.
 + (priority-donate-lower) Main thread should have priority 41.  Actual priority: 21.
-+ THREAD_UNBLOCK : acquire
   (priority-donate-lower) acquire: got the lock
   (priority-donate-lower) acquire: done
   (priority-donate-lower) acquire must already have finished.

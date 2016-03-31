@@ -1,14 +1,1 @@
-FAIL
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (alarm-zero) begin
-  (alarm-zero) PASS
-  (alarm-zero) end
-Differences in `diff -u' format:
-  (alarm-zero) begin
-+ here START
-+ THREAD_UNBLOCK : main
-+ here END
-  (alarm-zero) PASS
-  (alarm-zero) end
+PASS

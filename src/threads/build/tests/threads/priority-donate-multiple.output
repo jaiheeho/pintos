@@ -1,37 +1,28 @@
-Writing command line to /tmp/o9YRftxNuR.dsk...
+Writing command line to /tmp/YQF2wZ7vOn.dsk...
 warning: can't find squish-pty, so terminal input will fail
 bochs -q
 Kernel command line: -q run priority-donate-multiple
 Pintos booting with 4,096 kB RAM...
 374 pages available in kernel pool.
 374 pages available in user pool.
-THREAD_CREATE : idle
-THREAD_UNBLOCK : idle
-THREAD_UNBLOCK : main
 Calibrating timer...  102,400 loops/s.
 Boot complete.
 Executing 'priority-donate-multiple':
 (priority-donate-multiple) begin
-THREAD_CREATE : a
-THREAD_UNBLOCK : a
 (priority-donate-multiple) Main thread should have priority 32.  Actual priority: 31.
-THREAD_CREATE : b
-THREAD_UNBLOCK : b
 (priority-donate-multiple) Main thread should have priority 33.  Actual priority: 31.
-THREAD_UNBLOCK : b
 (priority-donate-multiple) Thread b acquired lock b.
 (priority-donate-multiple) Thread b finished.
 (priority-donate-multiple) Thread b should have just finished.
 (priority-donate-multiple) Main thread should have priority 32.  Actual priority: 31.
-THREAD_UNBLOCK : a
 (priority-donate-multiple) Thread a acquired lock a.
 (priority-donate-multiple) Thread a finished.
 (priority-donate-multiple) Thread a should have just finished.
 (priority-donate-multiple) Main thread should have priority 31.  Actual priority: 31.
 (priority-donate-multiple) end
 Execution of 'priority-donate-multiple' complete.
-Timer: 161 ticks
-Thread: 0 idle ticks, 164 kernel ticks, 0 user ticks
-Console: 1280 characters output
+Timer: 146 ticks
+Thread: 0 idle ticks, 149 kernel ticks, 0 user ticks
+Console: 1103 characters output
 Keyboard: 0 keys pressed
 Powering off...
