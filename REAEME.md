@@ -3,10 +3,5 @@ This is OS project of Team 01 junyong & jaihee
 
 Jaihee branch added this line
 
+finished until pro1 w/o priority donation
 
-Test merge intermediate and jaihee
-
-
-add one more line
-
-add two line
