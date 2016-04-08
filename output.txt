@@ -1,3 +1,7 @@
 hihi\n
 fixedddd
+<<<<<<< HEAD
 /develop/jay : iadded this line
+=======
+/develop/test : i added this lines
+>>>>>>> 3e6ab1b26d2e2ebb8f4db7d31f8b64fac8a599a0
