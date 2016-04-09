@@ -213,12 +213,11 @@ lock_acquire (struct lock *lock)
   {
     t->priority_rollback = t->priority;
     t->priority = thread_get_priority();
-
-    if (holder->priority < t->priority)
-    {
-      holder->priority_rollback = holder->priority;
-      holder->priority = thread_get_priority();
-    }
+    // if (holder->priority < t->priority)
+    // {
+    //   holder->priority_rollback = holder->priority;
+    //   holder->priority = thread_get_priority();
+    // }
   }
   sema_down (&lock->semaphore);
   lock->holder = t;
@@ -253,8 +252,14 @@ lock_try_acquire (struct lock *lock)
   }
   else {
     ///WHERE WE ADDED/////////
-    t -> priority_rollback = t ->priority;
-    thread_set_priority(thread_get_priority());
+    // t->priority_rollback = t->priority;
+    // t->priority = thread_get_priority();
+
+    if (holder->priority < t->priority)
+    {
+      holder->priority_rollback = holder->priority;
+      holder->priority = thread_get_priority();
+    }
     ///WHERE WE ADDED END/////
   }
   return success;
