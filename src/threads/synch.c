@@ -250,7 +250,10 @@ lock_release (struct lock *lock)
 {
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
-  thread_set_priority(thread_current()->priority_rollback);
+  ///WHERE WE ADDED/////////
+  list_remove(&lock->elem);
+  ///WHERE WE ADDED END/////
+  //thread_set_priority(thread_current()->priority_rollback);
   lock->holder = NULL;
   sema_up (&lock->semaphore);
 }
