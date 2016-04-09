@@ -211,8 +211,8 @@ lock_acquire (struct lock *lock)
   struct thread *holder = lock->holder;
   if (holder != NULL)
   {
-    t->priority_rollback = t->priority;
-    t->priority = thread_get_priority();
+    // t->priority_rollback = t->priority;
+    // t->priority = thread_get_priority();
     if (holder->priority < t->priority)
     {
       holder->priority_rollback = holder->priority;
