@@ -445,6 +445,7 @@ thread_get_priority (void)
     max_depth ++;
   }
   intr_set_level(old_level);
+  printf("%s : %d max: %d\n",thread_current()->name, thread_current()->priority,max_priority );
 
   return max_priority;
 
