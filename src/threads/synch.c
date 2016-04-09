@@ -281,7 +281,13 @@ lock_release (struct lock *lock)
   struct thread *t = thread_current();
   list_remove(&lock->elem);
   if (list_empty(&t->lock_holdings))
-    t->priority = t->priority_rollback;
+  {
+    if (thread_get_priority() > t->priority_rollback)
+      t->priority = thread_get_priority();
+    else
+      t->priority = t->priority_rollback;
+
+  }
   else 
     t->priority = thread_get_priority();
   ///WHERE WE ADDED END/////
