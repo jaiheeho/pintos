@@ -208,8 +208,12 @@ lock_acquire (struct lock *lock)
   ASSERT (!lock_held_by_current_thread (lock));
   ///WHERE WE ADDED/////////
   struct thread *t = thread_current();
-  t->priority_rollback = t->priority;
-  thread_set_priority(thread_get_priority()); 
+  struct thread *holder = lock->holder;
+  if (holder!= NULL)
+  {
+    holder->priority_rollback = holder->priority;
+    holder->priority = t->priority;
+  }
   sema_down (&lock->semaphore);
   lock->holder = t;
   list_push_back(&t-> lock_holdings, &(lock->elem));
