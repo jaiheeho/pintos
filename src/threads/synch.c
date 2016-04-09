@@ -209,6 +209,10 @@ lock_acquire (struct lock *lock)
 
   sema_down (&lock->semaphore);
   lock->holder = thread_current ();
+  ///WHERE WE ADDED/////////
+  list_push_back(&(thread_current() -> lock_holdings), &(lock->elem));
+  ///WHERE WE ADDED END/////
+
 }
 
 /* Tries to acquires LOCK and returns true if successful or false
@@ -227,7 +231,12 @@ lock_try_acquire (struct lock *lock)
 
   success = sema_try_down (&lock->semaphore);
   if (success)
+  {
     lock->holder = thread_current ();
+    ///WHERE WE ADDED/////////
+    list_push_back(&(thread_current() -> lock_holdings), &(lock->elem));
+    ///WHERE WE ADDED END/////
+  }
   return success;
 }
 
@@ -242,7 +251,7 @@ lock_release (struct lock *lock)
 {
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
-
+  thread_set_priority(thread_current()->priority_rollback);
   lock->holder = NULL;
   sema_up (&lock->semaphore);
 }

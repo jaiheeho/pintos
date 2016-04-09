@@ -385,23 +385,21 @@ thread_set_priority (int new_priority)
   old_priority = t->priority;
   t->priority = new_priority;
   if (!list_empty(&ready_list) && (new_priority < old_priority))
-    {
-      struct thread *front_of_q;
-      front_of_q = list_entry(list_front(&ready_list), struct thread, elem);
-      if (front_of_q->priority > new_priority)
-	{
-
-	  if(intr_context() == false)
+  {
+    struct thread *front_of_q;
+    front_of_q = list_entry(list_front(&ready_list), struct thread, elem);
+    if (front_of_q->priority > new_priority)
+  	{
+  	  if(intr_context() == false)
 	    {
 	      thread_yield();
 	    }
-	  else if (intr_context() == true)
+  	  else if (intr_context() == true)
 	    {
 	      intr_yield_on_return();
 	    } 
-	}
-      
-    }
+  	}  
+  }
   intr_set_level(old_level);
 }
 
@@ -409,7 +407,42 @@ thread_set_priority (int new_priority)
 int
 thread_get_priority (void) 
 {
-  return thread_current ()->priority;
+  ///WHERE WE ADDED/////////
+  struct list *lock_holding;
+  struct list *waiting;
+  int max_depth = 8;
+  int max_priority = 0;
+  struct lock *l;
+  struct thread *t;
+  struct thread *max_priority_thread = thread_current();
+  struct list_elem *iter_lock;
+  struct list_elem *iter_waiting;
+
+
+  while (max_depth < 8){
+    lock_holding = &(max_priority_thread->lock_holdings);
+    for(iter_lock = list_begin(lock_holding);
+      iter_lock != list_tail(lock_holding); iter_lock = iter_lock->next)
+    {
+      l = list_entry(iter_lock, struct lock, elem);
+
+      waiting = &(l->semaphore->waiters)
+
+      for(iter_waiting = list_begin(waiting);
+      iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
+      {
+        t = list_entry(iter_waiting, struct thread, elem);
+        if (t->priority > max_priority)
+        {
+          max_priority = t->priority;
+          max_priority_thread = t;
+        } 
+      }
+    }
+    max_depth ++;
+  }
+  return max_priority;
+  ///WHERE WE ADDED END/////
 }
 
 /************************************************************************
