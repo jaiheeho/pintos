@@ -240,6 +240,7 @@ lock_try_acquire (struct lock *lock)
   ASSERT (!lock_held_by_current_thread (lock));
   ///WHERE WE ADDED/////////
   struct thread *t = thread_current();
+  struct thread *holder = lock->holder;
   ///WHERE WE ADDED END/////
 
   success = sema_try_down (&lock->semaphore);
