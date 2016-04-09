@@ -426,7 +426,7 @@ thread_get_priority (void)
     {
       l = list_entry(iter_lock, struct lock, elem);
 
-      waiting = &(&(l->semaphore)->waiters);
+      waiting = &( (&l->semaphore)->waiters);
 
       for(iter_waiting = list_begin(waiting);
       iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
