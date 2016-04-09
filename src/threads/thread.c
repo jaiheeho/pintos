@@ -408,6 +408,7 @@ int
 thread_get_priority (void) 
 {
   ///WHERE WE ADDED/////////
+  return thread_current()->priority;
   enum intr_level old_level;
   old_level = intr_disable();
 
