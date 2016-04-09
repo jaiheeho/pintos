@@ -207,22 +207,24 @@ lock_acquire (struct lock *lock)
   ASSERT (!intr_context ());
   ASSERT (!lock_held_by_current_thread (lock));
   ///WHERE WE ADDED/////////
+    enum intr_level old_level;
+  old_level = intr_disable ();
+
   struct thread *t = thread_current();
   struct thread *holder = lock->holder;
   if ((&lock->semaphore)->value == 0)
   {
+    //t->priority = thread_get_priority();
     if (holder->priority < t->priority)
     {
-      if (holder->priority_rollback >= holder->priority)
-        holder->priority_rollback = holder->priority;
-      //printf("holder %s(%d) current : %s(%d) get_prio : %d\n", holder->name, holder->priority, t->name
-      //  , t->priority, thread_get_priority());
+      holder->priority_rollback = holder->priority;
       holder->priority = thread_get_priority();
     }
   }
   sema_down (&lock->semaphore);
   lock->holder = t;
   list_push_back(&t-> lock_holdings, &(lock->elem));
+    intr_set_level (old_level);
 
    ///WHERE WE ADDED END/////
 }
@@ -278,7 +280,6 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
   ///WHERE WE ADDED/////////
-    enum intr_level old_level;
 
   list_remove(&lock->elem);
   thread_set_priority(thread_current()->priority_rollback);
