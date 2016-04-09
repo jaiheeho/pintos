@@ -282,6 +282,7 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
   ///WHERE WE ADDED/////////
+    enum intr_level old_level;
 
   list_remove(&lock->elem);
   thread_set_priority(thread_current()->priority_rollback);
