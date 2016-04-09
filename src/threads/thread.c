@@ -420,7 +420,6 @@ thread_get_priority (void)
   struct thread *max_priority_thread = thread_current();
   struct list_elem *iter_lock;
   struct list_elem *iter_waiting;
-  printf("%s : %d max: %d\n",thread_current()->name, thread_current()->priority,max_priority);
   max_priority = max_priority_thread->priority;
   while (max_depth < 8){
     lock_holding = &max_priority_thread->lock_holdings;
@@ -445,7 +444,6 @@ thread_get_priority (void)
     max_depth ++;
   }
   intr_set_level(old_level);
-  printf("%s : %d max: %d\n",thread_current()->name, thread_current()->priority,max_priority );
 
   return max_priority;
 
