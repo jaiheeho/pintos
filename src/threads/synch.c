@@ -210,9 +210,8 @@ lock_acquire (struct lock *lock)
   sema_down (&lock->semaphore);
   lock->holder = thread_current ();
   ///WHERE WE ADDED/////////
-  list_push_back(&(thread_current() -> lock_holdings), &(lock->elem));
+  list_push_back(&thread_current() -> lock_holdings, &(lock->elem));
   ///WHERE WE ADDED END/////
-
 }
 
 /* Tries to acquires LOCK and returns true if successful or false

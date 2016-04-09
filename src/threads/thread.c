@@ -448,7 +448,6 @@ thread_get_priority (void)
 
   return max_priority;
 
-
   ///WHERE WE ADDED END/////
 }
 
@@ -753,6 +752,7 @@ init_thread (struct thread *t, const char *name, int priority)
   ///WHERE WE ADDED/////////
   //IMLEMENTIAION TO INITIALIZE recent_cpu to 0//
   t->recent_cpu = 0;
+  list_init (t->lock_holdings);
   ///WHERE WE ADDED END/////
 }
 
