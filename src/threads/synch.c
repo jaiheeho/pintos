@@ -212,10 +212,9 @@ lock_acquire (struct lock *lock)
   struct thread *holder = lock->holder;
   if ((&lock->semaphore)->value == 0)
   {
-    //t->priority = thread_get_priority();
     if (holder->priority < t->priority)
     {
-      if (holder->priority_rollback >= holder->priority)
+      if (holder->priority_rollback > holder->priority)
         holder->priority_rollback = holder->priority;
 
       holder->priority = thread_get_priority();
@@ -286,9 +285,10 @@ lock_release (struct lock *lock)
   }
   else {
     if (thread_get_priority() > t->priority_rollback)
-      t->priority = thread_get_priority();
+      //t->priority = thread_get_priority();
+      t->priority = t->priority_rollback; 
     else
-      t->priority = t->priority_rollback;
+      t->priority = t->priority_rollback; 
 
   }
   ///WHERE WE ADDED END/////
