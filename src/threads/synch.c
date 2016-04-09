@@ -278,8 +278,12 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
   ///WHERE WE ADDED/////////
+  struct thread *t = thread_current();
   list_remove(&lock->elem);
-  thread_current()-> priority = thread_current()->priority_rollback;
+  if (list_empty(&t->lock_holdings))
+    t->priority = t->priority_rollback;
+  else 
+    t->priority = thread_get_priority();
   ///WHERE WE ADDED END/////
   lock->holder = NULL;
   sema_up (&lock->semaphore);
