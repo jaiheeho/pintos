@@ -207,6 +207,9 @@ lock_acquire (struct lock *lock)
   ASSERT (!intr_context ());
   ASSERT (!lock_held_by_current_thread (lock));
   ///WHERE WE ADDED/////////
+    enum intr_level old_level;
+  old_level = intr_disable ();
+
   struct thread *t = thread_current();
   struct thread *holder = lock->holder;
   if ((&lock->semaphore)->value == 0)
@@ -226,6 +229,8 @@ lock_acquire (struct lock *lock)
   sema_down (&lock->semaphore);
   lock->holder = t;
   list_push_back(&t-> lock_holdings, &(lock->elem));
+    intr_set_level (old_level);
+
    ///WHERE WE ADDED END/////
 }
 
@@ -243,6 +248,7 @@ lock_try_acquire (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (!lock_held_by_current_thread (lock));
   ///WHERE WE ADDED/////////
+
   struct thread *t = thread_current();
   struct thread *holder = lock->holder;
   ///WHERE WE ADDED END/////
