@@ -215,8 +215,8 @@ lock_acquire (struct lock *lock)
     {
       if (holder->priority_rollback >= holder->priority)
         holder->priority_rollback = holder->priority;
-      printf("holder %s(%d) current : %s(%d) get_prio : %d\n", holder->name, holder->priority, t->name
-        , t->priority, thread_get_priority());
+      //printf("holder %s(%d) current : %s(%d) get_prio : %d\n", holder->name, holder->priority, t->name
+      //  , t->priority, thread_get_priority());
       holder->priority = thread_get_priority();
     }
   }
