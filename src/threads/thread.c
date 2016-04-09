@@ -411,7 +411,6 @@ thread_get_priority (void)
   enum intr_level old_level;
   old_level = intr_disable();
 
-
   struct list *lock_holding;
   struct list *waiting;
   int max_depth = 8;
@@ -422,14 +421,15 @@ thread_get_priority (void)
   struct list_elem *iter_lock;
   struct list_elem *iter_waiting;
 
+  max_priority = max_priority_thread->priority;
   while (max_depth < 8){
-    lock_holding = &(max_priority_thread->lock_holdings);
+    lock_holding = &max_priority_thread->lock_holdings;
+
     for(iter_lock = list_begin(lock_holding);
       iter_lock != list_tail(lock_holding); iter_lock = iter_lock->next)
     {
       l = list_entry(iter_lock, struct lock, elem);
-
-      waiting = &( (&l->semaphore)->waiters);
+      waiting = &(&l->semaphore)->waiters;
 
       for(iter_waiting = list_begin(waiting);
       iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
