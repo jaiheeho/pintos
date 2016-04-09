@@ -209,9 +209,9 @@ lock_acquire (struct lock *lock)
   ///WHERE WE ADDED/////////
   struct thread *t = thread_current();
   struct thread *holder = lock->holder;
-  if (holder != NULL)
+  if (lock->semaphore->value != 0)
   {
-    //t->priority_rollback = t->priority;
+    t->priority_rollback = t->priority;
     //t->priority = thread_get_priority();
     if (holder->priority < t->priority)
     {
