@@ -280,7 +280,7 @@ lock_release (struct lock *lock)
   enum intr_level old_level;
   old_level = intr_disable ();
   struct thread *t = thread_current();
-  struct thread *to_pop
+  struct thread *to_pop;
   struct semaphore *sema = &lock->semaphore;
   ASSERT (sema != NULL);
   sema->value++;
