@@ -279,7 +279,6 @@ lock_release (struct lock *lock)
   list_remove(&lock->elem);
   if (list_empty(&t->lock_holdings))
   {
-    //printf("thread : %s  prior : %d rollback : %d\n", t->name, t->priority, t->priority_rollback);
     t->priority = t->priority_rollback;
   }
   else {
@@ -291,8 +290,7 @@ lock_release (struct lock *lock)
   //sort_ready_list();
   
   lock->holder = NULL;
-  sema_up(&lock->semaphore);
-
+  sema_up(&lock->semaphore);a
   ///WHERE WE ADDED END/////
 
 }
