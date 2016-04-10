@@ -266,8 +266,8 @@ thread_unblock (struct thread *t)
   ASSERT (t->status == THREAD_BLOCKED);
 
   ///WHERE WE ADDED/////////
+  printf("unblock : %s\n", t->name);
   old_level = intr_disable ();
-  sort_ready_list();
   list_insert_ordered(&ready_list, &t->elem,
 		      (list_less_func *) &priority_less_func, NULL); 
 
