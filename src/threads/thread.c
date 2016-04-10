@@ -267,7 +267,7 @@ thread_unblock (struct thread *t)
 
   ///WHERE WE ADDED/////////
   old_level = intr_disable ();
-  ready_list_sort();
+  sort_ready_list();
   list_insert_ordered(&ready_list, &t->elem,
 		      (list_less_func *) &priority_less_func, NULL); 
 
