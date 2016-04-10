@@ -420,6 +420,7 @@ thread_get_priority (void)
   struct thread *max_priority_thread = thread_current();
   struct list_elem *iter_lock;
   struct list_elem *iter_waiting;
+  int depth = 8;
   
   max_priority = max_priority_thread->priority_rollback; 
   lock_holding = &max_priority_thread->lock_holdings;
@@ -452,7 +453,7 @@ thread_get_priority (void)
 * Purporse : Returns the current thread's priority. or donated priority *
 ************************************************************************/
 struct thread *
-thread_get_priority_donation(struct *thread t , int depth)
+thread_get_priority_donation(struct thread *t, int depth)
 {
   struct thread *max_priority_thread = t;
   struct list *lock_holding = &t->lock_holdings;
@@ -462,7 +463,7 @@ thread_get_priority_donation(struct *thread t , int depth)
   struct thread *t;
   struct list_elem *iter_lock;
   struct list_elem *iter_waiting;
-  
+
   if (depth == 0)
     return max_priority_thread;
 
