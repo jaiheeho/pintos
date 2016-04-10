@@ -437,6 +437,10 @@ thread_get_priority (void)
         {
           max_priority = t->priority;
           max_priority_thread = t;
+          printf("thread_current: %s, %d\n", thread_current()->name, thread_current()->priority);
+          printf("max: %s, %d\n", max_priority_thread->name, max_priority);
+
+
         } 
       }
     }
