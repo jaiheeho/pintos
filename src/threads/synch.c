@@ -111,6 +111,7 @@ sema_try_down (struct semaphore *sema)
    and wakes up one thread of those waiting for SEMA, if any.
 
    This function may be called from an interrupt handler. */
+/*fixed function */
 void
 sema_up (struct semaphore *sema) 
 {
@@ -120,16 +121,11 @@ sema_up (struct semaphore *sema)
   old_level = intr_disable ();
   ///WHERE WE ADDED/////////
   sema->value++;
-  struct thread* t;
   if (!list_empty (&sema->waiters)) {
     list_sort(&sema->waiters, (list_less_func *) &priority_less_func, NULL);
-    t = list_entry (list_pop_front (&sema->waiters), struct thread, elem);
-    //t->priority = thread_get_priority();
-    thread_unblock (t);
+    thread_unblock(list_entry (list_pop_front (&sema->waiters), struct thread, elem));
   }
   ///WHERE WE ADDED END/////
-
-
   intr_set_level (old_level);
 }
 
@@ -194,6 +190,13 @@ lock_init (struct lock *lock)
   sema_init (&lock->semaphore, 1);
 }
 
+
+/************************************************************************
+* FUNCTION : lock_release                                               *
+* Input : struct list_elem *, struct list_elem *, void *                *
+* Output : boolean                                                      *
+************************************************************************/
+/*fixed function */
 /* Acquires LOCK, sleeping until it becomes available if
    necessary.  The lock must not already be held by the current
    thread.
@@ -238,32 +241,19 @@ lock_try_acquire (struct lock *lock)
 
   ASSERT (lock != NULL);
   ASSERT (!lock_held_by_current_thread (lock));
-  ///WHERE WE ADDED/////////
-
-  struct thread *t = thread_current();
-  struct thread *holder = lock->holder;
-  ///WHERE WE ADDED END/////
 
   success = sema_try_down (&lock->semaphore);
   if (success)
-  {
     lock->holder = thread_current ();
-    ///WHERE WE ADDED/////////
-    list_push_back(&(thread_current() -> lock_holdings), &(lock->elem));
-    ///WHERE WE ADDED END/////
-  }
-  else {
-    ///WHERE WE ADDED/////////
-    if (holder->priority < t->priority)
-    {
-      holder->priority_rollback = holder->priority;
-      holder->priority = thread_get_priority();
-    }
-    ///WHERE WE ADDED END/////
-  }
   return success;
 }
 
+/************************************************************************
+* FUNCTION : lock_release                                               *
+* Input : struct list_elem *, struct list_elem *, void *                *
+* Output : boolean                                                      *
+************************************************************************/
+/*fixed function */
 /* Releases LOCK, which must be owned by the current thread.
    This is lock_release function.
 
@@ -385,6 +375,7 @@ cond_wait (struct condition *cond, struct lock *lock)
    An interrupt handler cannot acquire a lock, so it does not
    make sense to try to signal a condition variable within an
    interrupt handler. */
+ /*fixed function */
 void
 cond_signal (struct condition *cond, struct lock *lock UNUSED) 
 {
@@ -441,4 +432,3 @@ sema_less_func(const struct list_elem *a, const struct list_elem *b, void *aux)
   else return false;
 
 }
-
