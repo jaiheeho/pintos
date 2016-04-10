@@ -214,9 +214,6 @@ lock_acquire (struct lock *lock)
   {
     if (holder->priority < t->priority)
     {
-      // if (holder->priority_rollback > holder->priority)
-      //   holder->priority_rollback = holder->priority;
-
       holder->priority = thread_get_priority();
     }
   }
@@ -278,10 +275,6 @@ lock_release (struct lock *lock)
   ASSERT (lock_held_by_current_thread (lock));
   ///WHERE WE ADDED/////////
   struct thread *t = thread_current();
-  struct semaphore *sema = &lock->semaphore;
-  ASSERT (sema != NULL);
-  // sema->value++;
-  // lock->holder = NULL;
 
   list_remove(&lock->elem);
   if (list_empty(&t->lock_holdings))
