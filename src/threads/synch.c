@@ -215,7 +215,7 @@ lock_acquire (struct lock *lock)
     if (holder->priority < t->priority)
     {
       holder->priority = thread_get_priority();
-      sort_ready_list();
+      //sort_ready_list();
     }
   }
   sema_down (&lock->semaphore);
