@@ -90,9 +90,15 @@ donor_thread_func (void *locks_)
   if (locks->first)
     lock_acquire (locks->first);
 
+  msg ("Before got lock2 %s should have priority %d. Actual priority: %d : %d ", 
+        thread_name (), (NESTING_DEPTH - 1) * 3,
+        thread_get_priority (), thread_current()->priority);
   lock_acquire (locks->second);
   msg ("%s got lock", thread_name ());
-
+  msg ("After got lock2 %s should have priority %d. Actual priority: %d : %d ", 
+        thread_name (), (NESTING_DEPTH - 1) * 3,
+        thread_get_priority (), thread_current()->priority);
+  
   lock_release (locks->second);
   msg ("%s should have priority %d. Actual priority: %d : %d ", 
         thread_name (), (NESTING_DEPTH - 1) * 3,
@@ -108,7 +114,7 @@ donor_thread_func (void *locks_)
 static void
 interloper_thread_func (void *arg_ UNUSED)
 {
-  msg ("%s finished.%d", thread_name (),thread_get_priority ());
+  msg ("%s finished.%d, %d", thread_name (),thread_get_priority (), thread_current() -> priority );
 }
 
 // vim: sw=2
