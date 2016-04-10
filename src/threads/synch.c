@@ -305,6 +305,7 @@ lock_release (struct lock *lock)
   if (to_pop != NULL)
     thread_unblock (to_pop);
   intr_set_level (old_level);
+
   ///WHERE WE ADDED END/////
 
 }
