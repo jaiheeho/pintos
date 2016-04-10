@@ -284,23 +284,23 @@ lock_release (struct lock *lock)
   struct semaphore *sema = &lock->semaphore;
   ASSERT (sema != NULL);
   sema->value++;
+  lock->holder = NULL;
   if (!list_empty (&sema->waiters)) {
     list_sort(&sema->waiters, (list_less_func *) &priority_less_func, NULL);
     to_pop = list_entry (list_pop_front (&sema->waiters),struct thread, elem);
-    list_remove(&lock->elem);
-    if (list_empty(&t->lock_holdings))
-    {
-      t->priority = t->priority_rollback;
-    }
-    else {
-      if (thread_get_priority() > t->priority_rollback)
-        t->priority = thread_get_priority();
-      else
-        t->priority = t->priority_rollback; 
-    }
-    thread_unblock (to_pop);
   }
-  lock->holder = NULL;
+  list_remove(&lock->elem);
+  if (list_empty(&t->lock_holdings))
+  {
+    t->priority = t->priority_rollback;
+  }
+  else {
+    if (thread_get_priority() > t->priority_rollback)
+      t->priority = thread_get_priority();
+    else
+      t->priority = t->priority_rollback; 
+  }
+  thread_unblock (to_pop);
   intr_set_level (old_level);
   ///WHERE WE ADDED END/////
 
