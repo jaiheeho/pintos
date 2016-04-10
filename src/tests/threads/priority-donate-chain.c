@@ -108,7 +108,7 @@ donor_thread_func (void *locks_)
 static void
 interloper_thread_func (void *arg_ UNUSED)
 {
-  msg ("%s finished.", thread_name ());
+  msg ("%s finished.%d", thread_name (),thread_get_priority ());
 }
 
 // vim: sw=2
