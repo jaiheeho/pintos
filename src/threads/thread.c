@@ -384,6 +384,7 @@ thread_set_priority (int new_priority)
   t = thread_current();
   old_priority = t->priority;
   t->priority = new_priority;
+  t->priority_rollback = new_priority;
   if (!list_empty(&ready_list) && (new_priority < old_priority))
   {
     struct thread *front_of_q;
