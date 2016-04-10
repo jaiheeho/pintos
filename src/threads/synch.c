@@ -278,6 +278,8 @@ lock_release (struct lock *lock)
   ASSERT (lock_held_by_current_thread (lock));
   ///WHERE WE ADDED/////////
   struct thread *t = thread_current();
+  lock->holder = NULL;
+  sema_up (&lock->semaphore);
   list_remove(&lock->elem);
   if (list_empty(&t->lock_holdings))
   {
@@ -289,11 +291,9 @@ lock_release (struct lock *lock)
       //t->priority = t->priority_rollback; 
     else
       t->priority = t->priority_rollback; 
-
   }
   ///WHERE WE ADDED END/////
-  lock->holder = NULL;
-  sema_up (&lock->semaphore);
+
 }
 
 /* Returns true if the current thread holds LOCK, false
