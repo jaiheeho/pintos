@@ -285,8 +285,8 @@ lock_release (struct lock *lock)
   }
   else {
     if (thread_get_priority() > t->priority_rollback)
-      //t->priority = thread_get_priority();
-      t->priority = t->priority_rollback; 
+      t->priority = thread_get_priority();
+      //t->priority = t->priority_rollback; 
     else
       t->priority = t->priority_rollback; 
 
