@@ -22,6 +22,9 @@ struct lock
   {
     struct thread *holder;      /* Thread holding lock (for debugging). */
     struct semaphore semaphore; /* Binary semaphore controlling access. */
+    ///WHERE WE ADDED/////////
+    struct list_elem elem;      /* List element to record the locks that thread is holding*/
+    ///WHERE WE ADDED END/////
   };
 
 void lock_init (struct lock *);

@@ -93,6 +93,8 @@ struct thread
     int64_t wakeup_time;                /* wakeup time in ticks*/
     int recent_cpu;                     /* recent_cpu */
     int nice;                           /* nice */
+    int priority_rollback;              /* prioty value to be rolled back */
+    struct list lock_holdings;
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */
@@ -133,6 +135,11 @@ void thread_yield (void);
 
 int thread_get_priority (void);
 void thread_set_priority (int);
+///WHERE WE ADDED/////////
+/*IMPLEMENTAION FOR priority donation*/
+struct thread *thread_get_priority_donation(struct thread *, int);
+int thread_get_priority_for_thread (struct thread *t);
+///WHERE WE ADDED END/////
 
 int thread_get_nice (void);
 void thread_set_nice (int);
