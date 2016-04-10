@@ -290,7 +290,7 @@ lock_release (struct lock *lock)
   //sort_ready_list();
   
   lock->holder = NULL;
-  sema_up(&lock->semaphore);a
+  sema_up(&lock->semaphore);
   ///WHERE WE ADDED END/////
 
 }
