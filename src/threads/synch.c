@@ -303,7 +303,8 @@ lock_release (struct lock *lock)
   if (to_pop != NULL)
     thread_unblock (to_pop);
   intr_set_level (old_level);
-  printf("to pop : %s, %d, %d\n",to_pop->name, to_pop->priority, thread_get_priority());
+  if (to_pop != NULL)
+    printf("to pop : %s, %d, %d\n",to_pop->name, to_pop->priority, thread_get_priority());
 
   ///WHERE WE ADDED END/////
 
