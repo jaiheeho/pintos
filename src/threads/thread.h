@@ -138,6 +138,7 @@ void thread_set_priority (int);
 ///WHERE WE ADDED/////////
 /*IMPLEMENTAION FOR priority donation*/
 struct thread *thread_get_priority_donation(struct thread *, int);
+void sort_ready_list(void);
 ///WHERE WE ADDED END/////
 
 int thread_get_nice (void);

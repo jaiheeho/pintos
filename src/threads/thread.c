@@ -448,7 +448,7 @@ thread_get_priority (void)
   ///WHERE WE ADDED END/////
 }
 /************************************************************************
-* FUNCTION : thread_get_priority_donation                                        *
+* FUNCTION : thread_get_priority_donation                               *
 * INPUT    : new_priority                                               *
 * Purporse : Returns the current thread's priority. or donated priority *
 ************************************************************************/
@@ -921,4 +921,14 @@ priority_less_func(const struct list_elem *a, const struct list_elem *b, void *a
       return true;
     }
   else return false;
+}
+
+/************************************************************************
+* FUNCTION : sort_ready_list                                            *
+* PURPOSE : sorting ready_list according to priority_less_func          *
+************************************************************************/
+void
+sort_ready_list(void)
+{
+  list_sort(&ready_list, (list_less_func *) &priority_less_func, NULL);
 }
