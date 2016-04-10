@@ -287,7 +287,9 @@ lock_release (struct lock *lock)
   lock->holder = NULL;
   if (!list_empty (&sema->waiters)) {
     list_sort(&sema->waiters, (list_less_func *) &priority_less_func, NULL);
+    printf("to pop : %s, %d, %d\n",to_pop->name, to_pop->priority, thread_get_priority());
     to_pop = list_entry (list_pop_front (&sema->waiters),struct thread, elem);
+    printf("to pop : %s, %d, %d\n",to_pop->name, to_pop->priority, thread_get_priority());
   }
   list_remove(&lock->elem);
   if (list_empty(&t->lock_holdings))
