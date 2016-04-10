@@ -206,9 +206,24 @@ lock_acquire (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (!intr_context ());
   ASSERT (!lock_held_by_current_thread (lock));
+  ///WHERE WE ADDED/////////
 
+  struct thread *t = thread_current();
+  struct thread *holder = lock->holder;
+  if ((&lock->semaphore)->value == 0)
+  {
+    if (holder->priority < t->priority)
+    {
+      // if (holder->priority_rollback > holder->priority)
+      //   holder->priority_rollback = holder->priority;
+
+      holder->priority = thread_get_priority();
+    }
+  }
   sema_down (&lock->semaphore);
-  lock->holder = thread_current ();
+  lock->holder = t;
+  list_push_back(&t-> lock_holdings, &(lock->elem));
+   ///WHERE WE ADDED END/////
 }
 
 /* Tries to acquires LOCK and returns true if successful or false
@@ -224,10 +239,29 @@ lock_try_acquire (struct lock *lock)
 
   ASSERT (lock != NULL);
   ASSERT (!lock_held_by_current_thread (lock));
+  ///WHERE WE ADDED/////////
+
+  struct thread *t = thread_current();
+  struct thread *holder = lock->holder;
+  ///WHERE WE ADDED END/////
 
   success = sema_try_down (&lock->semaphore);
   if (success)
+  {
     lock->holder = thread_current ();
+    ///WHERE WE ADDED/////////
+    list_push_back(&(thread_current() -> lock_holdings), &(lock->elem));
+    ///WHERE WE ADDED END/////
+  }
+  else {
+    ///WHERE WE ADDED/////////
+    if (holder->priority < t->priority)
+    {
+      holder->priority_rollback = holder->priority;
+      holder->priority = thread_get_priority();
+    }
+    ///WHERE WE ADDED END/////
+  }
   return success;
 }
 
@@ -242,9 +276,30 @@ lock_release (struct lock *lock)
 {
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
+  ///WHERE WE ADDED/////////
+  struct thread *t = thread_current();
+  struct semaphore *sema = &lock->semaphore;
+  ASSERT (sema != NULL);
+  // sema->value++;
+  // lock->holder = NULL;
 
+  list_remove(&lock->elem);
+  if (list_empty(&t->lock_holdings))
+  {
+    t->priority = t->priority_rollback;
+  }
+  else {
+    if (thread_get_priority() > t->priority_rollback)
+      t->priority = thread_get_priority();
+    else
+      t->priority = t->priority_rollback; 
+  }
+  
   lock->holder = NULL;
-  sema_up (&lock->semaphore);
+  sema_up(&lock->semaphore);
+
+  ///WHERE WE ADDED END/////
+
 }
 
 /* Returns true if the current thread holds LOCK, false

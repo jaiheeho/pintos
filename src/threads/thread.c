@@ -365,12 +365,11 @@ thread_yield (void)
 }
 
 /************************************************************************
-* FUNCTION : thread_set_nice                                            *
+* FUNCTION : thread_set_priority                                            *
 * INPUT    : new_priority                                               *
 * Purporse : Sets the current thread's priority to NEW_PRIORITY.        *
             check priority of readylist  and preemp if priority is low  *
 ************************************************************************/
-/*  */
 void
 thread_set_priority (int new_priority) 
 {
@@ -384,32 +383,106 @@ thread_set_priority (int new_priority)
   t = thread_current();
   old_priority = t->priority;
   t->priority = new_priority;
+  t->priority_rollback = new_priority;
   if (!list_empty(&ready_list) && (new_priority < old_priority))
-    {
-      struct thread *front_of_q;
-      front_of_q = list_entry(list_front(&ready_list), struct thread, elem);
-      if (front_of_q->priority > new_priority)
-	{
-
-	  if(intr_context() == false)
+  {
+    struct thread *front_of_q;
+    front_of_q = list_entry(list_front(&ready_list), struct thread, elem);
+    if (front_of_q->priority > new_priority)
+  	{
+  	  if(intr_context() == false)
 	    {
 	      thread_yield();
 	    }
-	  else if (intr_context() == true)
+  	  else if (intr_context() == true)
 	    {
 	      intr_yield_on_return();
 	    } 
-	}
-      
-    }
+  	}  
+  }
   intr_set_level(old_level);
 }
-
-/* Returns the current thread's priority. */
+/************************************************************************
+* FUNCTION : thread_get_priority                                        *
+* INPUT    : new_priority                                               *
+* Purporse : Returns the current thread's priority. or donated priority *
+************************************************************************/
 int
 thread_get_priority (void) 
 {
-  return thread_current ()->priority;
+  ///WHERE WE ADDED/////////
+
+  struct list *lock_holding;
+  struct list *waiting;
+  int max_priority = 0;
+  struct lock *l;
+  struct thread *t;
+  struct thread *max_priority_thread = thread_current();
+  struct list_elem *iter_lock;
+  struct list_elem *iter_waiting;
+  int depth = 8;
+
+  if (thread_mlfqs)
+    return thread_current()->priority;
+
+  max_priority = max_priority_thread->priority_rollback; 
+  lock_holding = &max_priority_thread->lock_holdings;
+
+  for(iter_lock = list_begin(lock_holding);
+    iter_lock != list_tail(lock_holding); iter_lock = iter_lock->next)
+  {
+    l = list_entry(iter_lock, struct lock, elem);
+    waiting = &(&l->semaphore)->waiters;
+
+    for(iter_waiting = list_begin(waiting);
+    iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
+    {
+      t = list_entry(iter_waiting, struct thread, elem);
+      if (t->priority > max_priority){
+        max_priority_thread = thread_get_priority_donation(t, depth-1);
+        max_priority = max_priority_thread->priority;
+      }
+    }
+  }
+  return max_priority;
+  ///WHERE WE ADDED END/////
+}
+/************************************************************************
+* FUNCTION : thread_get_priority_donation                                        *
+* INPUT    : new_priority                                               *
+* Purporse : Returns the current thread's priority. or donated priority *
+************************************************************************/
+struct thread *
+thread_get_priority_donation(struct thread *t, int depth)
+{
+  struct thread *max_priority_thread = t;
+  struct list *lock_holding = &t->lock_holdings;
+  int max_priority = t->priority;
+  struct list *waiting;
+  struct lock *l;
+  struct list_elem *iter_lock;
+  struct list_elem *iter_waiting;
+
+  if (depth == 0)
+    return max_priority_thread;
+
+  for(iter_lock = list_begin(lock_holding);
+    iter_lock != list_tail(lock_holding); iter_lock = iter_lock->next)
+  {
+    l = list_entry(iter_lock, struct lock, elem);
+    waiting = &(&l->semaphore)->waiters;
+
+    for(iter_waiting = list_begin(waiting);
+    iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
+    {
+      t = list_entry(iter_waiting, struct thread, elem);
+      if (t->priority > max_priority){
+        max_priority_thread = thread_get_priority_donation(t, depth-1);
+        max_priority = max_priority_thread->priority;
+      }
+    }
+  }
+  return max_priority_thread;
 }
 
 /************************************************************************
@@ -713,6 +786,8 @@ init_thread (struct thread *t, const char *name, int priority)
   ///WHERE WE ADDED/////////
   //IMLEMENTIAION TO INITIALIZE recent_cpu to 0//
   t->recent_cpu = 0;
+  list_init (&t->lock_holdings);
+  t->priority_rollback = priority;
   ///WHERE WE ADDED END/////
 }
 
