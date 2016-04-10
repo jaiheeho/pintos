@@ -425,30 +425,25 @@ thread_get_priority (void)
   if (thread_mlfqs)
     return thread_current()->priority;
 
-  thread_get_priority_donation(thread_current(), depth);
+  max_priority = max_priority_thread->priority_rollback; 
+  lock_holding = &max_priority_thread->lock_holdings;
 
-  // max_priority = max_priority_thread->priority_rollback; 
-  // lock_holding = &max_priority_thread->lock_holdings;
+  for(iter_lock = list_begin(lock_holding);
+    iter_lock != list_tail(lock_holding); iter_lock = iter_lock->next)
+  {
+    l = list_entry(iter_lock, struct lock, elem);
+    waiting = &(&l->semaphore)->waiters;
 
-  // for(iter_lock = list_begin(lock_holding);
-  //   iter_lock != list_tail(lock_holding); iter_lock = iter_lock->next)
-  // {
-  //   l = list_entry(iter_lock, struct lock, elem);
-  //   waiting = &(&l->semaphore)->waiters;
-
-  //   for(iter_waiting = list_begin(waiting);
-  //   iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
-  //   {
-  //     t = list_entry(iter_waiting, struct thread, elem);
-  //     if (t->priority > max_priority){
-  //       max_priority_thread = thread_get_priority_donation(t, depth-1);
-  //       max_priority = max_priority_thread->priority;
-  //     }
-  //   }
-  // }
-
-  // printf("current : %s max_priority_thread : %s: %d, %d\n",thread_current()->name,max_priority_thread->name
-  //   , thread_current()->priority, max_priority_thread->priority);
+    for(iter_waiting = list_begin(waiting);
+    iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
+    {
+      t = list_entry(iter_waiting, struct thread, elem);
+      if (t->priority > max_priority){
+        max_priority_thread = thread_get_priority_donation(t, depth-1);
+        max_priority = max_priority_thread->priority;
+      }
+    }
+  }
   return max_priority;
   ///WHERE WE ADDED END/////
 }
