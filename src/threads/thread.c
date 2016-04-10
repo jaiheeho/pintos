@@ -451,7 +451,7 @@ thread_get_priority (void)
 * INPUT    : new_priority                                               *
 * Purporse : Returns the current thread's priority. or donated priority *
 ************************************************************************/
-struct thread*
+struct thread *
 thread_get_priority_donation(struct *thread t , int depth)
 {
   struct thread *max_priority_thread = t;
