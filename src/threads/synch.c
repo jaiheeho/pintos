@@ -283,8 +283,8 @@ lock_release (struct lock *lock)
   struct thread *to_pop=NULL;
   struct semaphore *sema = &lock->semaphore;
   ASSERT (sema != NULL);
-  sema->value++;
-  lock->holder = NULL;
+  // sema->value++;
+  // lock->holder = NULL;
   if (!list_empty (&sema->waiters)) {
     list_sort(&sema->waiters, (list_less_func *) &priority_less_func, NULL);
     to_pop = list_entry (list_pop_front (&sema->waiters),struct thread, elem);
@@ -300,6 +300,8 @@ lock_release (struct lock *lock)
     else
       t->priority = t->priority_rollback; 
   }
+  sema->value++;
+  lock->holder = NULL;
   if (to_pop != NULL)
     thread_unblock (to_pop);
   intr_set_level (old_level);
