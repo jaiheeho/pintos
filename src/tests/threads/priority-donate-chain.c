@@ -94,9 +94,9 @@ donor_thread_func (void *locks_)
   msg ("%s got lock", thread_name ());
 
   lock_release (locks->second);
-  msg ("%s should have priority %d. Actual priority: %d", 
+  msg ("%s should have priority %d. Actual priority: %d : %d ", 
         thread_name (), (NESTING_DEPTH - 1) * 3,
-        thread_get_priority ());
+        thread_get_priority (), thread_current()->priority);
 
   if (locks->first)
     lock_release (locks->first);
