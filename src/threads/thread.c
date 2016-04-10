@@ -508,8 +508,6 @@ thread_set_nice (int nice)
   {
     update_priorities();
     struct thread *front_of_ready = list_entry(list_front(&ready_list), struct thread, elem);
-    //printf ("t vs front : %d vs %d\n",t->priority ,front_of_ready->priority);
-
      if (t->priority <= front_of_ready->priority)
     {
       if(intr_context() == false)
@@ -887,7 +885,6 @@ schedule (void)
   if (curr != next)
     prev = switch_threads (curr, next);
   schedule_tail (prev); 
-  //printf("SCHEDULE : %s %s\n", curr->name, next->name);
 }
 
 /* Returns a tid to use for a new thread. */
