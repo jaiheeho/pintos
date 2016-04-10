@@ -279,7 +279,7 @@ lock_release (struct lock *lock)
   list_remove(&lock->elem);
   if (list_empty(&t->lock_holdings))
   {
-    printf("thread : %s  prior : %d\n rollback : %d", t->name, t->priority, t->priority_rollback);
+    printf("thread : %s  prior : %d rollback : %d\n", t->name, t->priority, t->priority_rollback);
     t->priority = t->priority_rollback;
   }
   else {
