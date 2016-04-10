@@ -450,6 +450,51 @@ thread_get_priority (void)
   ///WHERE WE ADDED END/////
 }
 /************************************************************************
+* FUNCTION : thread_get_priority                                        *
+* INPUT    : new_priority                                               *
+* Purporse : Returns the current thread's priority. or donated priority *
+************************************************************************/
+int
+thread_get_priority_for_thread (struct thread *target) 
+{
+  ///WHERE WE ADDED/////////
+
+  struct list *lock_holding;
+  struct list *waiting;
+  int max_priority = 0;
+  struct lock *l;
+  struct thread *t;
+  struct thread *max_priority_thread = target;
+  struct list_elem *iter_lock;
+  struct list_elem *iter_waiting;
+  int depth = 8;
+
+  if (thread_mlfqs)
+    return thread_current()->priority;
+
+  max_priority = max_priority_thread->priority_rollback; 
+  lock_holding = &max_priority_thread->lock_holdings;
+
+  for(iter_lock = list_begin(lock_holding);
+    iter_lock != list_tail(lock_holding); iter_lock = iter_lock->next)
+  {
+    l = list_entry(iter_lock, struct lock, elem);
+    waiting = &(&l->semaphore)->waiters;
+
+    for(iter_waiting = list_begin(waiting);
+    iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
+    {
+      t = list_entry(iter_waiting, struct thread, elem);
+      if (t->priority > max_priority){
+        max_priority_thread = thread_get_priority_donation(t, depth-1);
+        max_priority = max_priority_thread->priority;
+      }
+    }
+  }
+  return max_priority;
+  ///WHERE WE ADDED END/////
+}
+/************************************************************************
 * FUNCTION : thread_get_priority_donation                               *
 * INPUT    : new_priority                                               *
 * Purporse : Returns the current thread's priority. or donated priority *

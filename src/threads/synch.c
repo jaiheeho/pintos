@@ -279,6 +279,21 @@ lock_release (struct lock *lock)
   struct thread *t = thread_current();
 
   list_remove(&lock->elem);
+
+  struct list *waiting;
+  struct list_elem *iter_waiting;
+  struct thread *iter_thread;
+  waiting = &(&lock->semaphore)->waiters;
+  int temp_priority;
+
+  for(iter_waiting = list_begin(waiting);
+  iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
+  {
+    iter_thread = list_entry(iter_waiting, struct thread, elem);
+    temp_priority = thread_get_priority_for_thread(iter_thread);
+    iter_thread->priority = iter_thread->priority > temp_priority ? iter_thread->priority : temp_priority;
+  }
+
   if (list_empty(&t->lock_holdings))
   {
     t->priority = t->priority_rollback;
