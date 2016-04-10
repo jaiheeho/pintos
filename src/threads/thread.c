@@ -356,9 +356,9 @@ thread_yield (void)
   ///WHERE WE ADDED/////////
   old_level = intr_disable ();
   if (curr != idle_thread) {
+    list_sort(&ready_list, (list_less_func *) &priority_less_func, NULL);
     list_insert_ordered(&ready_list, &curr->elem,
 			(list_less_func *) &priority_less_func, NULL); 
-    list_sort(&ready_list, (list_less_func *) &priority_less_func, NULL);
   }
   ///WHERE WE ADDED END/////
   curr->status = THREAD_READY;
