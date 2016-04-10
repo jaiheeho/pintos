@@ -421,7 +421,7 @@ thread_get_priority (void)
   struct list_elem *iter_lock;
   struct list_elem *iter_waiting;
   int depth = 8;
-  
+
   max_priority = max_priority_thread->priority_rollback; 
   lock_holding = &max_priority_thread->lock_holdings;
 
@@ -460,7 +460,6 @@ thread_get_priority_donation(struct thread *t, int depth)
   int max_priority = t->priority;
   struct list *waiting;
   struct lock *l;
-  struct thread *t;
   struct list_elem *iter_lock;
   struct list_elem *iter_waiting;
 
