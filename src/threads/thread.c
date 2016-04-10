@@ -266,7 +266,7 @@ thread_unblock (struct thread *t)
   ASSERT (t->status == THREAD_BLOCKED);
 
   ///WHERE WE ADDED/////////
-  printf("unblock : %s, %d, current prio:%d\n", t->name,t->priority,thread_current()->priority);
+  //printf("unblock : %s, %d, current prio:%d\n", t->name,t->priority,thread_current()->priority);
   old_level = intr_disable ();
   list_insert_ordered(&ready_list, &t->elem,
 		      (list_less_func *) &priority_less_func, NULL); 
