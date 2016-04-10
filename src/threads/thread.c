@@ -408,8 +408,6 @@ int
 thread_get_priority (void) 
 {
   ///WHERE WE ADDED/////////
-  enum intr_level old_level;
-  old_level = intr_disable();
 
   struct list *lock_holding;
   struct list *waiting;
@@ -443,8 +441,7 @@ thread_get_priority (void)
     }
     max_depth ++;
   }
-  intr_set_level(old_level);
-  printf("current : %s max_priority_thread : %s, %d, %d\n",t->name,max_priority_thread->name
+  printf("current : %s max_priority_thread : %s: %d, %d\n",t->name,max_priority_thread->name
     , t->priority, max_priority_thread->priority);
   return max_priority;
 
