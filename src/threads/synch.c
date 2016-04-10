@@ -215,7 +215,6 @@ lock_acquire (struct lock *lock)
     if (holder->priority < t->priority)
     {
       holder->priority = thread_get_priority();
-      //sort_ready_list();
     }
   }
   sema_down (&lock->semaphore);
@@ -288,7 +287,7 @@ lock_release (struct lock *lock)
     else
       t->priority = t->priority_rollback; 
   }
-  sort_ready_list();
+  //sort_ready_list();
   
   lock->holder = NULL;
   sema_up(&lock->semaphore);
