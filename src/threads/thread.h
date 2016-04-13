@@ -95,6 +95,7 @@ struct thread
     int nice;                           /* nice */
     int priority_rollback;              /* prioty value to be rolled back */
     struct list lock_holdings;
+    struct list file_descriptor_table;
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */

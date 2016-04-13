@@ -17,6 +17,7 @@
 #include "threads/palloc.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
+#include <list.h> // ADDED HEADER
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
@@ -38,8 +39,22 @@ process_execute (const char *file_name)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
 
+  /***** ADDED CODE *****/
+  printf("aaaaaaaaaa %s\n", fn_copy);
+  char file_name_temp[128];
+  int i;
+  for(i=0; (fn_copy[i] == '\0') || (fn_copy[i] == ' '); i++);
+  if(i != 0)
+    {
+      strlcpy(file_name_temp, fn_copy, i+1);
+    }
+
+
+  /***** END OF ADDED CODE *****/
+
+
   /* Create a new thread to execute FILE_NAME. */
-  tid = thread_create (file_name, PRI_DEFAULT, start_process, fn_copy);
+  tid = thread_create (file_name_temp, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy); 
   return tid;
@@ -88,6 +103,7 @@ start_process (void *f_name)
 int
 process_wait (tid_t child_tid UNUSED) 
 {
+  while(1);
   return -1;
 }
 
@@ -195,7 +211,7 @@ struct Elf32_Phdr
 #define PF_W 2          /* Writable. */
 #define PF_R 4          /* Readable. */
 
-static bool setup_stack (void **esp);
+static bool setup_stack (void **esp, char *file_name, char **strtok_r_ptr);
 static bool validate_segment (const struct Elf32_Phdr *, struct file *);
 static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
                           uint32_t read_bytes, uint32_t zero_bytes,
@@ -214,6 +230,19 @@ load (const char *file_name, void (**eip) (void), void **esp)
   off_t file_ofs;
   bool success = false;
   int i;
+
+  /*ADDED CODE*/
+  char *strtok_r_ptr;
+  char *token_ptr;
+
+  token_ptr = strtok_r(file_name, " ", &strtok_r_ptr);
+
+
+  // initialize file descriptor table(this is in struct thread)
+  list_init(&t->file_descriptor_table);
+
+
+  /*END OF ADDED CODE*/
 
   /* Allocate and activate page directory. */
   t->pagedir = pagedir_create ();
@@ -241,19 +270,19 @@ load (const char *file_name, void (**eip) (void), void **esp)
       printf ("load: %s: error loading executable\n", file_name);
       goto done; 
     }
-
+  printf("CP3\n");
   /* Read program headers. */
   file_ofs = ehdr.e_phoff;
   for (i = 0; i < ehdr.e_phnum; i++) 
     {
       struct Elf32_Phdr phdr;
-
       if (file_ofs < 0 || file_ofs > file_length (file))
         goto done;
       file_seek (file, file_ofs);
-
+      printf("CP6");
       if (file_read (file, &phdr, sizeof phdr) != sizeof phdr)
         goto done;
+      printf("CP7\n");
       file_ofs += sizeof phdr;
       switch (phdr.p_type) 
         {
@@ -300,9 +329,9 @@ load (const char *file_name, void (**eip) (void), void **esp)
           break;
         }
     }
-
+  printf("ENTERING SETUPSTACK!!\n");
   /* Set up stack. */
-  if (!setup_stack (esp))
+  if (!setup_stack (esp, file_name, &strtok_r_ptr))
     goto done;
 
   /* Start address. */
@@ -427,10 +456,11 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 /* Create a minimal stack by mapping a zeroed page at the top of
    user virtual memory. */
 static bool
-setup_stack (void **esp) 
+setup_stack (void **esp, char *file_name, char **strtok_r_ptr) 
 {
   uint8_t *kpage;
   bool success = false;
+  printf("%s\n", file_name);
 
   kpage = palloc_get_page (PAL_USER | PAL_ZERO);
   if (kpage != NULL) 
@@ -441,6 +471,62 @@ setup_stack (void **esp)
       else
         palloc_free_page (kpage);
     }
+
+  /*ADDED CODE*/
+  char *token_ptr;
+  int argc = 0;
+  char* argv[128];
+
+  //insert file name argv[0]
+  *esp -= strlen(file_name) + 1;
+  strlcpy(*esp, file_name, strlen(file_name)+1);
+  argv[argc] = *esp;
+  argc++;  
+
+  //insert argv strings
+
+  for(token_ptr = strtok_r(NULL, " ", strtok_r_ptr);
+      token_ptr != NULL; token_ptr = strtok_r(NULL, " ", strtok_r_ptr))
+    {
+      printf("!!! %s\n", token_ptr);
+      *esp -= strlen(token_ptr) + 1;
+      strlcpy(*esp, token_ptr, strlen(token_ptr)+1);
+      argv[argc] = *esp;
+      argc++;
+    }
+  // Insert padding
+  if((PHYS_BASE - *esp)%4)
+    { 
+      *esp -= 4 - (PHYS_BASE - *esp)%4;
+    }
+
+  //insert argv pointer array
+  int i = argc - 1;
+  for(; i >= 0; i--)
+    {
+      *esp -= sizeof(char *);
+      *((char**)(*esp)) = argv[i];
+    }
+
+  *esp -= sizeof(char**);
+  *((char***)(*esp)) = *esp + sizeof(char**);
+
+  //insert argc
+  *esp -= sizeof(int);
+  memcpy(*esp, &argc, sizeof(int));
+
+  //insert dummy return address
+  *esp -= sizeof(void*);
+  *(int*)(*esp) = 0;
+
+  printf("ESP : %x\n", *esp);
+  int a = 0;
+  for(a=0; 4*a < (PHYS_BASE - *esp); a++){
+    printf("addr: %x  |  content: 0x%08x\n", (int*)(*esp) + a ,*((int*)(*esp) + a));
+  }
+  /*END OF ADDED CODE*/
+
+
   return success;
 }
 
