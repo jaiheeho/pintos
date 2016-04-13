@@ -49,14 +49,13 @@ process_execute (const char *file_name)
       strlcpy(file_name_temp, fn_copy, i+1);
     }
 
-
-  /***** END OF ADDED CODE *****/
-
-
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (file_name_temp, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy); 
+
+  /***** END OF ADDED CODE *****/
+
   return tid;
 }
 
@@ -103,7 +102,10 @@ start_process (void *f_name)
 int
 process_wait (tid_t child_tid UNUSED) 
 {
+  /***** ADDED CODE *****/
   while(1);
+  /***** END OF ADDED CODE *****/
+
   return -1;
 }
 
@@ -240,7 +242,6 @@ load (const char *file_name, void (**eip) (void), void **esp)
 
   // initialize file descriptor table(this is in struct thread)
   list_init(&t->file_descriptor_table);
-
 
   /*END OF ADDED CODE*/
 

@@ -215,13 +215,18 @@ lock_acquire (struct lock *lock)
 
   struct thread *t = thread_current();
   struct thread *holder = lock->holder;
+
+  //if lock is held by other thread
   if ((&lock->semaphore)->value == 0)
   {
+    //Donate priority by thread_get_priority
     if (holder->priority < t->priority)
     {
       holder->priority = thread_get_priority();
     }
   }
+  //then go to sema_down and enter block state
+
   sema_down (&lock->semaphore);
   lock->holder = t;
   list_push_back(&t-> lock_holdings, &(lock->elem));
@@ -234,6 +239,7 @@ lock_acquire (struct lock *lock)
 
    This function will not sleep, so it may be called within an
    interrupt handler. */
+/*fixed function */
 bool
 lock_try_acquire (struct lock *lock)
 {
@@ -243,8 +249,17 @@ lock_try_acquire (struct lock *lock)
   ASSERT (!lock_held_by_current_thread (lock));
 
   success = sema_try_down (&lock->semaphore);
-  if (success)
-    lock->holder = thread_current ();
+  ///WHERE WE ADDED/////////
+  struct thread *t =thread_current ()
+  if (success){
+    lock->holder = t;
+    list_push_back(&t-> lock_holdings, &(lock->elem));
+  }
+  else
+    if (holder->priority < t->priority)
+      holder->priority = thread_get_priority();
+  ///WHERE WE ADDED END/////
+
   return success;
 }
 
@@ -268,6 +283,7 @@ lock_release (struct lock *lock)
   ///WHERE WE ADDED/////////
   struct thread *t = thread_current();
 
+  //remove the lock from lock_holding list of thread
   list_remove(&lock->elem);
 
   struct list *waiting;
@@ -276,6 +292,8 @@ lock_release (struct lock *lock)
   waiting = &(&lock->semaphore)->waiters;
   int temp_priority;
 
+  //This is for donate-chain. When thread is blocked it does not have to have exact donated priority
+  //But, when a thread releases, it have to check whether waiting list of the loack have exact priority
   for(iter_waiting = list_begin(waiting);
   iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
   {
@@ -284,6 +302,7 @@ lock_release (struct lock *lock)
     iter_thread->priority = iter_thread->priority > temp_priority ? iter_thread->priority : temp_priority;
   }
 
+  //if list is empty it should be rolled-back
   if (list_empty(&t->lock_holdings))
   {
     t->priority = t->priority_rollback;
@@ -294,7 +313,6 @@ lock_release (struct lock *lock)
     else
       t->priority = t->priority_rollback; 
   }
-  //sort_ready_list();
   
   lock->holder = NULL;
   sema_up(&lock->semaphore);
