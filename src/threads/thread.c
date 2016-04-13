@@ -909,8 +909,8 @@ schedule_tail (struct thread *prev)
   thread_ticks = 0;
 
 #ifdef USERPROG
-  /* Activate the new address space. */
-  process_activate ();[]
+  /* activate the new address space. */
+  process_activate ();
 #endif
 
   /* If the thread we switched from is dying, destroy its struct
@@ -921,7 +921,7 @@ schedule_tail (struct thread *prev)
   if (prev != NULL && prev->status == THREAD_DYING && prev != initial_thread)  
     {
       ASSERT (prev != curr);
-      palloc_free_page (prev);
+      palloc_free_page(prev);
     }
 }
 
