@@ -40,10 +40,9 @@ process_execute (const char *file_name)
   strlcpy (fn_copy, file_name, PGSIZE);
 
   /***** ADDED CODE *****/
-  printf("aaaaaaaaaa %s\n", fn_copy);
   char file_name_temp[128];
   int i;
-  for(i=0; (fn_copy[i] == '\0') || (fn_copy[i] == ' '); i++);
+  for(i=0; !(fn_copy[i] == '\0') || (fn_copy[i] == ' '); i++);
   if(i != 0)
     {
       strlcpy(file_name_temp, fn_copy, i+1);
@@ -270,7 +269,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
       printf ("load: %s: error loading executable\n", file_name);
       goto done; 
     }
-  printf("CP3\n");
+
   /* Read program headers. */
   file_ofs = ehdr.e_phoff;
   for (i = 0; i < ehdr.e_phnum; i++) 
@@ -279,10 +278,10 @@ load (const char *file_name, void (**eip) (void), void **esp)
       if (file_ofs < 0 || file_ofs > file_length (file))
         goto done;
       file_seek (file, file_ofs);
-      printf("CP6");
+
       if (file_read (file, &phdr, sizeof phdr) != sizeof phdr)
         goto done;
-      printf("CP7\n");
+
       file_ofs += sizeof phdr;
       switch (phdr.p_type) 
         {
@@ -329,7 +328,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
           break;
         }
     }
-  printf("ENTERING SETUPSTACK!!\n");
+
   /* Set up stack. */
   if (!setup_stack (esp, file_name, &strtok_r_ptr))
     goto done;
@@ -460,7 +459,7 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
 {
   uint8_t *kpage;
   bool success = false;
-  printf("%s\n", file_name);
+
 
   kpage = palloc_get_page (PAL_USER | PAL_ZERO);
   if (kpage != NULL) 
@@ -488,7 +487,7 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
   for(token_ptr = strtok_r(NULL, " ", strtok_r_ptr);
       token_ptr != NULL; token_ptr = strtok_r(NULL, " ", strtok_r_ptr))
     {
-      printf("!!! %s\n", token_ptr);
+      //printf("Tokens: %s\n", token_ptr);
       *esp -= strlen(token_ptr) + 1;
       strlcpy(*esp, token_ptr, strlen(token_ptr)+1);
       argv[argc] = *esp;
