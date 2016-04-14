@@ -81,6 +81,7 @@ void exit(int status)
 
   // exit the thread(thread_exit will call process_exit)
   thread_exit();
+  return 0;
 
 }
 
