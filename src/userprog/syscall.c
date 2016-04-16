@@ -24,7 +24,7 @@ syscall_handler (struct intr_frame *f UNUSED)
   int syscall_num = *((int*)f->esp);
   int args[12];
   printf("THREAD <%s> CALLED SYSCALL NUMBER : %d\n",
-	 thread_name() *((int*)f->esp));
+	 thread_name(), *((int*)f->esp));
 
   switch(syscall_num)
     {
@@ -100,8 +100,7 @@ void exit(int status)
 
 int open(const char *file)
 {
-  
-
+  return;
 }
 
 
@@ -109,10 +108,7 @@ int filesize(int fd)
 {
   struct file *file = get_struct_file(fd);
   return file_length(file);
-
 }
-
-
 
 int write(int fd, const void *buffer, unsigned size)
 {
