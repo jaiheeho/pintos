@@ -31,6 +31,7 @@ process_execute (const char *file_name)
 {
   char *fn_copy;
   tid_t tid;
+  printf("process_execute :  %s to execute : %s\n", curr->name, file_name);
 
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
