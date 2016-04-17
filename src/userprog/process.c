@@ -102,12 +102,13 @@ int
 process_wait (tid_t child_tid) 
 {
   /***** ADDED CODE *****/
-  printf("process_wait : %s\n", curr->name);
 
-  struct thread *current = thread_current ();
+  struct thread *curr = thread_current ();
   struct list_elem *iter_child;
-  struct list *child_list = &current->child_procs;
+  struct list *child_list = &curr->child_procs;
   struct thread *c=NULL;
+
+  printf("process_wait : %s\n", curr->name);
 
   //Check whether child of the calling process, -> not child procee return -1
   for(iter_child = list_begin(child_list);
