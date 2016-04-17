@@ -150,6 +150,7 @@ process_exit (void)
   //Disconncect with its children(i.e change paren of child process to NULL)
   struct list *child_list = &curr->child_procs;
   struct thread *c;
+  struct list_elem *iter_child;
   for(iter_child = list_begin(child_list);
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
