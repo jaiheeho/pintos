@@ -102,13 +102,10 @@ int
 process_wait (tid_t child_tid) 
 {
   /***** ADDED CODE *****/
-  int return_value = 0;
   struct thread *current = thread_current ();
   struct list_elem *iter_child;
   struct list *child_list = &current->child_procs;
   struct thread *c=NULL;
-
-
 
   //Check whether child of the calling process, -> not child procee return -1
   for(iter_child = list_begin(child_list);
@@ -148,10 +145,11 @@ process_exit (void)
   uint32_t *pd;
   //Disconncect with its parent (i.e remove from children list of parent)
   if (curr->parent_proc != NULL)
-    list_remove (curr->child_elem);
+    list_remove (&curr->child_elem);
 
   //Disconncect with its children(i.e change paren of child process to NULL)
   struct list *child_list = &curr->child_procs;
+  struct thread *c;
   for(iter_child = list_begin(child_list);
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
@@ -182,7 +180,7 @@ process_exit (void)
   /***** ADDED CODE *****/
   //Finally, wake up parent who waiting for this thread*/
   if (curr->is_wait_called)
-    sema_up(curr->sema_wait);
+    sema_up(&curr->sema_wait);
   /***** END OF ADDED CODE *****/
 }
 
