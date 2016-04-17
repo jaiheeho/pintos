@@ -155,7 +155,7 @@ process_exit (void)
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
     c = list_entry(iter_child, struct thread, elem);
-    c->parent = NULL;
+    c->parent_proc = NULL;
   }
   //wake up parent//
 
