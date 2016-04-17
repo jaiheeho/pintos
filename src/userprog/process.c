@@ -115,10 +115,11 @@ process_wait (tid_t child_tid)
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
     c = list_entry(iter_child, struct thread, elem);
+    printf("process_wait : %s : son of %s\n", c->name, curr->name);
     if (c->tid == child_tid)
       break;
   }
-  printf("process_wait(parent) : %s\n", c->name);dsafaf
+  printf("process_wait(parent) : %s\n", c->name);
 
 
   //Check whether TID is invalid, invalid -> return -1
@@ -136,11 +137,11 @@ process_wait (tid_t child_tid)
   sema_down(&c->sema_wait);
   c->is_wait_called = true;
   sema_down(&c->sema_wait);
+
   printf("process_wait : %s\n", curr->name);
 
+  return 
   /***** END OF ADDED CODE *****/
-
-  return -1;
 }
 
 /* Free the current process's resources. */
@@ -191,8 +192,8 @@ process_exit (void)
   if (curr->is_wait_called){
     sema_up(&curr->sema_wait);
     printf("process exit wait?: %s\n", curr->name);
-    curr->parent_proc->child_
   }
+
 
   printf("process exit : %s\n", curr->name);
   /***** END OF ADDED CODE *****/

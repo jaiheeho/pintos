@@ -88,9 +88,10 @@ syscall_handler (struct intr_frame *f UNUSED)
 void exit(int status)
 {
   // exit the thread(thread_exit will call process_exit)
-  printf("%s: exit(%d)\n", thread_name(), status);
 
   struct thread *curr = thread_current();
+  printf("%s: exit(%d)\n", thread_name(), status);
+  printf("son of %s\n", curr->parent_proc->name);
   curr->exit_status=status;
   thread_exit();
   // print exit message
