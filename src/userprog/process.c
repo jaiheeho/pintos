@@ -140,7 +140,7 @@ process_wait (tid_t child_tid)
 
   printf("process_wait : %s\n", curr->name);
 
-  return 
+  return c->exit_status;
   /***** END OF ADDED CODE *****/
 }
 
