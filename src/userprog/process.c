@@ -118,7 +118,7 @@ process_wait (tid_t child_tid)
     if (c->tid == child_tid)
       break;
   }
-  printf("process_wait(tid) : %s\n", c->name);
+  printf("process_wait(parent) : %s\n", c->name);dsafaf
 
 
   //Check whether TID is invalid, invalid -> return -1
@@ -128,7 +128,7 @@ process_wait (tid_t child_tid)
   //process_wait() has already been successfully called for the given TID, return -1
   if (c->is_wait_called)
     return -1;
-  printf("process_wait(tid) : %s\n", c->name);
+  printf("process_wait(parent) : %s\n", c->name);
 
   //Wait for tid to be exited
   //At first, init sema which is owned by child in case of parent waiting.
@@ -191,7 +191,7 @@ process_exit (void)
   if (curr->is_wait_called){
     sema_up(&curr->sema_wait);
     printf("process exit wait?: %s\n", curr->name);
-
+    curr->parent_proc->child_
   }
 
   printf("process exit : %s\n", curr->name);

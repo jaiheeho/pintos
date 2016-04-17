@@ -854,7 +854,7 @@ init_thread (struct thread *t, const char *name, int priority)
 
   ///WHERE WE ADDED/////////
   //IMLEMENTIAION TO INITIALIZE recent_cpu to 0//
-  //FOR BSE Scheduler//
+  //FOR BSD Scheduler//
   t->recent_cpu = 0;
   //FOR PRIORITY DONTATION//
   list_init (&t->lock_holdings);
@@ -868,8 +868,7 @@ init_thread (struct thread *t, const char *name, int priority)
   }
   else
   {
-    list_push_back (&initial_thread->child_procs, &t->child_elem);
-    t->parent_proc = initial_thread;
+    t->parent_proc = NULL;
   }
   t->is_wait_called = false;
   ///WHERE WE ADDED END/////
