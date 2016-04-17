@@ -153,7 +153,7 @@ process_exit (void)
   struct thread *curr = thread_current ();
   uint32_t *pd;
   //Disconncect with its parent (i.e remove from children list of parent)
-    printf("process_exit : %s : son of %s\n", curr->name, curr->parent->name);
+    printf("process_exit : %s : son of %s\n", curr->name, curr->parent_proc->name);
 
   if (curr->parent_proc != NULL)
     list_remove (&curr->child_elem);

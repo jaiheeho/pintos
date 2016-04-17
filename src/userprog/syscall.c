@@ -99,7 +99,6 @@ void exit(int status)
 }
 
 int wait(int pid){
-
   int retval;
   retval = process_wait(pid);
   return retval;
