@@ -95,7 +95,12 @@ struct thread
     int nice;                           /* nice */
     int priority_rollback;              /* prioty value to be rolled back */
     struct list lock_holdings;
+
+    //For Project 2
     struct list file_descriptor_table;
+    struct list child_procs;            /* list of child processes */
+    struct thread *parent_proc;           /* parent processes */
+    struct lock thread_data_lock;
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */

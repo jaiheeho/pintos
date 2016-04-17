@@ -99,10 +99,18 @@ start_process (void *f_name)
    This function will be implemented in problem 2-2.  For now, it
    does nothing. */
 int
-process_wait (tid_t child_tid UNUSED) 
+process_wait (tid_t child_tid) 
 {
   /***** ADDED CODE *****/
-  while(1);
+  int return_value = 0;
+  struct thread *current = thread_current ();
+
+  //TID  
+  while(1){
+
+
+
+  } 
   /***** END OF ADDED CODE *****/
 
   return -1;
