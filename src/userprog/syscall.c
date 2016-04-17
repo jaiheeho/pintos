@@ -25,11 +25,8 @@ syscall_handler (struct intr_frame *f UNUSED)
   int retval;
   int syscall_num = *((int*)f->esp);
   int args[12];
-  // printf("THREAD <%s> CALLED SYSCALL NUMBER : %d\n",
-	 // thread_name(), *((int*)f->esp));
-  printf("THREAD <%s> <%d>CALLED SYSCALL NUMBER : %d\n",
-   thread_name(),thread_current()->tid, *((int*)f->esp));
-
+  printf("THREAD <%s> CALLED SYSCALL NUMBER : %d\n",
+	 thread_name(), *((int*)f->esp));
   switch(syscall_num)
     {
     case SYS_HALT:
@@ -90,28 +87,17 @@ syscall_handler (struct intr_frame *f UNUSED)
 void exit(int status)
 {
   // exit the thread(thread_exit will call process_exit)
-  printf("syscall exit : THREAD <%s> status %d\n", thread_name(), status);
-
-  struct thread *curr = thread_current();
+  // print exit message
   printf("%s: exit(%d)\n", thread_name(), status);
-  printf("son of %s\n", curr->parent_proc->name);
-  printf("with pid : %d\n", curr->tid);
-
+  struct thread *curr = thread_current();
   curr->exit_status=status;
   thread_exit();
-
-  printf("syscall exit end: THREAD <%s> status %d\n", thread_name(), status);
-
-  // print exit message
   // return exit status to kernel
 }
-
-int wait(int pid){
-    printf("syscall wait : THREAD <%s> pid : %d\n", thread_name(), pid);
-
+int wait(pid_t pid){
+  printf("syscall wait : THREAD <%s> pid : %d\n", thread_name(), pid);
   int retval;
   retval = process_wait(pid);
-    printf("syscall wait end: THREAD <%s> pid : %d\n", thread_name(), pid);
   return retval;
 }
 

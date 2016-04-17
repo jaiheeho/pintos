@@ -111,7 +111,7 @@ process_wait (tid_t child_tid)
 
   printf("process_wait : %s waits for %d\n", curr->name, child_tid);
 
-  //Check whether child of the calling process, -> not child procee return -1
+  //Check whether child of the calling process, -> not child process return -1
   for(iter_child = list_begin(child_list);
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
@@ -120,29 +120,20 @@ process_wait (tid_t child_tid)
     if (c->tid == child_tid)
       break;
   }
-  printf("process_wait(parent) : %s\n", c->name);
-
 
   //Check whether TID is invalid, invalid -> return -1
-  if (c==NULL)
+  if (c==NULL || c->status == THREAD_DYING)
     return -1;
-
   //process_wait() has already been successfully called for the given TID, return -1
   if (c->is_wait_called)
     return -1;
-  printf("process_wait(parent) : %s\n", c->name);
 
   //Wait for tid to be exited
   //At first, init sema which is owned by child in case of parent waiting.
   sema_init(&c->sema_wait, 1);
   sema_down(&c->sema_wait);
   c->is_wait_called = true;
-  printf("process_wait(parent) : %s\n", c->name);
-
   sema_down(&c->sema_wait);
-
-  printf("process_wait : %s\n", curr->name);
-
   return c->exit_status;
   /***** END OF ADDED CODE *****/
 }
@@ -154,8 +145,6 @@ process_exit (void)
   struct thread *curr = thread_current ();
   uint32_t *pd;
   //Disconncect with its parent (i.e remove from children list of parent)
-    printf("process_exit : %s : son of %s\n", curr->name, curr->parent_proc->name);
-
   if (curr->parent_proc != NULL)
     list_remove (&curr->child_elem);
 
@@ -169,8 +158,6 @@ process_exit (void)
     c = list_entry(iter_child, struct thread, child_elem);
     c->parent_proc = NULL;
   }
-  //wake up parent//
-
   /***** END OF ADDED CODE *****/
 
   /* Destroy the current process's page directory and switch back
@@ -194,10 +181,7 @@ process_exit (void)
   //Finally, wake up parent who waiting for this thread*/
   if (curr->is_wait_called){
     sema_up(&curr->sema_wait);
-    printf("process exit wait?: %s\n", curr->name);
   }
-
-
   printf("process exit : %s\n", curr->name);
   /***** END OF ADDED CODE *****/
 }
