@@ -102,6 +102,8 @@ int
 process_wait (tid_t child_tid) 
 {
   /***** ADDED CODE *****/
+  printf("process_wait : %s\n", curr->name);
+
   struct thread *current = thread_current ();
   struct list_elem *iter_child;
   struct list *child_list = &current->child_procs;
@@ -115,6 +117,8 @@ process_wait (tid_t child_tid)
     if (c->tid == child_tid)
       break;
   }
+  printf("process_wait(tid) : %s\n", c->name);
+
 
   //Check whether TID is invalid, invalid -> return -1
   if (c==NULL)
@@ -123,6 +127,7 @@ process_wait (tid_t child_tid)
   //process_wait() has already been successfully called for the given TID, return -1
   if (c->is_wait_called)
     return -1;
+  printf("process_wait(tid) : %s\n", c->name);
 
   //Wait for tid to be exited
   //At first, init sema which is owned by child in case of parent waiting.
@@ -130,6 +135,7 @@ process_wait (tid_t child_tid)
   sema_down(&c->sema_wait);
   c->is_wait_called = true;
   sema_down(&c->sema_wait);
+  printf("process_wait : %s\n", curr->name);
 
   /***** END OF ADDED CODE *****/
 
