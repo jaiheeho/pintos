@@ -4,7 +4,7 @@
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/init.h" // ADDED HEADER
-#include "process.h" // ADDED HEADER
+#include "userprog/process.h" // ADDED HEADER
 #include "filesys/file.h" // ADDED HEADER
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
@@ -97,6 +97,7 @@ void exit(int status)
 }
 
 int wait(pid_t pid){
+
   int retval;
   retval = process_wait((tid_t)pid);
   return retval;
