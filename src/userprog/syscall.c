@@ -85,7 +85,6 @@ syscall_handler (struct intr_frame *f UNUSED)
   //thread_exit ();
 }
 
-
 void exit(int status)
 {
   // exit the thread(thread_exit will call process_exit)
@@ -98,10 +97,10 @@ void exit(int status)
   // return exit status to kernel
 }
 
-int wait(pid_t pid){
+int wait(int pid){
 
   int retval;
-  retval = process_wait((tid_t)pid);
+  retval = process_wait(pid);
   return retval;
 }
 
