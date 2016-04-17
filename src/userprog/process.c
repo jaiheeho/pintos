@@ -188,8 +188,12 @@ process_exit (void)
 
   /***** ADDED CODE *****/
   //Finally, wake up parent who waiting for this thread*/
-  if (curr->is_wait_called)
+  if (curr->is_wait_called){
     sema_up(&curr->sema_wait);
+    printf("process exit wait?: %s\n", curr->name);
+
+  }
+
   printf("process exit : %s\n", curr->name);
   /***** END OF ADDED CODE *****/
 }
