@@ -7,7 +7,7 @@ void exit(int status);
 int write(int fd, const void *buffer, unsigned size);
 int open(const char *file);
 int filesize(int fd);
-int wait(pid_t pid);
+int wait(pid_t);
 
 struct file* get_struct_file(int fd);
 
