@@ -86,10 +86,10 @@ syscall_handler (struct intr_frame *f UNUSED)
 
 void exit(int status)
 {
-  // print exit message
-  printf("%s: exit(%d)\n", thread_name(), status);
   // exit the thread(thread_exit will call process_exit)
   thread_exit();
+  // print exit message
+  printf("%s: exit(%d)\n", thread_name(), status);
   // return exit status to kernel
   return status;
 }
@@ -98,7 +98,6 @@ int open(const char *file)
 {
   return;
 }
-
 
 int filesize(int fd)
 {

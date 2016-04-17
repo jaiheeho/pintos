@@ -104,6 +104,26 @@ process_wait (tid_t child_tid)
   /***** ADDED CODE *****/
   int return_value = 0;
   struct thread *current = thread_current ();
+  struct list_elem *iter_child;
+  struct list *child_list = &current->child_procs;
+  struct thread *c;
+
+
+  //Check whether TID is invalid, invalid -> return -1
+
+
+  //Check whether child of the calling process, -> not child procee return -1
+  for(iter_child = list_begin(child_list);
+    iter_child != list_tail(child_list); iter_child = list_next(iter_child))
+  {
+    c = list_entry(iter_child, struct thread, elem);
+    if (c->tid == child_tid)
+      break;
+  }
+
+  //process_wait() has already been successfully called for the given TID, return -1
+
+
 
   //TID  
   while(1){
@@ -122,6 +142,13 @@ process_exit (void)
 {
   struct thread *curr = thread_current ();
   uint32_t *pd;
+  /***** ADDED CODE *****/
+  //Disconncect with its parent
+  if (curr->parent_proc != NULL)
+    list_remove (curr->child_elem);
+
+ 
+  /***** END OF ADDED CODE *****/
 
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */

@@ -101,6 +101,7 @@ struct thread
     struct list child_procs;            /* list of child processes */
     struct thread *parent_proc;           /* parent processes */
     struct lock thread_data_lock;
+    struct list_elem child_elem;
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */

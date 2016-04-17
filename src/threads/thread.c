@@ -854,10 +854,15 @@ init_thread (struct thread *t, const char *name, int priority)
 
   ///WHERE WE ADDED/////////
   //IMLEMENTIAION TO INITIALIZE recent_cpu to 0//
+  //FOR BSE Scheduler//
   t->recent_cpu = 0;
+  //FOR PRIORITY DONTATION//
   list_init (&t->lock_holdings);
-  list_init (&t->child_procs);
   t->priority_rollback = priority;
+  //FOR PROCESS INHERITANE in Proj2//
+  list_init (&t->child_procs);
+  list_push_back (&thread_current()->child_procs, &t->child_elem);
+  t->parent_proc = thread_current();
   ///WHERE WE ADDED END/////
 }
 
