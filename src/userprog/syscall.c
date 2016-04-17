@@ -88,19 +88,26 @@ syscall_handler (struct intr_frame *f UNUSED)
 void exit(int status)
 {
   // exit the thread(thread_exit will call process_exit)
+  printf("syscall exit : THREAD <%s> status %d\n", thread_name(), status);
 
   struct thread *curr = thread_current();
   printf("%s: exit(%d)\n", thread_name(), status);
   printf("son of %s\n", curr->parent_proc->name);
   curr->exit_status=status;
   thread_exit();
+
+  printf("syscall exit end: THREAD <%s> status %d\n", thread_name(), status);
+
   // print exit message
   // return exit status to kernel
 }
 
 int wait(int pid){
+    printf("syscall wait : THREAD <%s> pid : %d\n", thread_name(), pid);
+
   int retval;
   retval = process_wait(pid);
+    printf("syscall wait end: THREAD <%s> pid : %d\n", thread_name(), pid);
   return retval;
 }
 
