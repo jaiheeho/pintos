@@ -88,12 +88,12 @@ syscall_handler (struct intr_frame *f UNUSED)
 void exit(int status)
 {
   // exit the thread(thread_exit will call process_exit)
+  printf("%s: exit(%d)\n", thread_name(), status);
 
   struct thread *curr = thread_current();
   curr->exit_status=status;
   thread_exit();
   // print exit message
-  printf("%s: exit(%d)\n", thread_name(), status);
   // return exit status to kernel
 }
 
