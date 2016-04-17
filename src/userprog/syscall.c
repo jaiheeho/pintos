@@ -94,12 +94,12 @@ void exit(int status)
   // print exit message
   printf("%s: exit(%d)\n", thread_name(), status);
   // return exit status to kernel
-
-  return status;
 }
-int wait(pid_t pid){
 
-  return process_wait(pid);
+int wait(pid_t pid){
+  int retval;
+  retval = process_wait(pid);
+  return retval;
 }
 
 int open(const char *file)

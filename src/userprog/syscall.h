@@ -4,7 +4,7 @@
 void syscall_init (void);
 
 void exit(int status);
-int write(int fd, const void *buffer, unsigned size);
+int write(int, const void *, unsigned);
 int open(const char *file);
 int filesize(int fd);
 int wait(pid_t);
