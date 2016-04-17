@@ -7,7 +7,6 @@
 #include "userprog/process.h" // ADDED HEADER
 #include "filesys/file.h" // ADDED HEADER
 #include <syscall.h> // ADDED HEADER
-typedef int pid_t;
 
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);

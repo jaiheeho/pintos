@@ -1,7 +1,6 @@
 #ifndef USERPROG_SYSCALL_H
 #define USERPROG_SYSCALL_H
 #include <syscall.h> // ADDED HEADER
-typedef int pid_t;
 
 void syscall_init (void);
 
