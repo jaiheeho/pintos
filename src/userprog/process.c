@@ -136,6 +136,8 @@ process_wait (tid_t child_tid)
   sema_init(&c->sema_wait, 1);
   sema_down(&c->sema_wait);
   c->is_wait_called = true;
+  printf("process_wait(parent) : %s\n", c->name);
+
   sema_down(&c->sema_wait);
 
   printf("process_wait : %s\n", curr->name);
@@ -151,7 +153,7 @@ process_exit (void)
   struct thread *curr = thread_current ();
   uint32_t *pd;
   //Disconncect with its parent (i.e remove from children list of parent)
-  printf("process exit : %s\n", curr->name);
+    printf("process_exit : %s : son of %s\n", curr->name, curr->parent->name);
 
   if (curr->parent_proc != NULL)
     list_remove (&curr->child_elem);
