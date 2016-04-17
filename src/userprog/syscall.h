@@ -1,6 +1,6 @@
 #ifndef USERPROG_SYSCALL_H
 #define USERPROG_SYSCALL_H
-#include "userprog/process.h" // ADDED HEADER
+#include <syscall.h> // ADDED HEADER
 
 void syscall_init (void);
 
