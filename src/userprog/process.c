@@ -143,7 +143,7 @@ process_exit (void)
   struct thread *curr = thread_current ();
   uint32_t *pd;
   //Disconncect with its parent (i.e remove from children list of parent)
-  printf("process exit : %s\n", curr->name)
+  printf("process exit : %s\n", curr->name);
 
   if (curr->parent_proc != NULL)
     list_remove (&curr->child_elem);
@@ -183,7 +183,7 @@ process_exit (void)
   //Finally, wake up parent who waiting for this thread*/
   if (curr->is_wait_called)
     sema_up(&curr->sema_wait);
-  printf("process exit : %s\n", curr->name)
+  printf("process exit : %s\n", curr->name);
   /***** END OF ADDED CODE *****/
 }
 
