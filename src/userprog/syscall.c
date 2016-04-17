@@ -87,11 +87,19 @@ syscall_handler (struct intr_frame *f UNUSED)
 void exit(int status)
 {
   // exit the thread(thread_exit will call process_exit)
+
+  struct thread *curr = thread_current();
+  curr->exit_status=status;
   thread_exit();
   // print exit message
   printf("%s: exit(%d)\n", thread_name(), status);
   // return exit status to kernel
+
   return status;
+}
+int wait(pid_t pid){
+
+  return process_wait(pid);
 }
 
 int open(const char *file)

@@ -863,6 +863,7 @@ init_thread (struct thread *t, const char *name, int priority)
   list_init (&t->child_procs);
   list_push_back (&thread_current()->child_procs, &t->child_elem);
   t->parent_proc = thread_current();
+  t->is_wait_called = false;
   ///WHERE WE ADDED END/////
 }
 

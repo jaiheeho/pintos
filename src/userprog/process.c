@@ -106,10 +106,8 @@ process_wait (tid_t child_tid)
   struct thread *current = thread_current ();
   struct list_elem *iter_child;
   struct list *child_list = &current->child_procs;
-  struct thread *c;
+  struct thread *c=NULL;
 
-
-  //Check whether TID is invalid, invalid -> return -1
 
 
   //Check whether child of the calling process, -> not child procee return -1
@@ -121,16 +119,22 @@ process_wait (tid_t child_tid)
       break;
   }
 
+  //Check whether TID is invalid, invalid -> return -1
+  if (c==NULL)
+    return -1;
+
   //process_wait() has already been successfully called for the given TID, return -1
+  if (c->is_wait_called)
+    return -1;
 
+  //Wait for tid to be exited
+  //At first, init sema which is owned by child in case of parent waiting.
+  sema_init(&c->sema_wait, 1);
+  sema_down(&c->sema_wait);
+  c->is_wait_called = true;
 
+  sema_down(&c->sema_wait);
 
-  //TID  
-  while(1){
-
-
-
-  } 
   /***** END OF ADDED CODE *****/
 
   return -1;
@@ -142,12 +146,20 @@ process_exit (void)
 {
   struct thread *curr = thread_current ();
   uint32_t *pd;
-  /***** ADDED CODE *****/
-  //Disconncect with its parent
+  //Disconncect with its parent (i.e remove from children list of parent)
   if (curr->parent_proc != NULL)
     list_remove (curr->child_elem);
 
- 
+  //Disconncect with its children(i.e change paren of child process to NULL)
+  struct list *child_list = &curr->child_procs;
+  for(iter_child = list_begin(child_list);
+    iter_child != list_tail(child_list); iter_child = list_next(iter_child))
+  {
+    c = list_entry(iter_child, struct thread, elem);
+    c->parent = NULL;
+  }
+  //wake up parent//
+
   /***** END OF ADDED CODE *****/
 
   /* Destroy the current process's page directory and switch back
@@ -166,6 +178,12 @@ process_exit (void)
       pagedir_activate (NULL);
       pagedir_destroy (pd);
     }
+
+  /***** ADDED CODE *****/
+  //Finally, wake up parent who waiting for this thread*/
+  if (curr->is_wait_called)
+    sema_up(curr->sema_wait);
+  /***** END OF ADDED CODE *****/
 }
 
 /* Sets up the CPU for running user code in the current
