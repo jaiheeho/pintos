@@ -432,19 +432,22 @@ thread_get_priority (void)
   if (thread_mlfqs)
     return thread_current()->priority;
 
+  //we should compare with priority_rollback instead of priority itself because priority can be donated priority
   max_priority = max_priority_thread->priority_rollback; 
   lock_holding = &max_priority_thread->lock_holdings;
 
+  //for every lock current thread own
   for(iter_lock = list_begin(lock_holding);
     iter_lock != list_tail(lock_holding); iter_lock = iter_lock->next)
   {
     l = list_entry(iter_lock, struct lock, elem);
     waiting = &(&l->semaphore)->waiters;
-
+    //for every thread waiting for the lock that current thread own
     for(iter_waiting = list_begin(waiting);
     iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
     {
       t = list_entry(iter_waiting, struct thread, elem);
+      //use recursion for deeper chain
       if (t->priority > max_priority){
         max_priority_thread = thread_get_priority_donation(t, depth-1);
         max_priority = max_priority_thread->priority;
@@ -477,18 +480,21 @@ thread_get_priority_for_thread (struct thread *target)
   if (thread_mlfqs)
     return thread_current()->priority;
 
+  //we should compare with priority_rollback instead of priority itself because priority can be donated priority
   max_priority = max_priority_thread->priority_rollback; 
   lock_holding = &max_priority_thread->lock_holdings;
 
+  //for every lock current thread own
   for(iter_lock = list_begin(lock_holding);
     iter_lock != list_tail(lock_holding); iter_lock = iter_lock->next)
   {
     l = list_entry(iter_lock, struct lock, elem);
     waiting = &(&l->semaphore)->waiters;
-
+    //for every thread waiting for the lock that current thread own
     for(iter_waiting = list_begin(waiting);
     iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
     {
+      //use recursion for deeper chain
       t = list_entry(iter_waiting, struct thread, elem);
       if (t->priority > max_priority){
         max_priority_thread = thread_get_priority_donation(t, depth-1);
@@ -519,15 +525,17 @@ thread_get_priority_donation(struct thread *t, int depth)
   if (depth == 0)
     return max_priority_thread;
 
+  //for every lock current thread own
   for(iter_lock = list_begin(lock_holding);
     iter_lock != list_tail(lock_holding); iter_lock = iter_lock->next)
   {
     l = list_entry(iter_lock, struct lock, elem);
     waiting = &(&l->semaphore)->waiters;
-
+    //for every thread waiting for the lock that current thread own
     for(iter_waiting = list_begin(waiting);
     iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
     {
+      //use recursion for deeper chain
       t = list_entry(iter_waiting, struct thread, elem);
       if (t->priority > max_priority){
         max_priority_thread = thread_get_priority_donation(t, depth-1);
@@ -846,9 +854,23 @@ init_thread (struct thread *t, const char *name, int priority)
 
   ///WHERE WE ADDED/////////
   //IMLEMENTIAION TO INITIALIZE recent_cpu to 0//
+  //FOR BSD Scheduler//
   t->recent_cpu = 0;
+  //FOR PRIORITY DONTATION//
   list_init (&t->lock_holdings);
   t->priority_rollback = priority;
+  //FOR PROCESS INHERITANE in Proj2//
+  list_init (&t->child_procs);
+  if (thread_start_complete == 1)
+  {
+    list_push_back (&thread_current()->child_procs, &t->child_elem);
+    t->parent_proc = thread_current();
+  }
+  else
+  {
+    t->parent_proc = NULL;
+  }
+  t->is_wait_called = false;
   ///WHERE WE ADDED END/////
 }
 

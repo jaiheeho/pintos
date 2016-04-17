@@ -15,7 +15,6 @@ struct file_descriptor
   struct file *file;
   int fd;
   struct list_elem elem;
-
 };
 
 #endif /* userprog/process.h */

@@ -31,6 +31,7 @@ process_execute (const char *file_name)
 {
   char *fn_copy;
   tid_t tid;
+  printf("process_execute :  %s to execute : %s\n", thread_current()->name, file_name);
 
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
@@ -40,23 +41,21 @@ process_execute (const char *file_name)
   strlcpy (fn_copy, file_name, PGSIZE);
 
   /***** ADDED CODE *****/
-  printf("aaaaaaaaaa %s\n", fn_copy);
   char file_name_temp[128];
   int i;
-  for(i=0; (fn_copy[i] == '\0') || (fn_copy[i] == ' '); i++);
+  for(i=0; !(fn_copy[i] == '\0') || (fn_copy[i] == ' '); i++);
   if(i != 0)
     {
       strlcpy(file_name_temp, fn_copy, i+1);
     }
 
-
-  /***** END OF ADDED CODE *****/
-
-
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (file_name_temp, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy); 
+
+  /***** END OF ADDED CODE *****/
+
   return tid;
 }
 
@@ -101,10 +100,42 @@ start_process (void *f_name)
    This function will be implemented in problem 2-2.  For now, it
    does nothing. */
 int
-process_wait (tid_t child_tid UNUSED) 
+process_wait (tid_t child_tid) 
 {
-  while(1);
-  return -1;
+  /***** ADDED CODE *****/
+
+  struct thread *curr = thread_current ();
+  struct list_elem *iter_child;
+  struct list *child_list = &curr->child_procs;
+  struct thread *c=NULL;
+
+  printf("process_wait : %s waits for %d\n", curr->name, child_tid);
+
+  //Check whether child of the calling process, -> not child process return -1
+  for(iter_child = list_begin(child_list);
+    iter_child != list_tail(child_list); iter_child = list_next(iter_child))
+  {
+    c = list_entry(iter_child, struct thread, child_elem);
+    printf("process_wait : %s : son of %s\n", c->name, curr->name);
+    if (c->tid == child_tid)
+      break;
+  }
+
+  //Check whether TID is invalid, invalid -> return -1
+  if (c==NULL || c->status == THREAD_DYING)
+    return -1;
+  //process_wait() has already been successfully called for the given TID, return -1
+  if (c->is_wait_called)
+    return -1;
+
+  //Wait for tid to be exited
+  //At first, init sema which is owned by child in case of parent waiting.
+  sema_init(&c->sema_wait, 1);
+  sema_down(&c->sema_wait);
+  c->is_wait_called = true;
+  sema_down(&c->sema_wait);
+  return c->exit_status;
+  /***** END OF ADDED CODE *****/
 }
 
 /* Free the current process's resources. */
@@ -113,6 +144,21 @@ process_exit (void)
 {
   struct thread *curr = thread_current ();
   uint32_t *pd;
+  //Disconncect with its parent (i.e remove from children list of parent)
+  if (curr->parent_proc != NULL)
+    list_remove (&curr->child_elem);
+
+  //Disconncect with its children(i.e change paren of child process to NULL)
+  struct list *child_list = &curr->child_procs;
+  struct thread *c;
+  struct list_elem *iter_child;
+  for(iter_child = list_begin(child_list);
+    iter_child != list_tail(child_list); iter_child = list_next(iter_child))
+  {
+    c = list_entry(iter_child, struct thread, child_elem);
+    c->parent_proc = NULL;
+  }
+  /***** END OF ADDED CODE *****/
 
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
@@ -130,6 +176,14 @@ process_exit (void)
       pagedir_activate (NULL);
       pagedir_destroy (pd);
     }
+
+  /***** ADDED CODE *****/
+  //Finally, wake up parent who waiting for this thread*/
+  if (curr->is_wait_called){
+    sema_up(&curr->sema_wait);
+  }
+  printf("process exit : %s\n", curr->name);
+  /***** END OF ADDED CODE *****/
 }
 
 /* Sets up the CPU for running user code in the current
@@ -241,7 +295,6 @@ load (const char *file_name, void (**eip) (void), void **esp)
   // initialize file descriptor table(this is in struct thread)
   list_init(&t->file_descriptor_table);
 
-
   /*END OF ADDED CODE*/
 
   /* Allocate and activate page directory. */
@@ -270,7 +323,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
       printf ("load: %s: error loading executable\n", file_name);
       goto done; 
     }
-  printf("CP3\n");
+
   /* Read program headers. */
   file_ofs = ehdr.e_phoff;
   for (i = 0; i < ehdr.e_phnum; i++) 
@@ -279,10 +332,10 @@ load (const char *file_name, void (**eip) (void), void **esp)
       if (file_ofs < 0 || file_ofs > file_length (file))
         goto done;
       file_seek (file, file_ofs);
-      printf("CP6");
+
       if (file_read (file, &phdr, sizeof phdr) != sizeof phdr)
         goto done;
-      printf("CP7\n");
+
       file_ofs += sizeof phdr;
       switch (phdr.p_type) 
         {
@@ -329,7 +382,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
           break;
         }
     }
-  printf("ENTERING SETUPSTACK!!\n");
+
   /* Set up stack. */
   if (!setup_stack (esp, file_name, &strtok_r_ptr))
     goto done;
@@ -460,7 +513,7 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
 {
   uint8_t *kpage;
   bool success = false;
-  printf("%s\n", file_name);
+
 
   kpage = palloc_get_page (PAL_USER | PAL_ZERO);
   if (kpage != NULL) 
@@ -488,7 +541,7 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
   for(token_ptr = strtok_r(NULL, " ", strtok_r_ptr);
       token_ptr != NULL; token_ptr = strtok_r(NULL, " ", strtok_r_ptr))
     {
-      printf("!!! %s\n", token_ptr);
+      //printf("Tokens: %s\n", token_ptr);
       *esp -= strlen(token_ptr) + 1;
       strlcpy(*esp, token_ptr, strlen(token_ptr)+1);
       argv[argc] = *esp;

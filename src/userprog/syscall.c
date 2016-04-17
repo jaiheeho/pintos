@@ -4,8 +4,10 @@
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/init.h" // ADDED HEADER
-#include "process.h" // ADDED HEADER
+#include "userprog/process.h" // ADDED HEADER
 #include "filesys/file.h" // ADDED HEADER
+#include <syscall.h> // ADDED HEADER
+
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
 
@@ -19,11 +21,12 @@ syscall_init (void)
 static void
 syscall_handler (struct intr_frame *f UNUSED) 
 {
+  bool returnZ = false;
   int retval;
   int syscall_num = *((int*)f->esp);
   int args[12];
-  printf("SYSCALL! NUMBER : %d\n", *((int*)f->esp));
-  printf("THREAD NAME: %s\n", thread_name());
+  printf("THREAD <%s> CALLED SYSCALL NUMBER : %d\n",
+	 thread_name(), *((int*)f->esp));
   switch(syscall_num)
     {
     case SYS_HALT:
@@ -48,42 +51,69 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
 
     case SYS_OPEN:
+      get_args(f->esp, args, 1);
+      retval = open(args[0]);
       break;
 
     case SYS_FILESIZE:
+      get_args(f->esp, args, 1);
+      retval = filesize(args[0]);
+      break;
+
+    case SYS_READ:
+      get_args(f->esp, args, 3);
       break;
 
     case SYS_WRITE:
       printf("SYS_WRITE\n");
       get_args(f->esp, args, 3);
       retval = write(args[0], args[1], args[2]);
-      f->eax = retval;
       break;
-
-
-
 
     }
 
+
+  // if return value is needed, plug in the return value
+
+  if(returnZ)
+    {
+      f->eax = retval;
+    }
 
 
   //thread_exit ();
 }
 
-
-void exit(int status)
+void 
+exit(int status)
 {
-
-  // return status to parent(kernel)
-
+  // exit the thread(thread_exit will call process_exit)
   // print exit message
   printf("%s: exit(%d)\n", thread_name(), status);
-
-  // exit the thread(thread_exit will call process_exit)
+  struct thread *curr = thread_current();
+  curr->exit_status=status;
   thread_exit();
-
+  // return exit status to kernel
 }
 
+int 
+wait(int pid){
+  printf("syscall wait : THREAD <%s> pid : %d\n", thread_name(), pid);
+  int retval;
+  retval = process_wait(pid);
+  return retval;
+}
+
+int open(const char *file)
+{
+  return;
+}
+
+int filesize(int fd)
+{
+  struct file *file = get_struct_file(fd);
+  return file_length(file);
+}
 
 int write(int fd, const void *buffer, unsigned size)
 {
