@@ -93,6 +93,8 @@ void exit(int status)
   struct thread *curr = thread_current();
   printf("%s: exit(%d)\n", thread_name(), status);
   printf("son of %s\n", curr->parent_proc->name);
+  printf("with pid : %d\n", curr->tid);
+
   curr->exit_status=status;
   thread_exit();
 
