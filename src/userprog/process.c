@@ -54,6 +54,8 @@ process_execute (const char *file_name)
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy); 
 
+  printf("22222222222\n");
+
   /***** END OF ADDED CODE *****/
 
   return tid;
@@ -77,14 +79,10 @@ start_process (void *f_name)
 
   /* If load failed, quit. */
   palloc_free_page (file_name);
-
-  /***** ADDED CODE *****/  
-  if (!success){
-    thread_current()->exit_status=-1;
+  if (!success) 
     thread_exit ();
-  }
-  /***** END OF ADDED CODE *****/
 
+  printf("111111111\n");
 
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
@@ -183,10 +181,12 @@ process_exit (void)
       pagedir_destroy (pd);
     }
 
+  /***** ADDED CODE *****/
   //Finally, wake up parent who waiting for this thread*/
   if (curr->is_wait_called){
     sema_up(&curr->sema_wait);
   }
+  //printf("process exit : %s\n", curr->name);
   /***** END OF ADDED CODE *****/
 }
 
