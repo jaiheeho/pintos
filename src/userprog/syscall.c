@@ -58,7 +58,7 @@ syscall_handler (struct intr_frame *f UNUSED)
     case SYS_REMOVE:
       break;
       get_args(f->esp, args, 1);
-      retval=create(args[0]);
+      retval=remove(args[0]);
 
     case SYS_OPEN:
       get_args(f->esp, args, 1);
@@ -128,17 +128,16 @@ wait(int pid){
 bool 
 create (const char *file, unsigned initial_size){
   bool success;
-  //No 0 size 
   success = filesys_create(file, initial_size);
   return success;
 }
+
 bool
 remove (const char *file)
 {
   bool success;
   success = filesys_remove(file);
   return success;
-
 }
 
 int open(const char *file)
