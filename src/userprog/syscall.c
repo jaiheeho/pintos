@@ -120,7 +120,7 @@ exec (const char *cmd_line)
 
 int 
 wait(int pid){
-  //printf("syscall wait : THREAD <%s> pid : %d\n", thread_name(), pid);
+  printf("syscall wait : THREAD <%s> pid : %d\n", thread_name(), pid);
   int retval;
   retval = process_wait(pid);
   return retval;
@@ -193,7 +193,6 @@ struct file* get_struct_file(int fd)
   return NULL;
 }
 
-
 void get_args(void* esp, int *args, int argsnum)
 {
   int i;
@@ -214,7 +213,7 @@ bool invalid_addr(void* addr){
   if (addr > PHYS_BASE)
     return true;
 
-  if (addr <= 64*1024*1024)
+  if (addr <=(void*)4000000)
     return true;
   
   return false;

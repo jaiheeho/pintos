@@ -138,10 +138,14 @@ process_wait (tid_t child_tid)
 
   //Wait for tid to be exited
   //At first, init sema which is owned by child in case of parent waiting.
+
+  printf("before in wait: %s exit stats :%d ", c->name, c->exit_status);
   sema_init(&c->sema_wait, 1);
   sema_down(&c->sema_wait);
   c->is_wait_called = true;
   sema_down(&c->sema_wait);
+    printf("after in wait: %s exit stats :%d ", c->name, c->exit_status);
+
   return c->exit_status;
   /***** END OF ADDED CODE *****/
 }
