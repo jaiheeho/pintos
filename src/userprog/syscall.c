@@ -190,10 +190,10 @@ void get_args(void* esp, int *args, int argsnum)
 }
 
 bool invalid_addr(void* addr){
-  if (addr > PHYS_BASE)
+  if (addr > (void*)PHYS_BASE)
     return true;
 
-  if (addr < 64*1024*1024)
+  if (addr <= (void*)64*1024*1024)
     return true;
   
   return false;
