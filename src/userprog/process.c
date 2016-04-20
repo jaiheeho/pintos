@@ -549,7 +549,7 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
     }
 
   // Insert NULL
-  argv[argv] = NULL;
+  argv[argc] = NULL;
   argc++;
 
   // Insert padding
