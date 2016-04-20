@@ -79,7 +79,7 @@ start_process (void *f_name)
   if_.eflags = FLAG_IF | FLAG_MBS;
   success = load (file_name, &if_.eip, &if_.esp);
 
-
+  printf("thread at start : %s, father : %s\n", thread_name(), thread_current()->parent_proc->name);
   /***** ADDED CODE *****/
   /* If load failed, quit. */
   palloc_free_page (file_name);
