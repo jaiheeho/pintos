@@ -48,13 +48,16 @@ process_execute (const char *file_name)
     {
       strlcpy(file_name_temp, fn_copy, i+1);
     }
+  /***** END OF ADDED CODE *****/
 
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (file_name_temp, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy); 
-  printf("2222222222 : %s\n", thread_name());
 
+  /***** ADDED CODE *****/
+  if (thread_current()->is_loaded == false)
+    return TID_ERROR;
   /***** END OF ADDED CODE *****/
 
   return tid;
@@ -76,12 +79,17 @@ start_process (void *f_name)
   if_.eflags = FLAG_IF | FLAG_MBS;
   success = load (file_name, &if_.eip, &if_.esp);
 
+
+  /***** ADDED CODE *****/
   /* If load failed, quit. */
   palloc_free_page (file_name);
-  if (!success) 
+  if (!success) {
+    thread_current()->parent_proc->is_loaded = false;
     thread_exit ();
-
-  printf("111111111 : %s\n", thread_name());
+  }
+  else
+    thread_current()->parent_proc->is_loaded = true;
+  /***** END OF ADDED CODE *****/
 
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
