@@ -111,11 +111,12 @@ int
 process_wait (tid_t child_tid) 
 {
   /***** ADDED CODE *****/
-  printf("this is here \n");
+  //printf("this is here \n");
   struct thread *curr = thread_current ();
   struct list_elem *iter_child;
   struct list *child_list = &curr->child_procs;
   struct thread *c=NULL;
+  int retval;
 
   //printf("process_wait : %s waits for %d\n", curr->name, child_tid);
 
@@ -138,13 +139,18 @@ process_wait (tid_t child_tid)
 
   //Wait for tid to be exited
   //At first, init sema which is owned by child in case of parent waiting.
+  if(sema_try_down(&c->sema_wait))
+  {
+    c->is_wait_called = true;
+    sema_down(&c->sema_wait);
+    retval = c->exit_status;
+  }
+  else
+  {
+    retval = c->exit_status;
+    sema_up(&c->sema_wait);
+  }
 
-  //printf("before in wait: %s exit stats :%d ", c->name, c->exit_status);
-  sema_init(&c->sema_wait, 1);
-  sema_down(&c->sema_wait);
-  //printf("hererere\n");
-  c->is_wait_called = true;
-  sema_down(&c->sema_wait);
 
   return curr->wait_status;
   /***** END OF ADDED CODE *****/
@@ -156,9 +162,7 @@ process_exit (void)
 {
   struct thread *curr = thread_current ();
   uint32_t *pd;
-  //Disconncect with its parent (i.e remove from children list of parent)
-  if (curr->parent_proc != NULL)
-    list_remove (&curr->child_elem);
+
 
   //Disconncect with its children(i.e change paren of child process to NULL)
   struct list *child_list = &curr->child_procs;
@@ -173,8 +177,8 @@ process_exit (void)
 
   if (curr->is_wait_called){
     curr->parent_proc->wait_status = curr->exit_status;
-    printf("%s: exit(%d)\n", thread_name(), thread_current()->status);
-    printf("curr : %d, child : %d\n", curr->parent_proc->wait_status, curr->exit_status);
+    //printf("%s: exit(%d)\n", thread_name(), thread_current()->status);
+    //printf("curr : %d, child : %d\n", curr->parent_proc->wait_status, curr->exit_status);
   }
 
   /***** END OF ADDED CODE *****/
@@ -200,9 +204,17 @@ process_exit (void)
   //Finally, wake up parent who waiting for this thread*/
   if (curr->is_wait_called){
     curr->parent_proc->wait_status = curr->exit_status;
-    printf("curr : %d, child : %d\n", curr->parent_proc->wait_status, curr->exit_status);
+    //printf("curr : %d, child : %d\n", curr->parent_proc->wait_status, curr->exit_status);
     sema_up(&curr->sema_wait);
   }
+  else {
+    sema_down(&curr->sema_wait);
+    sema_down(&curr->sema_wait);
+  }
+
+  //Disconncect with its parent (i.e remove from children list of parent)
+  if (curr->parent_proc != NULL)
+    list_remove (&curr->child_elem);
   //printf("process exit : %s\n", curr->name);
   /***** END OF ADDED CODE *****/
 }
