@@ -112,8 +112,10 @@ exit(int status)
 pid_t
 exec (const char *cmd_line)
 {
-  
+
   pid_t process_id =  process_execute(cmd_line);
+  if (process_id == TID_ERROR)
+    return -1;
   return process_id;
 }
 

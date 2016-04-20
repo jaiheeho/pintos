@@ -872,6 +872,7 @@ init_thread (struct thread *t, const char *name, int priority)
   }
   t->is_wait_called = false;
   t->is_process=true;
+  t->exit_status=0;
   ///WHERE WE ADDED END/////
 }
 
