@@ -25,8 +25,7 @@ syscall_handler (struct intr_frame *f UNUSED)
   int retval;
   int syscall_num = *((int*)f->esp);
   int args[12];
-  //printf("THREAD <%s> CALLED SYSCALL NUMBER : %d\n",
-	 thread_name(), *((int*)f->esp));
+  //printf("THREAD <%s> CALLED SYSCALL NUMBER : %d\n", thread_name(), *((int*)f->esp));
   switch(syscall_num)
     {
     case SYS_HALT:
