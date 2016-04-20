@@ -7,7 +7,8 @@
 #include "userprog/process.h" // ADDED HEADER
 #include "filesys/file.h" // ADDED HEADER
 #include "lib/user/syscall.h" // ADDED HEADER
-
+#include "threads/vaddr.h"// ADDED HEADER
+#include <stdlib.h>
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
 
@@ -27,6 +28,7 @@ syscall_handler (struct intr_frame *f UNUSED)
   int syscall_num;
   int args[12];
   //check whether address is vaild
+  //printf("f->esp : %d\n",  f->esp);
   if (invalid_addr(f->esp))
     exit(-1);
   else
@@ -43,14 +45,15 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_EXEC:
       get_args(f->esp, args, 1);
-      exec(args[0]);
+      retval=exec(args[0]);
       break;
     case SYS_WAIT:
       get_args(f->esp, args, 2);
-      wait(args[1]);
+      retval=wait(args[0]);
       break;
-
     case SYS_CREATE:
+      get_args(f->esp, args, 2);
+      retval=create(args[0],args[1]);
       break;
 
     case SYS_REMOVE:
@@ -83,8 +86,6 @@ syscall_handler (struct intr_frame *f UNUSED)
     {
       f->eax = retval;
     }
-
-
   //thread_exit ();
 }
 
@@ -121,6 +122,11 @@ wait(int pid){
   int retval;
   retval = process_wait(pid);
   return retval;
+}
+
+bool 
+create (const char *file, unsigned initial_size){
+  return 0;
 }
 
 int open(const char *file)
@@ -188,14 +194,12 @@ void get_args(void* esp, int *args, int argsnum)
     }
 }
 
-void invalid_addr(void* addr){
-  if (addr > PHYS_BASE)
+bool invalid_addr(void* addr){
+  if (addr > (void*)PHYS_BASE)
     return true;
 
-  if (addr < 64*1024*1024)
+  if (addr <= 64*1024*1024)
     return true;
   
   return false;
-
-
 }
