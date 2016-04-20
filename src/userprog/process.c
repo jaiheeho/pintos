@@ -111,7 +111,7 @@ int
 process_wait (tid_t child_tid) 
 {
   /***** ADDED CODE *****/
-  printf("this is here:%d\n", child_tid);
+  printf("this is here%d\n", child_tid);
   struct thread *curr = thread_current ();
   struct list_elem *iter_child;
   struct list *child_list = &curr->child_procs;
@@ -124,7 +124,7 @@ process_wait (tid_t child_tid)
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
     c = list_entry(iter_child, struct thread, child_elem);
-    //printf("process_wait : %s : son of %s\n", c->name, curr->name);
+    printf("process_wait : %s : son of %s\n", c->name, curr->name);
     if (c->tid == child_tid)
       break;
   }
@@ -147,7 +147,8 @@ process_wait (tid_t child_tid)
   sema_down(&c->sema_wait);
 
   //Disconncect with its parent (i.e remove from children list of parent)
-  list_remove (&c->child_elem);
+  if (curr->parent_proc != NULL)
+    list_remove (&curr->child_elem);
 
   return c->exit_status;
   /***** END OF ADDED CODE *****/
@@ -159,7 +160,7 @@ process_exit (void)
 {
   struct thread *curr = thread_current ();
   uint32_t *pd;
-  // //Disconncect with its parent (i.e remove from children list of parent)
+  //Disconncect with its parent (i.e remove from children list of parent)
   // if (curr->parent_proc != NULL)
   //   list_remove (&curr->child_elem);
 
