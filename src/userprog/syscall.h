@@ -6,17 +6,16 @@
 #endif
 
 void syscall_init (void);
-
 void halt (void);
 void exit (int status);
 pid_t exec (const char *cmd_line);
 int wait(pid_t);
 bool create (const char *file, unsigned initial_size);
 bool remove (const char *file);
-
 int write(int, const void *, unsigned);
 int open(const char *file);
 int filesize(int fd);
+
 
 struct file* get_struct_file(int fd);
 bool invalid_addr(void *);

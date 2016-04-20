@@ -9,17 +9,33 @@
 #include "filesys/filesys.h" // ADDED HEADER
 #include "lib/user/syscall.h" // ADDED HEADER
 #include "threads/vaddr.h" // ADDED HEADER
-#include <stdlib.h>
+#include "lib/user/syscall.h" // ADDED HEADER
+#include <stdlib.h> // ADDED HEADER
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
 
-
+/************************************************************************
+* FUNCTION : syscall_init                                               *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
 void
 syscall_init (void) 
 {
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
 }
 
+/************************************************************************
+* FUNCTION : syscall_handler                                            *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
 static void
 syscall_handler (struct intr_frame *f UNUSED) 
 {
@@ -92,6 +108,14 @@ syscall_handler (struct intr_frame *f UNUSED)
   //thread_exit ();
 }
 
+/************************************************************************
+* FUNCTION : halt                                                       *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
 void
 halt (void) 
 {
@@ -99,6 +123,14 @@ halt (void)
   NOT_REACHED ();
 }
 
+/************************************************************************
+* FUNCTION : exit                                                       *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
 void
 exit(int status)
 {
@@ -111,13 +143,28 @@ exit(int status)
   // return exit status to kernel
 }
 
+/************************************************************************
+* FUNCTION : exec                                                       *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
 pid_t
 exec (const char *cmd_line)
 {
   pid_t process_id =  process_execute(cmd_line);
   return process_id;
 }
-
+/************************************************************************
+* FUNCTION : wait                                                       *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
 int 
 wait(int pid){
   //printf("syscall wait : THREAD <%s> pid : %d\n", thread_name(), pid);
@@ -126,6 +173,14 @@ wait(int pid){
   return retval;
 }
 
+/************************************************************************
+* FUNCTION : create                                                     *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
 bool 
 create (const char *file, unsigned initial_size){
   bool success;
@@ -134,7 +189,14 @@ create (const char *file, unsigned initial_size){
   success = filesys_create(file, initial_size);
   return success;
 }
-
+/************************************************************************
+* FUNCTION : remove                                                     *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
 bool
 remove (const char *file)
 {
@@ -142,19 +204,42 @@ remove (const char *file)
   success = filesys_remove(file);
   return success;
 }
-
+/************************************************************************
+* FUNCTION : open                                                       *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
 int 
 open(const char *file)
 {
+
   return;
 }
 
+/************************************************************************
+* FUNCTION : filesize                                                   *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
 int filesize(int fd)
 {
   struct file *file = get_struct_file(fd);
   return file_length(file);
 }
-
+/************************************************************************
+* FUNCTION : write                                                      *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
 int write(int fd, const void *buffer, unsigned size)
 {
   //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
@@ -175,6 +260,14 @@ int write(int fd, const void *buffer, unsigned size)
     }
 }
 
+/************************************************************************
+* FUNCTION : get_struct_file                                            *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
 struct file* get_struct_file(int fd)
 {
   struct thread* curr = thread_current();
@@ -195,6 +288,14 @@ struct file* get_struct_file(int fd)
   return NULL;
 }
 
+/************************************************************************
+* FUNCTION : get_args                                                   *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
 void get_args(void* esp, int *args, int argsnum)
 {
   int i;
@@ -210,7 +311,14 @@ void get_args(void* esp, int *args, int argsnum)
       args[i] = *esp_copy;
     }
 }
-
+/************************************************************************
+* FUNCTION : update_priorities                                          *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
 bool invalid_addr(void* addr){
   if (addr > PHYS_BASE)
     return true;
