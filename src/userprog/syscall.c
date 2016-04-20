@@ -70,9 +70,7 @@ syscall_handler (struct intr_frame *f UNUSED)
       get_args(f->esp, args, 3);
       retval = write(args[0], args[1], args[2]);
       break;
-
     }
-
 
   // if return value is needed, plug in the return value
 
