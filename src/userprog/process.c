@@ -124,7 +124,7 @@ process_wait (tid_t child_tid)
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
     c = list_entry(iter_child, struct thread, child_elem);
-    //printf("process_wait : %s : son of %s\n", c->name, curr->name);
+    printf("process_wait : %s : son of %s\n", c->name, curr->name);
     if (c->tid == child_tid)
       break;
   }
