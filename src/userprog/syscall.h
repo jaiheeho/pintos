@@ -1,14 +1,15 @@
 #ifndef USERPROG_SYSCALL_H
 #define USERPROG_SYSCALL_H
-#include <syscall.h> // ADDED HEADER
+
+#ifdef USERPROG
+#include "lib/user/syscall.h" // ADDED HEADER
+#endif
 
 void syscall_init (void);
 
-void exit(int);
 void halt (void);
 void exit (int status);
 pid_t exec (const char *cmd_line);
->>>>>>> b4f1ffe0b73eb9a83e1ae827a84c2143853de58e
 int wait(pid_t);
 int write(int, const void *, unsigned);
 int open(const char *file);

@@ -6,7 +6,7 @@
 #include "threads/init.h" // ADDED HEADER
 #include "userprog/process.h" // ADDED HEADER
 #include "filesys/file.h" // ADDED HEADER
-#include <syscall.h> // ADDED HEADER
+#include "lib/user/syscall.h" // ADDED HEADER
 
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
@@ -70,9 +70,7 @@ syscall_handler (struct intr_frame *f UNUSED)
       get_args(f->esp, args, 3);
       retval = write(args[0], args[1], args[2]);
       break;
-
     }
-
 
   // if return value is needed, plug in the return value
 
@@ -85,7 +83,6 @@ syscall_handler (struct intr_frame *f UNUSED)
   //thread_exit ();
 }
 
-=
 void
 halt (void) 
 {
