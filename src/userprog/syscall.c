@@ -48,42 +48,46 @@ syscall_handler (struct intr_frame *f UNUSED)
     case SYS_EXEC:
       get_args(f->esp, args, 1);
       retval=exec(args[0]);
+      returnZ=true;
       break;
     case SYS_WAIT:
       get_args(f->esp, args, 2);
       retval=wait(args[0]);
+      returnZ=true;
       break;
     case SYS_CREATE:
       get_args(f->esp, args, 2);
       retval=create(args[0],args[1]);
+      returnZ=true;
       break;
     case SYS_REMOVE:
       break;
       get_args(f->esp, args, 1);
       retval=remove(args[0]);
+      returnZ=true;
     case SYS_OPEN:
       get_args(f->esp, args, 1);
       retval = open(args[0]);
+      returnZ=true;
       break;
-
     case SYS_FILESIZE:
       get_args(f->esp, args, 1);
       retval = filesize(args[0]);
+      returnZ=true;
       break;
-
     case SYS_READ:
       get_args(f->esp, args, 3);
+      returnZ=true;
       break;
-
     case SYS_WRITE:
       //printf("SYS_WRITE\n");
       get_args(f->esp, args, 3);
       retval = write(args[0], args[1], args[2]);
+      returnZ=true;
       break;
     }
 
   // if return value is needed, plug in the return value
-
   if(returnZ)
     {
       f->eax = retval;
@@ -113,9 +117,7 @@ exit(int status)
 pid_t
 exec (const char *cmd_line)
 {
-
   pid_t process_id =  process_execute(cmd_line);
-  printf("syscall exec (%s): returned value %d" , thread_name(),process_id);
   return process_id;
 }
 

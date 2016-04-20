@@ -56,14 +56,8 @@ process_execute (const char *file_name)
     palloc_free_page (fn_copy); 
 
   /***** ADDED CODE *****/
-  if (thread_current()->parent_proc != NULL)
-    printf("thread at execute : %s, father : %s\n", thread_name(), thread_current()->parent_proc->name);
-
   if (thread_current()->is_loaded == false)
-  {
-    printf("thread at execute : %s, father : %s\n", thread_name(), thread_current()->parent_proc->name);
-    return -1;
-  }
+    return TID_ERROR;
   /***** END OF ADDED CODE *****/
 
   return tid;
@@ -85,18 +79,13 @@ start_process (void *f_name)
   if_.eflags = FLAG_IF | FLAG_MBS;
   success = load (file_name, &if_.eip, &if_.esp);
 
-  printf("thread at start : %s, father : %s\n", thread_name(), thread_current()->parent_proc->name);
   /***** ADDED CODE *****/
   /* If load failed, quit. */
   palloc_free_page (file_name);
   if (!success) {
-    printf("load fail at start : %s, father : %s\n", thread_name(), thread_current()->parent_proc->name);
-
     thread_current()->parent_proc->is_loaded = false;
     thread_exit ();
   }
-  else
-    thread_current()->parent_proc->is_loaded = true;
   /***** END OF ADDED CODE *****/
 
   /* Start the user process by simulating a return from an
