@@ -120,7 +120,7 @@ exec (const char *cmd_line)
 
 int 
 wait(int pid){
-  printf("syscall wait : THREAD <%s> pid : %d\n", thread_name(), pid);
+  //printf("syscall wait : THREAD <%s> pid : %d\n", thread_name(), pid);
   int retval;
   retval = process_wait(pid);
   return retval;
