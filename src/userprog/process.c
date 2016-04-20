@@ -31,7 +31,7 @@ process_execute (const char *file_name)
 {
   char *fn_copy;
   tid_t tid;
-  printf("process_execute :  %s to execute : %s\n", thread_current()->name, file_name);
+  //printf("process_execute :  %s to execute : %s\n", thread_current()->name, file_name);
 
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
@@ -109,14 +109,14 @@ process_wait (tid_t child_tid)
   struct list *child_list = &curr->child_procs;
   struct thread *c=NULL;
 
-  printf("process_wait : %s waits for %d\n", curr->name, child_tid);
+  //printf("process_wait : %s waits for %d\n", curr->name, child_tid);
 
   //Check whether child of the calling process, -> not child process return -1
   for(iter_child = list_begin(child_list);
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
     c = list_entry(iter_child, struct thread, child_elem);
-    printf("process_wait : %s : son of %s\n", c->name, curr->name);
+    //printf("process_wait : %s : son of %s\n", c->name, curr->name);
     if (c->tid == child_tid)
       break;
   }
@@ -182,7 +182,7 @@ process_exit (void)
   if (curr->is_wait_called){
     sema_up(&curr->sema_wait);
   }
-  printf("process exit : %s\n", curr->name);
+  //printf("process exit : %s\n", curr->name);
   /***** END OF ADDED CODE *****/
 }
 
@@ -572,10 +572,10 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
   *esp -= sizeof(void*);
   *(int*)(*esp) = 0;
 
-  printf("ESP : %x\n", *esp);
+  //printf("ESP : %x\n", *esp);
   int a = 0;
   for(a=0; 4*a < (PHYS_BASE - *esp); a++){
-    printf("addr: %x  |  content: 0x%08x\n", (int*)(*esp) + a ,*((int*)(*esp) + a));
+    //printf("addr: %x  |  content: 0x%08x\n", (int*)(*esp) + a ,*((int*)(*esp) + a));
   }
   /*END OF ADDED CODE*/
 
