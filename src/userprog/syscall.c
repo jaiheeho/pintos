@@ -143,7 +143,8 @@ remove (const char *file)
   return success;
 }
 
-int open(const char *file)
+int 
+open(const char *file)
 {
   return;
 }
