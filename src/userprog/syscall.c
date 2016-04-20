@@ -132,7 +132,7 @@ create (const char *file, unsigned initial_size){
     return false;
   //Invalid name
   if (!file)
-    return false;
+    exit(-1);
   success = filesys_create(file, initial_size);
   return success;
 }
