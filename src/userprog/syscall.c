@@ -28,6 +28,7 @@ syscall_handler (struct intr_frame *f UNUSED)
   int syscall_num;
   int args[12];
   //check whether address is vaild
+  printf("f->esp : %d\n",  f->esp);
   if (invalid_addr(f->esp))
     exit(-1);
   else
@@ -84,8 +85,6 @@ syscall_handler (struct intr_frame *f UNUSED)
     {
       f->eax = retval;
     }
-
-
   //thread_exit ();
 }
 
@@ -193,10 +192,8 @@ bool invalid_addr(void* addr){
   if (addr > (void*)PHYS_BASE)
     return true;
 
-  if (addr <= (void*)64*1024*1024)
+  if (addr <= 64*1024*1024)
     return true;
   
   return false;
-
-
 }
