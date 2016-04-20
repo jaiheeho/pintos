@@ -170,6 +170,12 @@ process_exit (void)
     c = list_entry(iter_child, struct thread, child_elem);
     c->parent_proc = NULL;
   }
+
+  if (curr->is_wait_called){
+    curr->parent_proc->wait_status = curr->exit_status;
+    printf("curr : %d, child : %d\n", curr->parent_proc->wait_status, curr->exit_status);
+  }
+
   /***** END OF ADDED CODE *****/
 
   /* Destroy the current process's page directory and switch back
@@ -194,7 +200,6 @@ process_exit (void)
   if (curr->is_wait_called){
     curr->parent_proc->wait_status = curr->exit_status;
     printf("curr : %d, child : %d\n", curr->parent_proc->wait_status, curr->exit_status);
-
     sema_up(&curr->sema_wait);
   }
   //printf("process exit : %s\n", curr->name);
