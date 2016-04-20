@@ -146,6 +146,9 @@ process_wait (tid_t child_tid)
   c->is_wait_called = true;
   sema_down(&c->sema_wait);
 
+  //Disconncect with its parent (i.e remove from children list of parent)
+  list_remove (&c->child_elem);
+
   return curr->wait_status;
   /***** END OF ADDED CODE *****/
 }
@@ -156,9 +159,9 @@ process_exit (void)
 {
   struct thread *curr = thread_current ();
   uint32_t *pd;
-  //Disconncect with its parent (i.e remove from children list of parent)
-  if (curr->parent_proc != NULL)
-    list_remove (&curr->child_elem);
+  // //Disconncect with its parent (i.e remove from children list of parent)
+  // if (curr->parent_proc != NULL)
+  //   list_remove (&curr->child_elem);
 
   //Disconncect with its children(i.e change paren of child process to NULL)
   struct list *child_list = &curr->child_procs;
