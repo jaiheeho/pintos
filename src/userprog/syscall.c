@@ -29,6 +29,7 @@ syscall_handler (struct intr_frame *f UNUSED)
   int args[12];
   //check whether address is vaild
   printf("f->esp : %d\n",  f->esp);
+  fflush(stdout);
   if (invalid_addr(f->esp))
     exit(-1);
   else
