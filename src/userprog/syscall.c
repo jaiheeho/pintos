@@ -8,7 +8,7 @@
 #include "filesys/file.h" // ADDED HEADER
 #include "lib/user/syscall.h" // ADDED HEADER
 #include "threads/vaddr.h"// ADDED HEADER
-
+#include <stdlib.h>
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
 
@@ -28,8 +28,7 @@ syscall_handler (struct intr_frame *f UNUSED)
   int syscall_num;
   int args[12];
   //check whether address is vaild
-  printf("f->esp : %d\n",  f->esp);
-  fflush(stdout);
+  //printf("f->esp : %d\n",  f->esp);
   if (invalid_addr(f->esp))
     exit(-1);
   else
