@@ -57,10 +57,13 @@ process_execute (const char *file_name)
 
   /***** ADDED CODE *****/
   if (thread_current()->parent_proc != NULL)
-    printf("thread at start : %s, father : %s\n", thread_name(), thread_current()->parent_proc->name);
+    printf("thread at execute : %s, father : %s\n", thread_name(), thread_current()->parent_proc->name);
 
   if (thread_current()->is_loaded == false)
-    return TID_ERROR;
+  {
+    printf("thread at execute : %s, father : %s\n", thread_name(), thread_current()->parent_proc->name);
+    return -1;
+  }
   /***** END OF ADDED CODE *****/
 
   return tid;
@@ -87,6 +90,8 @@ start_process (void *f_name)
   /* If load failed, quit. */
   palloc_free_page (file_name);
   if (!success) {
+    printf("load fail at start : %s, father : %s\n", thread_name(), thread_current()->parent_proc->name);
+
     thread_current()->parent_proc->is_loaded = false;
     thread_exit ();
   }
