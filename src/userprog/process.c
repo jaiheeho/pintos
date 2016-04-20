@@ -77,8 +77,14 @@ start_process (void *f_name)
 
   /* If load failed, quit. */
   palloc_free_page (file_name);
-  if (!success) 
+
+  /***** ADDED CODE *****/  
+  if (!success){
+    thread_current()->exit_status=-1;
     thread_exit ();
+  }
+  /***** END OF ADDED CODE *****/
+
 
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
@@ -294,7 +300,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
 
   // initialize file descriptor table(this is in struct thread)
   list_init(&t->file_descriptor_table);
-
+  t->is_process=true;
   /*END OF ADDED CODE*/
 
   /* Allocate and activate page directory. */

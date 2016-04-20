@@ -871,6 +871,7 @@ init_thread (struct thread *t, const char *name, int priority)
     t->parent_proc = NULL;
   }
   t->is_wait_called = false;
+  t->is_process=true;
   ///WHERE WE ADDED END/////
 }
 

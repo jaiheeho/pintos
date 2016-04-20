@@ -112,7 +112,7 @@ exit(int status)
 pid_t
 exec (const char *cmd_line)
 {
-  //printf("syscall exit : THREAD <%s> cmd_line : %s\n", thread_name(), cmd_line);
+  
   pid_t process_id =  process_execute(cmd_line);
   return process_id;
 }
@@ -192,11 +192,13 @@ struct file* get_struct_file(int fd)
   return NULL;
 }
 
+
 void get_args(void* esp, int *args, int argsnum)
 {
   int i;
   int* esp_copy = (int*)esp;
 
+  //in order to check whether address of arguments exceed PHYS_BASE [hint from : sc_bad_arg test]
   if (esp_copy + argsnum  >= PHYS_BASE)
     exit(-1);
 
@@ -208,7 +210,7 @@ void get_args(void* esp, int *args, int argsnum)
 }
 
 bool invalid_addr(void* addr){
-  if (addr > (void*)PHYS_BASE)
+  if (addr > PHYS_BASE)
     return true;
 
   if (addr <= 64*1024*1024)
