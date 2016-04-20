@@ -43,7 +43,7 @@ process_execute (const char *file_name)
   /***** ADDED CODE *****/
   char file_name_temp[128];
   int i;
-  for(i=0; !(fn_copy[i] == '\0') || (fn_copy[i] == ' '); i++);
+  for(i=0; (fn_copy[i] == '\0') || (fn_copy[i] == ' '); i++);
   if(i != 0)
     {
       strlcpy(file_name_temp, fn_copy, i+1);
