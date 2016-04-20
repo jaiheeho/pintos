@@ -173,7 +173,7 @@ process_exit (void)
   {
     c = list_entry(iter_child, struct thread, child_elem);
     sema_try_down(&c->sema_wait);
-    same_up(&c->sema_wait);
+    sema_up(&c->sema_wait);
     c->parent_proc = NULL;
   }
 
