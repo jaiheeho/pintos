@@ -9,7 +9,6 @@
 #include "filesys/filesys.h" // ADDED HEADER
 #include "lib/user/syscall.h" // ADDED HEADER
 #include "threads/vaddr.h" // ADDED HEADER
-#include "lib/user/syscall.h" // ADDED HEADER
 #include <stdlib.h> // ADDED HEADER
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
@@ -216,6 +215,8 @@ int
 open(const char *file)
 {
 
+  struct file *file = filesys_open(file);
+
   return;
 }
 
@@ -320,10 +321,10 @@ void get_args(void* esp, int *args, int argsnum)
 ************************************************************************/
  /*added function */
 bool invalid_addr(void* addr){
-  if (addr > PHYS_BASE)
+  if (is_user_vaddr(addr))
     return true;
 
-  if (addr <=(void*)4000000)
+  if (addr <=(void*)0x08048000)
     return true;
   
   return false;
