@@ -172,6 +172,8 @@ process_exit (void)
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
     c = list_entry(iter_child, struct thread, child_elem);
+    sema_try_down(&c->sema_wait);
+    same_up(&c->sema_wait);
     c->parent_proc = NULL;
   }
 
