@@ -128,11 +128,6 @@ bool
 create (const char *file, unsigned initial_size){
   bool success;
   //No 0 size 
-  if (initial_size <= 0)
-    return false;
-  //Invalid name
-  if (!file)
-    exit(-1);
   success = filesys_create(file, initial_size);
   return success;
 }
@@ -200,6 +195,8 @@ void get_args(void* esp, int *args, int argsnum)
       esp_copy += 1;
       args[i] = *esp_copy;
     }
+  if (args == NULL)
+    exit(-1);
 }
 
 bool invalid_addr(void* addr){
