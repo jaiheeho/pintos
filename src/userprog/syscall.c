@@ -86,7 +86,6 @@ syscall_handler (struct intr_frame *f UNUSED)
       returnZ=true;
       break;
     }
-
   // if return value is needed, plug in the return value
   if(returnZ)
       f->eax = retval;
