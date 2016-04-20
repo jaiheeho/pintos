@@ -25,8 +25,7 @@ syscall_handler (struct intr_frame *f UNUSED)
   int retval;
   int syscall_num = *((int*)f->esp);
   int args[12];
-  printf("THREAD <%s> CALLED SYSCALL NUMBER : %d\n",
-	 thread_name(), *((int*)f->esp));
+  //printf("THREAD <%s> CALLED SYSCALL NUMBER : %d\n", thread_name(), *((int*)f->esp));
   switch(syscall_num)
     {
     case SYS_HALT:
@@ -66,7 +65,7 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
 
     case SYS_WRITE:
-      printf("SYS_WRITE\n");
+      //printf("SYS_WRITE\n");
       get_args(f->esp, args, 3);
       retval = write(args[0], args[1], args[2]);
       break;
@@ -105,13 +104,14 @@ exit(int status)
 pid_t
 exec (const char *cmd_line)
 {
-    printf("syscall exit : THREAD <%s> cmd_line : %s\n", thread_name(), cmd_line);
-    return 0;
+  //printf("syscall exit : THREAD <%s> cmd_line : %s\n", thread_name(), cmd_line);
+  pid_t process_id =  process_execute(cmd_line);
+  return process_id;
 }
 
 int 
 wait(int pid){
-  printf("syscall wait : THREAD <%s> pid : %d\n", thread_name(), pid);
+  //printf("syscall wait : THREAD <%s> pid : %d\n", thread_name(), pid);
   int retval;
   retval = process_wait(pid);
   return retval;
@@ -130,7 +130,7 @@ int filesize(int fd)
 
 int write(int fd, const void *buffer, unsigned size)
 {
-  printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
+  //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
   if(fd == 0)
     {
       //error
@@ -166,9 +166,7 @@ struct file* get_struct_file(int fd)
 	}
 
     }
-
   return NULL;
-
 }
 
 void get_args(void* esp, int *args, int argsnum)
@@ -181,7 +179,5 @@ void get_args(void* esp, int *args, int argsnum)
     {
       esp_copy += 1;
       args[i] = *esp_copy;
-
     }
-
 }
