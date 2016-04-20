@@ -111,7 +111,7 @@ int
 process_wait (tid_t child_tid) 
 {
   /***** ADDED CODE *****/
-
+  printf("this is here\n");
   struct thread *curr = thread_current ();
   struct list_elem *iter_child;
   struct list *child_list = &curr->child_procs;
@@ -170,9 +170,10 @@ process_exit (void)
     c = list_entry(iter_child, struct thread, child_elem);
     c->parent_proc = NULL;
   }
-
+    printf("%s: exit at process_exit(%d)\n", thread_name(), curr->exit_status);
   if (curr->is_wait_called){
     curr->parent_proc->wait_status = curr->exit_status;
+    printf("%s: exit at process_exit(%d)\n", thread_name(), curr->exit_status);
     printf("curr : %d, child : %d\n", curr->parent_proc->wait_status, curr->exit_status);
   }
 
