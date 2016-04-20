@@ -111,7 +111,7 @@ int
 process_wait (tid_t child_tid) 
 {
   /***** ADDED CODE *****/
-  printf("this is here ")
+  printf("this is here \n");
   struct thread *curr = thread_current ();
   struct list_elem *iter_child;
   struct list *child_list = &curr->child_procs;
