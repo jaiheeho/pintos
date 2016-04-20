@@ -149,7 +149,7 @@ process_wait (tid_t child_tid)
   //Disconncect with its parent (i.e remove from children list of parent)
   list_remove (&c->child_elem);
 
-  return curr->exit_status;
+  return c->exit_status;
   /***** END OF ADDED CODE *****/
 }
 
