@@ -126,7 +126,9 @@ wait(int pid){
 
 bool 
 create (const char *file, unsigned initial_size){
-  return 0;
+  bool success;
+  success = filesys_create(file, initial_size);
+  return success;
 }
 
 int open(const char *file)
