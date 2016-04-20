@@ -45,14 +45,15 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_EXEC:
       get_args(f->esp, args, 1);
-      exec(args[0]);
+      retval=exec(args[0]);
       break;
     case SYS_WAIT:
       get_args(f->esp, args, 2);
-      wait(args[1]);
+      retval=wait(args[0]);
       break;
-
     case SYS_CREATE:
+      get_args(f->esp, args, 2);
+      retval=create(args[0],args[1]);
       break;
 
     case SYS_REMOVE:
@@ -121,6 +122,11 @@ wait(int pid){
   int retval;
   retval = process_wait(pid);
   return retval;
+}
+
+bool 
+create (const char *file, unsigned initial_size){
+  return 0;
 }
 
 int open(const char *file)
