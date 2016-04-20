@@ -23,8 +23,14 @@ syscall_handler (struct intr_frame *f UNUSED)
 {
   bool returnZ = false;
   int retval;
-  int syscall_num = *((int*)f->esp);
+
+  int syscall_num;
   int args[12];
+  //check whether address is vaild
+  if (invalid_addr(f->esp))
+    exit(-1);
+  else
+    syscall_num = *((int*)f->esp);
   //printf("THREAD <%s> CALLED SYSCALL NUMBER : %d\n", thread_name(), *((int*)f->esp));
   switch(syscall_num)
     {
@@ -180,4 +186,16 @@ void get_args(void* esp, int *args, int argsnum)
       esp_copy += 1;
       args[i] = *esp_copy;
     }
+}
+
+void invalid_addr(void* addr){
+  if (addr > PHYS_BASE)
+    return true;
+
+  if (addr < 64*1024*1024)
+    return true;
+  
+  return false;
+
+
 }
