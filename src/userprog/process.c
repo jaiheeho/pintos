@@ -550,7 +550,7 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
 
   // Insert NULL
   argv[argc] = NULL;
-
+  argv++;
   // Insert padding
   if((PHYS_BASE - *esp)%4)
     { 
@@ -569,6 +569,7 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
   *((char***)(*esp)) = *esp + sizeof(char**);
 
   //insert argc
+  argc--;
   *esp -= sizeof(int);
   memcpy(*esp, &argc, sizeof(int));
 
