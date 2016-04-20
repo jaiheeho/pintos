@@ -55,9 +55,10 @@ syscall_handler (struct intr_frame *f UNUSED)
       get_args(f->esp, args, 2);
       retval=create(args[0],args[1]);
       break;
-
     case SYS_REMOVE:
       break;
+      get_args(f->esp, args, 1);
+      retval=create(args[0]);
 
     case SYS_OPEN:
       get_args(f->esp, args, 1);
@@ -131,6 +132,14 @@ create (const char *file, unsigned initial_size){
   success = filesys_create(file, initial_size);
   return success;
 }
+bool
+remove (const char *file)
+{
+  bool success;
+  success = filesys_remove(file);
+  return success;
+
+}
 
 int open(const char *file)
 {
@@ -195,8 +204,6 @@ void get_args(void* esp, int *args, int argsnum)
       esp_copy += 1;
       args[i] = *esp_copy;
     }
-  if (args[0] == NULL)
-    exit(-1);
 }
 
 bool invalid_addr(void* addr){
