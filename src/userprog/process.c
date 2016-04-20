@@ -56,8 +56,9 @@ process_execute (const char *file_name)
     palloc_free_page (fn_copy); 
 
   /***** ADDED CODE *****/
-  if (thread_current()->is_loaded == false)
+  if (thread_current()->is_loaded == false){
     return TID_ERROR;
+  }
   /***** END OF ADDED CODE *****/
 
   return tid;
@@ -84,6 +85,7 @@ start_process (void *f_name)
   palloc_free_page (file_name);
   if (!success) {
     thread_current()->parent_proc->is_loaded = false;
+    list_remove(&thread_current()->child_elem);
     thread_exit ();
   }
   /***** END OF ADDED CODE *****/
