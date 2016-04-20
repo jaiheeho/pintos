@@ -16,7 +16,7 @@ int open(const char *file);
 int filesize(int fd);
 
 struct file* get_struct_file(int fd);
-void invalid_addr(void*);
+void invalid_addr(char *);
 
 
 // void halt (void) NO_RETURN;

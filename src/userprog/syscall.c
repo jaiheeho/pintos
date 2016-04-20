@@ -189,7 +189,7 @@ void get_args(void* esp, int *args, int argsnum)
     }
 }
 
-void invalid_addr(void* addr){
+void invalid_addr(char* addr){
   if (addr > PHYS_BASE)
     return true;
 
