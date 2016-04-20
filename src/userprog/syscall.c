@@ -33,6 +33,7 @@ syscall_handler (struct intr_frame *f UNUSED)
     exit(-1);
   else
     syscall_num = *((int*)f->esp);
+
   //printf("THREAD <%s> CALLED SYSCALL NUMBER : %d\n", thread_name(), *((int*)f->esp));
   switch(syscall_num)
     {
@@ -59,7 +60,6 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
       get_args(f->esp, args, 1);
       retval=remove(args[0]);
-
     case SYS_OPEN:
       get_args(f->esp, args, 1);
       retval = open(args[0]);
@@ -197,6 +197,8 @@ void get_args(void* esp, int *args, int argsnum)
   int i;
   int* esp_copy = (int*)esp;
 
+  if (esp_copy + argsnum  >= PHYS_BASE)
+    exit(-1);
 
   for(i=0; i<argsnum; i++)
     {
