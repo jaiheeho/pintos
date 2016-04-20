@@ -115,7 +115,6 @@ pid_t
 exec (const char *cmd_line)
 {
   pid_t process_id =  process_execute(cmd_line);
-  printf("exec current :%s, %d\n",thread_name(), thread_current()->tid);
   return process_id;
 }
 

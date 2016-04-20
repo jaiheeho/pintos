@@ -111,7 +111,7 @@ int
 process_wait (tid_t child_tid) 
 {
   /***** ADDED CODE *****/
-  printf("this is here%d\n", child_tid);
+  printf("this is here ")
   struct thread *curr = thread_current ();
   struct list_elem *iter_child;
   struct list *child_list = &curr->child_procs;
@@ -124,7 +124,7 @@ process_wait (tid_t child_tid)
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
     c = list_entry(iter_child, struct thread, child_elem);
-    printf("process_wait : %s : son of %s\n", c->name, curr->name);
+    //printf("process_wait : %s : son of %s\n", c->name, curr->name);
     if (c->tid == child_tid)
       break;
   }
@@ -146,11 +146,7 @@ process_wait (tid_t child_tid)
   c->is_wait_called = true;
   sema_down(&c->sema_wait);
 
-  //Disconncect with its parent (i.e remove from children list of parent)
-  if (curr->parent_proc != NULL)
-    list_remove (&curr->child_elem);
-
-  return c->exit_status;
+  return curr->wait_status;
   /***** END OF ADDED CODE *****/
 }
 
@@ -161,8 +157,8 @@ process_exit (void)
   struct thread *curr = thread_current ();
   uint32_t *pd;
   //Disconncect with its parent (i.e remove from children list of parent)
-  // if (curr->parent_proc != NULL)
-  //   list_remove (&curr->child_elem);
+  if (curr->parent_proc != NULL)
+    list_remove (&curr->child_elem);
 
   //Disconncect with its children(i.e change paren of child process to NULL)
   struct list *child_list = &curr->child_procs;
@@ -174,10 +170,10 @@ process_exit (void)
     c = list_entry(iter_child, struct thread, child_elem);
     c->parent_proc = NULL;
   }
-    printf("%s: exit at process_exit(%d)\n", thread_name(), curr->exit_status);
+
   if (curr->is_wait_called){
     curr->parent_proc->wait_status = curr->exit_status;
-    printf("%s: exit at process_exit(%d)\n", thread_name(), curr->exit_status);
+    printf("%s: exit(%d)\n", thread_name(), status);
     printf("curr : %d, child : %d\n", curr->parent_proc->wait_status, curr->exit_status);
   }
 
