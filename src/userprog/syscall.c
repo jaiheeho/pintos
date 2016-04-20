@@ -6,8 +6,9 @@
 #include "threads/init.h" // ADDED HEADER
 #include "userprog/process.h" // ADDED HEADER
 #include "filesys/file.h" // ADDED HEADER
+#include "filesys/filesys.h" // ADDED HEADER
 #include "lib/user/syscall.h" // ADDED HEADER
-#include "threads/vaddr.h"// ADDED HEADER
+#include "threads/vaddr.h" // ADDED HEADER
 #include <stdlib.h>
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
