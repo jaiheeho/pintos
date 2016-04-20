@@ -173,7 +173,7 @@ process_exit (void)
 
   if (curr->is_wait_called){
     curr->parent_proc->wait_status = curr->exit_status;
-    printf("%s: exit(%d)\n", thread_name(), status);
+    printf("%s: exit(%d)\n", thread_name(), thread_current()->status);
     printf("curr : %d, child : %d\n", curr->parent_proc->wait_status, curr->exit_status);
   }
 
