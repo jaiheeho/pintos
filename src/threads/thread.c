@@ -861,6 +861,7 @@ init_thread (struct thread *t, const char *name, int priority)
   t->priority_rollback = priority;
   //FOR PROCESS INHERITANE in Proj2//
   list_init (&t->child_procs);
+  sema_init(&t->sema_wait, 1);
   if (thread_start_complete == 1)
   {
     list_push_back (&thread_current()->child_procs, &t->child_elem);

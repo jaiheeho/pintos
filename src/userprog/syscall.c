@@ -51,7 +51,7 @@ syscall_handler (struct intr_frame *f UNUSED)
       returnZ=true;
       break;
     case SYS_WAIT:
-      get_args(f->esp, args, 2);
+      get_args(f->esp, args, 1);
       retval=wait(args[0]);
       returnZ=true;
       break;
@@ -86,7 +86,6 @@ syscall_handler (struct intr_frame *f UNUSED)
       returnZ=true;
       break;
     }
-
   // if return value is needed, plug in the return value
   if(returnZ)
       f->eax = retval;
@@ -194,7 +193,6 @@ struct file* get_struct_file(int fd)
   return NULL;
 }
 
-
 void get_args(void* esp, int *args, int argsnum)
 {
   int i;
@@ -215,7 +213,7 @@ bool invalid_addr(void* addr){
   if (addr > PHYS_BASE)
     return true;
 
-  if (addr <= 64*1024*1024)
+  if (addr <=(void*)4000000)
     return true;
   
   return false;

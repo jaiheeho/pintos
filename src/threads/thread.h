@@ -106,8 +106,9 @@ struct thread
     bool is_wait_called;                /* check whether wait function is called for thread */
     struct semaphore sema_wait;         /* semaphore that blocks parent proceess who wait for this thread*/
     int exit_status;                    /* store exit_status when it is called */
+    int wait_status;                    /* store child's exit status when parent wait for it */
     bool is_process;                    /* check whether thread is proces of kernel thread*/
-    bool is_loaded;
+    bool is_loaded;                     /* check whether thread's child process is loaded successfully */
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */
