@@ -5,10 +5,10 @@
 void syscall_init (void);
 
 void exit(int);
+int wait(pid_t);
 int write(int, const void *, unsigned);
 int open(const char *file);
 int filesize(int fd);
-int wait(pid_t);
 
 struct file* get_struct_file(int fd);
 
