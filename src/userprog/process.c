@@ -22,6 +22,13 @@
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
+
+/************************************************************************
+* FUNCTION : process_execute                                            *
+* Input : file_name                                                     *
+* Output : new process id                                               *
+************************************************************************/
+ /*fixed function */
 /* Starts a new thread running a user program loaded from
    FILENAME.  The new thread may be scheduled (and may even exit)
    before process_execute() returns.  Returns the new process's
@@ -56,13 +63,22 @@ process_execute (const char *file_name)
     palloc_free_page (fn_copy); 
 
   /***** ADDED CODE *****/
-  if (thread_current()->is_loaded == false)
+  //Loading elf was not successful return tid -1
+  if (thread_current()->is_loaded == false){
     return TID_ERROR;
+  }
   /***** END OF ADDED CODE *****/
 
   return tid;
 }
 
+
+/************************************************************************
+* FUNCTION : start_process                                              *
+* Input : f_name                                                        *
+* Output : None                                                         *
+************************************************************************/
+/*fixed function */
 /* A thread function that loads a user process and makes it start
    running. */
 static void
@@ -79,11 +95,14 @@ start_process (void *f_name)
   if_.eflags = FLAG_IF | FLAG_MBS;
   success = load (file_name, &if_.eip, &if_.esp);
 
-  /***** ADDED CODE *****/
   /* If load failed, quit. */
   palloc_free_page (file_name);
+
+  /***** ADDED CODE *****/
   if (!success) {
     thread_current()->parent_proc->is_loaded = false;
+    //if loading was unsuccessful remove thread from parent's child list and exit();
+    list_remove(&thread_current()->child_elem);
     thread_exit ();
   }
   /***** END OF ADDED CODE *****/
@@ -98,6 +117,14 @@ start_process (void *f_name)
   NOT_REACHED ();
 }
 
+
+/************************************************************************
+* FUNCTION : process_wait                                               *
+* Input : child_tid                                                     *
+* Output : exit_status of child                                         *
+************************************************************************/
+/*fixed function */
+
 /* Waits for thread TID to die and returns its exit status.  If
    it was terminated by the kernel (i.e. killed due to an
    exception), returns -1.  If TID is invalid or if it was not a
@@ -111,21 +138,17 @@ int
 process_wait (tid_t child_tid) 
 {
   /***** ADDED CODE *****/
-  //printf("this is here \n");
   struct thread *curr = thread_current ();
   struct list_elem *iter_child;
   struct list *child_list = &curr->child_procs;
   struct thread *c=NULL;
   int retval;
 
-  //printf("process_wait : %s waits for %d\n", curr->name, child_tid);
-
   //Check whether child of the calling process, -> not child process return -1
   for(iter_child = list_begin(child_list);
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
     c = list_entry(iter_child, struct thread, child_elem);
-    //printf("process_wait : %s : son of %s\n", c->name, curr->name);
     if (c->tid == child_tid)
       break;
   }
@@ -156,31 +179,34 @@ process_wait (tid_t child_tid)
   /***** END OF ADDED CODE *****/
 }
 
+
+/************************************************************************
+* FUNCTION : process_exit                                               *
+* Input : None                                                          *
+* Output : None                                                         *
+************************************************************************/
+/*fixed function */
+
 /* Free the current process's resources. */
 void
 process_exit (void)
 {
   struct thread *curr = thread_current ();
   uint32_t *pd;
-  //Disconncect with its children(i.e change paren of child process to NULL)
   struct list *child_list = &curr->child_procs;
   struct thread *c;
   struct list_elem *iter_child;
+
   for(iter_child = list_begin(child_list);
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
+    //first for every child in this thread's children list, make their parent pointer to NULL
     c = list_entry(iter_child, struct thread, child_elem);
+    c->parent_proc = NULL;
+    //if exit was called for child but is block to wait for parent's wait call release lock and make it dead.
     sema_try_down(&c->sema_wait);
     sema_up(&c->sema_wait);
-    c->parent_proc = NULL;
   }
-
-  if (curr->is_wait_called){
-    curr->parent_proc->wait_status = curr->exit_status;
-    //printf("%s: exit(%d)\n", thread_name(), thread_current()->status);
-    //printf("curr : %d, child : %d\n", curr->parent_proc->wait_status, curr->exit_status);
-  }
-
   /***** END OF ADDED CODE *****/
 
   /* Destroy the current process's page directory and switch back
@@ -203,20 +229,16 @@ process_exit (void)
   /***** ADDED CODE *****/
   //Finally, wake up parent who waiting for this thread*/
   if (curr->is_wait_called){
-    //curr->parent_proc->wait_status = curr->exit_status;
-    //printf("curr : %d, child : %d\n", curr->parent_proc->wait_status, curr->exit_status);
     sema_up(&curr->sema_wait);
   }
   else {
+    //If, parent didn't call wait() for this process yet, wait for parent until parent calls exit() or call wait()
     sema_down(&curr->sema_wait);
-    //curr->parent_proc->wait_status = curr->exit_status;
     sema_down(&curr->sema_wait);
   }
-
-  //Disconncect with its parent (i.e remove from children list of parent)
+  //Disconncect with its parent (i.e remove itself from children list of parent)
   if (curr->parent_proc != NULL)
     list_remove (&curr->child_elem);
-  //printf("process exit : %s\n", curr->name);
   /***** END OF ADDED CODE *****/
 }
 
@@ -539,6 +561,13 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
     }
   return true;
 }
+
+/************************************************************************
+* FUNCTION : process_exit                                               *
+* Input : void **esp, char *file_name, char **strtok_r_ptr              *
+* Output :                                                              *
+************************************************************************/
+/*fixed function */
 
 /* Create a minimal stack by mapping a zeroed page at the top of
    user virtual memory. */
