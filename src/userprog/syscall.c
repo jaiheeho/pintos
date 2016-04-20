@@ -195,7 +195,7 @@ void get_args(void* esp, int *args, int argsnum)
       esp_copy += 1;
       args[i] = *esp_copy;
     }
-  if (args == NULL)
+  if (args[0] == NULL)
     exit(-1);
 }
 
