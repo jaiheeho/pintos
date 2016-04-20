@@ -193,6 +193,8 @@ process_exit (void)
   //Finally, wake up parent who waiting for this thread*/
   if (curr->is_wait_called){
     curr->parent_proc->wait_status = curr->exit_status;
+    printf("curr : %d, child : %d\n", curr->parent_proc->wait_status, curr->exit_status);
+
     sema_up(&curr->sema_wait);
   }
   //printf("process exit : %s\n", curr->name);
