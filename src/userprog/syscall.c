@@ -129,6 +129,8 @@ wait(int pid){
 bool 
 create (const char *file, unsigned initial_size){
   bool success;
+  if (file == NULL)
+    return false;
   success = filesys_create(file, initial_size);
   return success;
 }
@@ -171,7 +173,6 @@ int write(int fd, const void *buffer, unsigned size)
       return file_write(file, buffer, size);
     }
 }
-
 
 struct file* get_struct_file(int fd)
 {
