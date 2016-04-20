@@ -30,18 +30,19 @@ syscall_handler (struct intr_frame *f UNUSED)
   switch(syscall_num)
     {
     case SYS_HALT:
-      power_off();
+      halt();
       break;
-
     case SYS_EXIT:
       get_args(f->esp, args, 1);
       exit(args[0]);
       break;
-
     case SYS_EXEC:
+      get_args(f->esp, args, 1);
+      exec(args[0]);
       break;
-
     case SYS_WAIT:
+      get_args(f->esp, args, 2);
+      wait(args[1]);
       break;
 
     case SYS_CREATE:
@@ -84,6 +85,14 @@ syscall_handler (struct intr_frame *f UNUSED)
   //thread_exit ();
 }
 
+void
+halt (void) 
+{
+  power_off();
+  NOT_REACHED ();
+}
+
+
 void 
 exit(int status)
 {
@@ -94,6 +103,13 @@ exit(int status)
   curr->exit_status=status;
   thread_exit();
   // return exit status to kernel
+}
+
+pid_t
+exec (const char *cmd_line)
+{
+    printf("syscall exit : THREAD <%s> cmd_line : %s\n", thread_name(), cmd_line);
+    return 0;
 }
 
 int 
