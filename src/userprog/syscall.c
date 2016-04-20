@@ -6,8 +6,9 @@
 #include "threads/init.h" // ADDED HEADER
 #include "userprog/process.h" // ADDED HEADER
 #include "filesys/file.h" // ADDED HEADER
+#include "filesys/filesys.h" // ADDED HEADER
 #include "lib/user/syscall.h" // ADDED HEADER
-#include "threads/vaddr.h"// ADDED HEADER
+#include "threads/vaddr.h" // ADDED HEADER
 #include <stdlib.h>
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
@@ -33,6 +34,7 @@ syscall_handler (struct intr_frame *f UNUSED)
     exit(-1);
   else
     syscall_num = *((int*)f->esp);
+
   //printf("THREAD <%s> CALLED SYSCALL NUMBER : %d\n", thread_name(), *((int*)f->esp));
   switch(syscall_num)
     {
@@ -46,46 +48,48 @@ syscall_handler (struct intr_frame *f UNUSED)
     case SYS_EXEC:
       get_args(f->esp, args, 1);
       retval=exec(args[0]);
+      returnZ=true;
       break;
     case SYS_WAIT:
       get_args(f->esp, args, 2);
       retval=wait(args[0]);
+      returnZ=true;
       break;
     case SYS_CREATE:
       get_args(f->esp, args, 2);
       retval=create(args[0],args[1]);
+      returnZ=true;
       break;
-
     case SYS_REMOVE:
       break;
-
+      get_args(f->esp, args, 1);
+      retval=remove(args[0]);
+      returnZ=true;
     case SYS_OPEN:
       get_args(f->esp, args, 1);
       retval = open(args[0]);
+      returnZ=true;
       break;
-
     case SYS_FILESIZE:
       get_args(f->esp, args, 1);
       retval = filesize(args[0]);
+      returnZ=true;
       break;
-
     case SYS_READ:
       get_args(f->esp, args, 3);
+      returnZ=true;
       break;
-
     case SYS_WRITE:
       //printf("SYS_WRITE\n");
       get_args(f->esp, args, 3);
       retval = write(args[0], args[1], args[2]);
+      returnZ=true;
       break;
     }
 
   // if return value is needed, plug in the return value
-
   if(returnZ)
-    {
       f->eax = retval;
-    }
   //thread_exit ();
 }
 
@@ -111,7 +115,6 @@ exit(int status)
 pid_t
 exec (const char *cmd_line)
 {
-  //printf("syscall exit : THREAD <%s> cmd_line : %s\n", thread_name(), cmd_line);
   pid_t process_id =  process_execute(cmd_line);
   return process_id;
 }
@@ -126,7 +129,17 @@ wait(int pid){
 
 bool 
 create (const char *file, unsigned initial_size){
-  return 0;
+  bool success;
+  success = filesys_create(file, initial_size);
+  return success;
+}
+
+bool
+remove (const char *file)
+{
+  bool success;
+  success = filesys_remove(file);
+  return success;
 }
 
 int open(const char *file)
@@ -181,11 +194,15 @@ struct file* get_struct_file(int fd)
   return NULL;
 }
 
+
 void get_args(void* esp, int *args, int argsnum)
 {
   int i;
   int* esp_copy = (int*)esp;
 
+  //in order to check whether address of arguments exceed PHYS_BASE [hint from : sc_bad_arg test]
+  if (esp_copy + argsnum  >= PHYS_BASE)
+    exit(-1);
 
   for(i=0; i<argsnum; i++)
     {
@@ -195,7 +212,7 @@ void get_args(void* esp, int *args, int argsnum)
 }
 
 bool invalid_addr(void* addr){
-  if (addr > (void*)PHYS_BASE)
+  if (addr > PHYS_BASE)
     return true;
 
   if (addr <= 64*1024*1024)

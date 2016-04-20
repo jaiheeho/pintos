@@ -107,6 +107,7 @@ struct thread
     struct semaphore sema_wait;         /* semaphore that blocks parent proceess who wait for this thread*/
     int exit_status;                    /* store exit_status when it is called */
     bool is_process;                    /* check whether thread is proces of kernel thread*/
+    bool is_loaded;
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */
