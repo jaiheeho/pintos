@@ -53,8 +53,7 @@ process_execute (const char *file_name)
   tid = thread_create (file_name_temp, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy); 
-
-  printf("22222222222\n");
+  printf("2222222222 : %s\n", thread_name());
 
   /***** END OF ADDED CODE *****/
 
@@ -82,7 +81,7 @@ start_process (void *f_name)
   if (!success) 
     thread_exit ();
 
-  printf("111111111\n");
+  printf("111111111 : %s\n", thread_name());
 
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
