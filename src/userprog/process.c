@@ -56,6 +56,8 @@ process_execute (const char *file_name)
     palloc_free_page (fn_copy); 
 
   /***** ADDED CODE *****/
+  printf("thread at start : %s, father : %s\n", thread_name(), thread_current()->parent_proc->name);
+
   if (thread_current()->is_loaded == false)
     return TID_ERROR;
   /***** END OF ADDED CODE *****/
