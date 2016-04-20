@@ -214,10 +214,8 @@ remove (const char *file)
 int 
 open(const char *file)
 {
-
-  struct file *file = filesys_open(file);
-
   return;
+  struct file *filestruct = filesys_open(file);
 }
 
 /************************************************************************
