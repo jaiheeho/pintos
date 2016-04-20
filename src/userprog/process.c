@@ -234,6 +234,7 @@ process_exit (void)
   else {
     //If, parent didn't call wait() for this process yet, wait for parent until parent calls exit() or call wait()
     sema_down(&curr->sema_wait);
+    sema_down(&curr->sema_wait);
   }
   //Disconncect with its parent (i.e remove itself from children list of parent)
   if (curr->parent_proc != NULL)
