@@ -138,7 +138,9 @@ process_wait (tid_t child_tid)
     return -1;
 
   //Wait for tid to be exited
-  //At first, init sema which is owned by child in case of parent waiting.
+  //At first, try_sema_down to acquire semaphor for child's wait
+  //if semaphore is acquired, wait for child
+  //else, child has already exited but it is waiting in case of late wait call. (release semaphore for child)
   if(sema_try_down(&c->sema_wait))
   {
     c->is_wait_called = true;
