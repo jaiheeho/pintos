@@ -142,6 +142,7 @@ process_wait (tid_t child_tid)
   //printf("before in wait: %s exit stats :%d ", c->name, c->exit_status);
   sema_init(&c->sema_wait, 1);
   sema_down(&c->sema_wait);
+  printf("hererere\n");
   c->is_wait_called = true;
   sema_down(&c->sema_wait);
 

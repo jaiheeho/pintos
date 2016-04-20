@@ -51,7 +51,7 @@ syscall_handler (struct intr_frame *f UNUSED)
       returnZ=true;
       break;
     case SYS_WAIT:
-      get_args(f->esp, args, 2);
+      get_args(f->esp, args, 1);
       retval=wait(args[0]);
       returnZ=true;
       break;
