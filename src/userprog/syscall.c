@@ -7,7 +7,7 @@
 #include "userprog/process.h" // ADDED HEADER
 #include "filesys/file.h" // ADDED HEADER
 #include "lib/user/syscall.h" // ADDED HEADER
-#include "threads/vaddr.h"
+#include "threads/vaddr.h"// ADDED HEADER
 
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
@@ -189,7 +189,7 @@ void get_args(void* esp, int *args, int argsnum)
     }
 }
 
-void invalid_addr(char* addr){
+bool invalid_addr(void* addr){
   if (addr > PHYS_BASE)
     return true;
 
