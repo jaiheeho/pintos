@@ -547,9 +547,9 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
       argv[argc] = *esp;
       argc++;
     }
-    
+
   // Insert NULL
-  argv[argv] = 0;
+  argv[argv] = NULL;
   argc++;
 
   // Insert padding
@@ -557,7 +557,6 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
     { 
       *esp -= 4 - (PHYS_BASE - *esp)%4;
     }
-
 
   //insert argv pointer array
   int i = argc - 1;
