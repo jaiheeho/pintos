@@ -2,12 +2,11 @@
 #define USERPROG_SYSCALL_H
 
 #ifdef USERPROG
-#include <lib/user/syscall.h> // ADDED HEADER
+#include "lib/user/syscall.h" // ADDED HEADER
 #endif
 
 void syscall_init (void);
 
-void exit(int);
 void halt (void);
 void exit (int status);
 pid_t exec (const char *cmd_line);
