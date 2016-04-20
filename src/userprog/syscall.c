@@ -114,6 +114,7 @@ exec (const char *cmd_line)
 {
 
   pid_t process_id =  process_execute(cmd_line);
+  printf("TID_ERROR: %d, current id: %d\n", TID_ERROR, thread_current()->tid);
   if (process_id == TID_ERROR)
     return -1;
   return process_id;
