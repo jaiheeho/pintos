@@ -550,7 +550,6 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
 
   // Insert NULL
   argv[argc] = NULL;
-  argc++;
 
   // Insert padding
   if((PHYS_BASE - *esp)%4)
