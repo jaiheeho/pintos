@@ -111,7 +111,7 @@ int
 process_wait (tid_t child_tid) 
 {
   /***** ADDED CODE *****/
-  printf("this is here\n");
+  printf("this is here:%d\n", child_tid);
   struct thread *curr = thread_current ();
   struct list_elem *iter_child;
   struct list *child_list = &curr->child_procs;
@@ -149,7 +149,7 @@ process_wait (tid_t child_tid)
   //Disconncect with its parent (i.e remove from children list of parent)
   list_remove (&c->child_elem);
 
-  return curr->wait_status;
+  return curr->exit_status;
   /***** END OF ADDED CODE *****/
 }
 
