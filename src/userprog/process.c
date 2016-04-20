@@ -102,7 +102,7 @@ start_process (void *f_name)
   if (!success) {
     thread_current()->parent_proc->is_loaded = false;
     //if loading was unsuccessful remove thread from parent's child list and exit();
-    list_remove(&thread_current()->child_elem);]
+    list_remove(&thread_current()->child_elem);
     thread_exit ();
   }
   /***** END OF ADDED CODE *****/
