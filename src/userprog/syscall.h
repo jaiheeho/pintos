@@ -12,9 +12,13 @@ pid_t exec (const char *cmd_line);
 int wait(pid_t);
 bool create (const char *file, unsigned initial_size);
 bool remove (const char *file);
-int write(int, const void *, unsigned);
 int open(const char *file);
 int filesize(int fd);
+int read (int fd, void *buffer, unsigned length);
+int write(int, const void *, unsigned);
+void seek (int fd, unsigned position);
+unsigned tell (int fd);
+void close (int fd);
 
 struct file* get_struct_file(int fd);
 bool invalid_addr(void *);

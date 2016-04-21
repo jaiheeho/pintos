@@ -220,6 +220,9 @@ remove (const char *file)
 int 
 open(const char *file)
 {
+  if(invalid_addr(file))
+    exit(-1);
+
   return;
   struct file *filestruct = filesys_open(file);
 }
@@ -237,6 +240,29 @@ int filesize(int fd)
   struct file *file = get_struct_file(fd);
   return file_length(file);
 }
+
+/************************************************************************
+* FUNCTION : read                                                      *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
+int read (int fd, void *buffer, unsigned length){
+{
+  //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
+  if(invalid_addr(buffer))
+    exit(-1);
+  if(fd == 0)
+    {
+      //error
+      return -1;
+    }
+
+  return 0;
+}
+
 /************************************************************************
 * FUNCTION : write                                                      *
 * Input : NONE                                                          *
@@ -245,9 +271,12 @@ int filesize(int fd)
 * when function is Called                                               *
 ************************************************************************/
  /*added function */
+
 int write(int fd, const void *buffer, unsigned size)
 {
   //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
+  if(invalid_addr(buffer))
+    exit(-1);
   if(fd == 0)
     {
       //error
@@ -263,6 +292,63 @@ int write(int fd, const void *buffer, unsigned size)
       struct file *file = get_struct_file(fd);
       return file_write(file, buffer, size);
     }
+}
+
+/************************************************************************
+* FUNCTION : seek                                                      *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
+
+void seek (int fd, unsigned position)
+{
+  if(fd == 0)
+  {
+    //error
+    return;
+  }
+  return;
+}
+
+/************************************************************************
+* FUNCTION : tell                                                      *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
+unsigned tell (int fd)
+{
+  if(fd == 0)
+    {
+      //error
+      return -1;
+    }
+
+  return 0;
+}
+
+/************************************************************************
+* FUNCTION : close                                                      *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
+void close (int fd)
+{
+  if(fd == 0)
+    {
+      //error
+      return;
+    }
+
+    return;
 }
 
 /************************************************************************
@@ -292,6 +378,7 @@ struct file* get_struct_file(int fd)
     }
   return NULL;
 }
+
 
 /************************************************************************
 * FUNCTION : get_args                                                   *
