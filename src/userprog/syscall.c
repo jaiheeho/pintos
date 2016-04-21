@@ -66,6 +66,7 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_EXEC:
       get_args(f->esp, args, 1);
+
       retval=exec(args[0]);
       returnZ=true;
       break;
@@ -182,9 +183,10 @@ wait(int pid){
 bool 
 create (const char *file, unsigned initial_size){
   bool success;
-  if (file == NULL)
-    exit(-1);
-  success = filesys_create(file, initial_size);
+  // if (file == NULL)
+  //   exit(-1);
+  void* kernel_addr = get_kernel_addr(file);
+  success = filesys_create(kernel_addr, initial_size);
   return success;
 }
 
@@ -307,8 +309,6 @@ void get_args(void* esp, int *args, int argsnum)
   for(i=0; i<argsnum; i++)
     {
       esp_copy += 1;
-      if (!invalid_addr((void *)esp_copy))
-        exit(-1); 
       args[i] = *esp_copy;
     }
 }
@@ -331,3 +331,11 @@ bool invalid_addr(void* addr){
   //    return true;
   return false;
 }
+
+void * 
+get_kernel_addr(void* addr){
+  void * kernel_addr;
+  if(!kernel_addr = pagedir_get_page (thread_current()->pagedir, addr))
+    exit(-1);
+}
+
