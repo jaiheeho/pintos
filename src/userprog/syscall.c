@@ -156,7 +156,9 @@ exit(int status)
 pid_t
 exec (const char *cmd_line)
 {
-  pid_t process_id =  process_execute(cmd_line);
+  pid_t process_id;
+  void* kernel_addr = get_kernel_addr(cmd_line);
+  process_id =  process_execute(kernel_addr);
   return process_id;
 }
 
@@ -183,8 +185,6 @@ wait(int pid){
 bool 
 create (const char *file, unsigned initial_size){
   bool success;
-  // if (file == NULL)
-  //   exit(-1);
   void* kernel_addr = get_kernel_addr(file);
   success = filesys_create(kernel_addr, initial_size);
   return success;
