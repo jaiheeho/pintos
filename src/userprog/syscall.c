@@ -307,6 +307,8 @@ void get_args(void* esp, int *args, int argsnum)
   for(i=0; i<argsnum; i++)
     {
       esp_copy += 1;
+      if(invalid_addr(esp_copy))
+        exit(-1);
       args[i] = *esp_copy;
     }
 }
@@ -325,8 +327,8 @@ bool invalid_addr(void* addr){
   if (addr <=(void*)0x08048000)
     return true;
 
-  // if (!pagedir_get_page (thread_current()->pagedir, addr))
-  //   return true;
+  if (!pagedir_get_page (thread_current()->pagedir, addr))
+     return true;
 
   return false;
 }
