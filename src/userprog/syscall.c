@@ -331,11 +331,11 @@ bool invalid_addr(void* addr){
   if (addr <(void*)0x08048000)
     return true;
 
-  if (!addr)
+  if (addr == NULL)
     return true;
 
-  // if(!pagedir_get_page (thread_current()->pagedir, addr))
-  //   exit(-1);
+  if(!pagedir_get_page (thread_current()->pagedir, addr))
+    exit(-1);
 
   return false;
 }
