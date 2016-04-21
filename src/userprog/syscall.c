@@ -9,7 +9,6 @@
 #include "filesys/filesys.h" // ADDED HEADER
 #include "lib/user/syscall.h" // ADDED HEADER
 #include "threads/vaddr.h" // ADDED HEADER
-#include "lib/user/syscall.h" // ADDED HEADER
 #include <stdlib.h> // ADDED HEADER
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
@@ -42,7 +41,7 @@ syscall_handler (struct intr_frame *f UNUSED)
   bool returnZ = false;
   int retval;
 
-  int syscall_num;
+  uint32_t syscall_num;
   int args[12];
   //check whether address is vaild
   //printf("f->esp : %d\n",  f->esp);
@@ -50,6 +49,10 @@ syscall_handler (struct intr_frame *f UNUSED)
     exit(-1);
   else
     syscall_num = *((int*)f->esp);
+
+  //check validity of  syscall_num
+  if (syscall_num > SYS_INUMBER)
+    exit(-1);
 
   //printf("THREAD <%s> CALLED SYSCALL NUMBER : %d\n", thread_name(), *((int*)f->esp));
   switch(syscall_num)
@@ -63,6 +66,7 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_EXEC:
       get_args(f->esp, args, 1);
+
       retval=exec(args[0]);
       returnZ=true;
       break;
@@ -112,8 +116,7 @@ syscall_handler (struct intr_frame *f UNUSED)
 * FUNCTION : halt                                                       *
 * Input : NONE                                                          *
 * Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Purporse : system halt                                                *
 ************************************************************************/
  /*added function */
 void
@@ -125,10 +128,9 @@ halt (void)
 
 /************************************************************************
 * FUNCTION : exit                                                       *
-* Input : NONE                                                          *
+* Input : status                                                        *
 * Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Purporse : exit process with exit exit_status                         *
 ************************************************************************/
  /*added function */
 void
@@ -140,70 +142,73 @@ exit(int status)
   struct thread *curr = thread_current();
   curr->exit_status=status;
   thread_exit();
+  NOT_REACHED ();
   // return exit status to kernel
 }
 
 /************************************************************************
 * FUNCTION : exec                                                       *
-* Input : NONE                                                          *
+* Input : cmd_line                                                      *
 * Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Purporse : execute new process                                        *
 ************************************************************************/
  /*added function */
 pid_t
 exec (const char *cmd_line)
 {
-  pid_t process_id =  process_execute(cmd_line);
+  pid_t process_id;
+  if(invalid_addr(cmd_line))
+    exit(-1);
+  process_id =  process_execute(cmd_line);
   return process_id;
 }
+
 /************************************************************************
 * FUNCTION : wait                                                       *
-* Input : NONE                                                          *
-* Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Input : pid_t                                                         *
+* Output : child(=pid) 's  exit status                                  *
+* Purporse : wait for the child process with pid to exit and return     *
+* child's exit status                                                   *
 ************************************************************************/
  /*added function */
 int 
 wait(int pid){
-  //printf("syscall wait : THREAD <%s> pid : %d\n", thread_name(), pid);
-  int retval;
-  retval = process_wait(pid);
-  return retval;
+  return process_wait(pid);;
 }
 
 /************************************************************************
 * FUNCTION : create                                                     *
-* Input : NONE                                                          *
-* Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Input : file, initial_size                                            *
+* Output : true of false                                                *
+* Purporse : create new file with file name and initial size            *
 ************************************************************************/
  /*added function */
 bool 
 create (const char *file, unsigned initial_size){
   bool success;
-  if (file == NULL)
+  if(invalid_addr(file))
     exit(-1);
   success = filesys_create(file, initial_size);
   return success;
 }
+
 /************************************************************************
 * FUNCTION : remove                                                     *
-* Input : NONE                                                          *
-* Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Input : file                                                          *
+* Output : true of false                                                *
+* Purporse : remove file with file name                                 *
 ************************************************************************/
  /*added function */
 bool
 remove (const char *file)
 {
   bool success;
+  if(invalid_addr(file))
+    exit(-1);
   success = filesys_remove(file);
   return success;
 }
+
 /************************************************************************
 * FUNCTION : open                                                       *
 * Input : NONE                                                          *
@@ -215,8 +220,11 @@ remove (const char *file)
 int 
 open(const char *file)
 {
+  if(invalid_addr(file))
+    exit(-1);
 
   return;
+  struct file *filestruct = filesys_open(file);
 }
 
 /************************************************************************
@@ -232,6 +240,28 @@ int filesize(int fd)
   struct file *file = get_struct_file(fd);
   return file_length(file);
 }
+
+/************************************************************************
+* FUNCTION : read                                                      *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
+int read (int fd, void *buffer, unsigned length)
+{
+  //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
+  if(invalid_addr(buffer))
+    exit(-1);
+  if(fd == 0)
+    {
+      //error
+      return -1;
+    }
+  return 0;
+}
+
 /************************************************************************
 * FUNCTION : write                                                      *
 * Input : NONE                                                          *
@@ -243,6 +273,8 @@ int filesize(int fd)
 int write(int fd, const void *buffer, unsigned size)
 {
   //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
+  if(invalid_addr(buffer))
+    exit(-1);
   if(fd == 0)
     {
       //error
@@ -258,6 +290,64 @@ int write(int fd, const void *buffer, unsigned size)
       struct file *file = get_struct_file(fd);
       return file_write(file, buffer, size);
     }
+    return 0;
+}
+
+/************************************************************************
+* FUNCTION : seek                                                      *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
+
+void seek (int fd, unsigned position)
+{
+  if(fd == 0)
+  {
+    //error
+    return;
+  }
+  return;
+}
+
+/************************************************************************
+* FUNCTION : tell                                                      *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
+unsigned tell (int fd)
+{
+  if(fd == 0)
+    {
+      //error
+      return -1;
+    }
+
+  return 0;
+}
+
+/************************************************************************
+* FUNCTION : close                                                      *
+* Input : NONE                                                          *
+* Output : NONE                                                         *
+* Purporse : update priority values of all threads                      *
+* when function is Called                                               *
+************************************************************************/
+ /*added function */
+void close (int fd)
+{
+  if(fd == 0)
+    {
+      //error
+      return;
+    }
+
+    return;
 }
 
 /************************************************************************
@@ -288,6 +378,7 @@ struct file* get_struct_file(int fd)
   return NULL;
 }
 
+
 /************************************************************************
 * FUNCTION : get_args                                                   *
 * Input : NONE                                                          *
@@ -308,23 +399,36 @@ void get_args(void* esp, int *args, int argsnum)
   for(i=0; i<argsnum; i++)
     {
       esp_copy += 1;
+      if (invalid_addr(esp_copy))
+        exit(-1);
       args[i] = *esp_copy;
     }
 }
 /************************************************************************
-* FUNCTION : update_priorities                                          *
-* Input : NONE                                                          *
-* Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* FUNCTION : invalid_addr                                               *
+* Input : addr                                                          *
+* Output : true of false                                                *
+* Purporse : check wheter given address is valid or not                 *
 ************************************************************************/
  /*added function */
 bool invalid_addr(void* addr){
-  if (addr > PHYS_BASE)
+  //check whether it is user addr
+  if (!is_user_vaddr(addr))
     return true;
-
-  if (addr <=(void*)4000000)
+  //under CODE segment
+  if (addr <(void*)0x08048000)
     return true;
-  
+  if (addr == NULL)
+    return true;
+  if(!pagedir_get_page (thread_current()->pagedir, addr))
+    exit(-1);
   return false;
+}
+
+void * 
+get_kernel_addr(void* addr){
+  void * kernel_addr = pagedir_get_page (thread_current()->pagedir, addr);
+  if(!kernel_addr)
+    exit(-1);
+  return kernel_addr;
 }

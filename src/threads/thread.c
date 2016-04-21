@@ -224,11 +224,6 @@ thread_create (const char *name, int priority,
   sf = alloc_frame (t, sizeof *sf);
   sf->eip = switch_entry;
 
-  ///WHERE WE ADDED/////////
-  /* NICE  INHERITENCE*/
-  t->nice = thread_current()->nice;
-  ///WHERE WE ADDED END/////
-
   /* Add to run queue. */
   thread_unblock (t);
   return tid;
@@ -855,6 +850,10 @@ init_thread (struct thread *t, const char *name, int priority)
   ///WHERE WE ADDED/////////
   //IMLEMENTIAION TO INITIALIZE recent_cpu to 0//
   //FOR BSD Scheduler//
+  if (thread_start_complete == 1)
+  {
+    t->nice = thread_current()->nice;
+  }
   t->recent_cpu = 0;
   //FOR PRIORITY DONTATION//
   list_init (&t->lock_holdings);

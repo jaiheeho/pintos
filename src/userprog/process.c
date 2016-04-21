@@ -563,7 +563,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 }
 
 /************************************************************************
-* FUNCTION : process_exit                                               *
+* FUNCTION : setup_stack                                               *
 * Input : void **esp, char *file_name, char **strtok_r_ptr              *
 * Output :                                                              *
 ************************************************************************/
@@ -611,15 +611,16 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
       argc++;
     }
 
-  // Insert NULL
-  argv[argc] = NULL;
-  argc++;
+
   // Insert padding
   if((PHYS_BASE - *esp)%4)
     { 
       *esp -= 4 - (PHYS_BASE - *esp)%4;
     }
-
+  // Insert NULL
+  argv[argc] = NULL;
+  argc++;
+  
   //insert argv pointer array
   int i = argc - 1;
   for(; i >= 0; i--)
