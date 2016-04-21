@@ -18,7 +18,6 @@ int filesize(int fd);
 
 struct file* get_struct_file(int fd);
 bool invalid_addr(void *);
-
 void * get_kernel_addr(void*);
 
 

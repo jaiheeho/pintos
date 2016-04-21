@@ -186,6 +186,8 @@ bool
 create (const char *file, unsigned initial_size){
   bool success;
   void* kernel_addr = get_kernel_addr(file);
+  printf("uaddr : %u ^^ kernel_addr : %u\n", file,kernel_addr );
+
   success = filesys_create(kernel_addr, initial_size);
   return success;
 }
@@ -328,8 +330,6 @@ bool invalid_addr(void* addr){
   if (addr <(void*)0x08048000)
     return true;
 
-  // if (!pagedir_get_page (thread_current()->pagedir, addr))
-  //    return true;
   return false;
 }
 
