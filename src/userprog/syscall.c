@@ -41,7 +41,7 @@ syscall_handler (struct intr_frame *f UNUSED)
   bool returnZ = false;
   int retval;
 
-  int syscall_num;
+  uint32_t syscall_num;
   int args[12];
   //check whether address is vaild
   //printf("f->esp : %d\n",  f->esp);
@@ -49,6 +49,10 @@ syscall_handler (struct intr_frame *f UNUSED)
     exit(-1);
   else
     syscall_num = *((int*)f->esp);
+
+  //check validity of  syscall_num
+  if (syscall_num > SYS_INUMBER)
+    exit(-1);
 
   //printf("THREAD <%s> CALLED SYSCALL NUMBER : %d\n", thread_name(), *((int*)f->esp));
   switch(syscall_num)
@@ -137,6 +141,7 @@ exit(int status)
   struct thread *curr = thread_current();
   curr->exit_status=status;
   thread_exit();
+  NOT_REACHED ();
   // return exit status to kernel
 }
 
@@ -320,8 +325,8 @@ bool invalid_addr(void* addr){
   if (addr <=(void*)0x08048000)
     return true;
 
-  if (!pagedir_get_page (thread_current()->pagedir, addr))
-    return true;
+  // if (!pagedir_get_page (thread_current()->pagedir, addr))
+  //   return true;
 
   return false;
 }
