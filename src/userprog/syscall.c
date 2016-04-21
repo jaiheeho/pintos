@@ -322,8 +322,8 @@ bool invalid_addr(void* addr){
   if (is_user_vaddr(addr))
     return true;
 
-  if (addr <=(void*)0x08048000)
-    return true;
+  // if (addr <=(void*)0x08048000)
+  //   return true;
   
   return false;
 }
