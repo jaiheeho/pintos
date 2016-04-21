@@ -186,7 +186,7 @@ bool
 create (const char *file, unsigned initial_size){
   bool success;
   void* kernel_addr = get_kernel_addr(file);
-  printf("uaddr : %u ^^ kernel_addr : %u\n", file,kernel_addr );
+  printf("uaddr : %u %s ^^ kernel_addr : %u, %s\n", file,file,kernel_addr,kernel_addr );
 
   success = filesys_create(kernel_addr, initial_size);
   return success;
