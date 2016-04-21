@@ -226,7 +226,7 @@ thread_create (const char *name, int priority,
 
   ///WHERE WE ADDED/////////
   /* NICE  INHERITENCE*/
-  t->nice = thread_current()->nice;
+  // t->nice = thread_current()->nice;
   ///WHERE WE ADDED END/////
 
   /* Add to run queue. */
@@ -855,6 +855,7 @@ init_thread (struct thread *t, const char *name, int priority)
   ///WHERE WE ADDED/////////
   //IMLEMENTIAION TO INITIALIZE recent_cpu to 0//
   //FOR BSD Scheduler//
+  t->nice = thread_current()->nice;
   t->recent_cpu = 0;
   //FOR PRIORITY DONTATION//
   list_init (&t->lock_holdings);

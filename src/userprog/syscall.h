@@ -16,7 +16,6 @@ int write(int, const void *, unsigned);
 int open(const char *file);
 int filesize(int fd);
 
-
 struct file* get_struct_file(int fd);
 bool invalid_addr(void *);
 
