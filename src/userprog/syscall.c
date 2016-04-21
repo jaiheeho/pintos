@@ -201,7 +201,8 @@ bool
 remove (const char *file)
 {
   bool success;
-  success = filesys_remove(file);
+  void* kernel_addr = get_kernel_addr(file);
+  success = filesys_remove(kernel_addr);
   return success;
 }
 
