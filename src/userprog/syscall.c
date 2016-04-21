@@ -157,8 +157,9 @@ pid_t
 exec (const char *cmd_line)
 {
   pid_t process_id;
-  void* kernel_addr = get_kernel_addr(cmd_line);
-  process_id =  process_execute(kernel_addr);
+  if(invalid_addr(cmd_line))
+    exit(-1);
+  process_id =  process_execute(cmd_line);
   return process_id;
 }
 
@@ -185,8 +186,6 @@ wait(int pid){
 bool 
 create (const char *file, unsigned initial_size){
   bool success;
-  // void* kernel_addr = get_kernel_addr(file);
-  // printf("uaddr : %u %s ^^ kernel_addr : %u, %s\n", file,file,kernel_addr,kernel_addr );
   if(invalid_addr(file))
     exit(-1);
   success = filesys_create(file, initial_size);
@@ -204,8 +203,9 @@ bool
 remove (const char *file)
 {
   bool success;
-  void* kernel_addr = get_kernel_addr(file);
-  success = filesys_remove(kernel_addr);
+  if(invalid_addr(file))
+    exit(-1);
+  success = filesys_remove(file);
   return success;
 }
 
