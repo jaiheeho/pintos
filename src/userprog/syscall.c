@@ -306,11 +306,10 @@ void get_args(void* esp, int *args, int argsnum)
     }
 }
 /************************************************************************
-* FUNCTION : update_priorities                                          *
-* Input : NONE                                                          *
-* Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* FUNCTION : invalid_addr                                               *
+* Input : addr                                                          *
+* Output : true of false                                                *
+* Purporse : check wheter given address is valid or not                 *
 ************************************************************************/
  /*added function */
 bool invalid_addr(void* addr){
@@ -320,6 +319,9 @@ bool invalid_addr(void* addr){
   //under CODE segment
   if (addr <=(void*)0x08048000)
     return true;
-  
+
+  if (!pagedir_get_page (t->pagedir, upage)
+    return true;
+    
   return false;
 }
