@@ -249,7 +249,7 @@ int filesize(int fd)
 * when function is Called                                               *
 ************************************************************************/
  /*added function */
-int read (int fd, void *buffer, unsigned length){
+int read (int fd, void *buffer, unsigned length)
 {
   //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
   if(invalid_addr(buffer))
@@ -270,7 +270,6 @@ int read (int fd, void *buffer, unsigned length){
 * when function is Called                                               *
 ************************************************************************/
  /*added function */
-
 int write(int fd, const void *buffer, unsigned size)
 {
   //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
@@ -433,4 +432,3 @@ get_kernel_addr(void* addr){
     exit(-1);
   return kernel_addr;
 }
-
