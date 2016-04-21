@@ -334,8 +334,9 @@ bool invalid_addr(void* addr){
 
 void * 
 get_kernel_addr(void* addr){
-  void * kernel_addr;
-  if(!kernel_addr = pagedir_get_page (thread_current()->pagedir, addr))
+  void * kernel_addr = pagedir_get_page (thread_current()->pagedir, addr);
+  if(!kernel_addr)
     exit(-1);
+  return kernel_addr;
 }
 
