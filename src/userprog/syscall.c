@@ -307,7 +307,7 @@ void get_args(void* esp, int *args, int argsnum)
   for(i=0; i<argsnum; i++)
     {
       esp_copy += 1;
-      if(invalid_addr(esp_copy))
+      if(invalid_addr(*esp_copy))
         exit(-1);
       args[i] = *esp_copy;
     }
