@@ -184,8 +184,6 @@ create (const char *file, unsigned initial_size){
   bool success;
   if (file == NULL)
     exit(-1);
-  if (!invalid_addr(file))
-    exit(-1);
   success = filesys_create(file, initial_size);
   return success;
 }
@@ -309,6 +307,8 @@ void get_args(void* esp, int *args, int argsnum)
   for(i=0; i<argsnum; i++)
     {
       esp_copy += 1;
+      if (!invalid_addr(esp_copy))
+        exit(-1);
       args[i] = *esp_copy;
     }
 }
@@ -324,7 +324,7 @@ bool invalid_addr(void* addr){
   if (!is_user_vaddr(addr))
     return true;
   //under CODE segment
-  if (addr <=(void*)0x08048000)
+  if (addr <(void*)0x08048000)
     return true;
 
   // if (!pagedir_get_page (thread_current()->pagedir, addr))
