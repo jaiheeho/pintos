@@ -259,7 +259,6 @@ int read (int fd, void *buffer, unsigned length){
       //error
       return -1;
     }
-
   return 0;
 }
 
@@ -292,6 +291,7 @@ int write(int fd, const void *buffer, unsigned size)
       struct file *file = get_struct_file(fd);
       return file_write(file, buffer, size);
     }
+    return 0;
 }
 
 /************************************************************************
