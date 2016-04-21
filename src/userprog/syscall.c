@@ -327,8 +327,8 @@ bool invalid_addr(void* addr){
   if (addr <=(void*)0x08048000)
     return true;
 
-  if (!pagedir_get_page (thread_current()->pagedir, addr))
-     return true;
+  // if (!pagedir_get_page (thread_current()->pagedir, addr))
+  //    return true;
 
   return false;
 }
