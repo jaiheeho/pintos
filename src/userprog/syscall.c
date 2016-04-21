@@ -111,8 +111,7 @@ syscall_handler (struct intr_frame *f UNUSED)
 * FUNCTION : halt                                                       *
 * Input : NONE                                                          *
 * Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Purporse : system halt                                                *
 ************************************************************************/
  /*added function */
 void
@@ -124,10 +123,9 @@ halt (void)
 
 /************************************************************************
 * FUNCTION : exit                                                       *
-* Input : NONE                                                          *
+* Input : status                                                        *
 * Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Purporse : exit process with exit exit_status                         *
 ************************************************************************/
  /*added function */
 void
@@ -144,10 +142,9 @@ exit(int status)
 
 /************************************************************************
 * FUNCTION : exec                                                       *
-* Input : NONE                                                          *
+* Input : cmd_line                                                      *
 * Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Purporse : execute new process                                        *
 ************************************************************************/
  /*added function */
 pid_t
@@ -156,28 +153,25 @@ exec (const char *cmd_line)
   pid_t process_id =  process_execute(cmd_line);
   return process_id;
 }
+
 /************************************************************************
 * FUNCTION : wait                                                       *
-* Input : NONE                                                          *
-* Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Input : pid_t                                                         *
+* Output : child(=pid) 's  exit status                                  *
+* Purporse : wait for the child process with pid to exit and return     *
+* child's exit status                                                   *
 ************************************************************************/
  /*added function */
 int 
 wait(int pid){
-  //printf("syscall wait : THREAD <%s> pid : %d\n", thread_name(), pid);
-  int retval;
-  retval = process_wait(pid);
-  return retval;
+  return process_wait(pid);;
 }
 
 /************************************************************************
 * FUNCTION : create                                                     *
-* Input : NONE                                                          *
-* Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Input : file, initial_size                                            *
+* Output : true of false                                                *
+* Purporse : create new file with file name and initial size            *
 ************************************************************************/
  /*added function */
 bool 
@@ -188,12 +182,12 @@ create (const char *file, unsigned initial_size){
   success = filesys_create(file, initial_size);
   return success;
 }
+
 /************************************************************************
 * FUNCTION : remove                                                     *
-* Input : NONE                                                          *
-* Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Input : file                                                          *
+* Output : true of false                                                *
+* Purporse : remove file with file name                                 *
 ************************************************************************/
  /*added function */
 bool
@@ -203,6 +197,7 @@ remove (const char *file)
   success = filesys_remove(file);
   return success;
 }
+
 /************************************************************************
 * FUNCTION : open                                                       *
 * Input : NONE                                                          *
@@ -319,9 +314,10 @@ void get_args(void* esp, int *args, int argsnum)
 ************************************************************************/
  /*added function */
 bool invalid_addr(void* addr){
+  //check whether it is user addr
   if (!is_user_vaddr(addr))
     return true;
-
+  //under CODE segment
   if (addr <=(void*)0x08048000)
     return true;
   
