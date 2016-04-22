@@ -344,12 +344,10 @@ int write(int fd, const void *buffer, unsigned length)
 
 void seek (int fd, unsigned position)
 {
-  if(fd == 0)
-  {
-    //error
+  struct file *file = get_struct_file(fd);
+  if (!file)
     return;
-  }
-  return;
+  file_seek(file, position);
 }
 
 /************************************************************************
@@ -362,13 +360,10 @@ void seek (int fd, unsigned position)
  /*added function */
 unsigned tell (int fd)
 {
-  if(fd == 0)
-    {
-      //error
-      return -1;
-    }
-
-  return 0;
+  struct file *file = get_struct_file(fd);
+  if (!file)
+    return -1;
+  return file_tell(file);
 }
 
 /************************************************************************
