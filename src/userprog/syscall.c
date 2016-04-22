@@ -285,11 +285,11 @@ int filesize(int fd)
 int read (int fd, void *buffer, unsigned length)
 {
   uint32_t i;
-  char* buf_char = buffer;
+  uint8_t* buf_char = buffer;
   int retval;
-  if(invalid_addr(buffer) || invalid_addr(buffer + length-1))
+  if(invalid_addr(buf_char) || invalid_addr(buf_char + length-1))
     exit(-1);
-  sema_down(&filesys_global_lock);
+
   if(fd == 0)
   {
     for(i = 0; i<length; i++)
@@ -305,6 +305,7 @@ int read (int fd, void *buffer, unsigned length)
   }
   else
   {
+    sema_down(&filesys_global_lock);
     struct file *file = get_struct_file(fd);
     if (!file)
     {
@@ -312,8 +313,8 @@ int read (int fd, void *buffer, unsigned length)
       return -1;
     }
     retval = file_read(file, buffer, length);
+    sema_up(&filesys_global_lock);
   }
-  sema_up(&filesys_global_lock);
   return retval;
 }
 
@@ -330,7 +331,6 @@ int write(int fd, const void *buffer, unsigned length)
   int retval;
   if(invalid_addr((void*)buffer) || invalid_addr((void*)(buffer + length-1)))
     exit(-1);
-  sema_down(&filesys_global_lock);
   if(fd <= 0)
     {
       //error
@@ -343,6 +343,7 @@ int write(int fd, const void *buffer, unsigned length)
     }
   else
     {
+      sema_down(&filesys_global_lock);
       struct file *file = get_struct_file(fd);
       if (!file)
       {
@@ -350,8 +351,8 @@ int write(int fd, const void *buffer, unsigned length)
         return -1;
       }
       retval = file_write(file, buffer, length);
+      sema_up(&filesys_global_lock);
     }
-  sema_up(&filesys_global_lock);
 
   return retval;
 }
