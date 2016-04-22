@@ -4,11 +4,13 @@
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/init.h" // ADDED HEADER
+#include "threads/vaddr.h" // ADDED HEADER
+#include "threads/malloc.h" // ADDED HEADER
 #include "userprog/process.h" // ADDED HEADER
+#include "userprog/pagedir.h" // ADDED HEADER
 #include "filesys/file.h" // ADDED HEADER
 #include "filesys/filesys.h" // ADDED HEADER
 #include "lib/user/syscall.h" // ADDED HEADER
-#include "threads/vaddr.h" // ADDED HEADER
 #include <stdlib.h> // ADDED HEADER
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
@@ -66,8 +68,7 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_EXEC:
       get_args(f->esp, args, 1);
-
-      retval=exec(args[0]);
+      retval=exec((char *)args[0]);
       returnZ=true;
       break;
     case SYS_WAIT:
@@ -77,17 +78,17 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_CREATE:
       get_args(f->esp, args, 2);
-      retval=create(args[0],args[1]);
+      retval=create((char *)args[0],args[1]);
       returnZ=true;
       break;
     case SYS_REMOVE:
       break;
       get_args(f->esp, args, 1);
-      retval=remove(args[0]);
+      retval=remove((char *)args[0]);
       returnZ=true;
     case SYS_OPEN:
       get_args(f->esp, args, 1);
-      retval = open(args[0]);
+      retval = open((char *)args[0]);
       returnZ=true;
       break;
     case SYS_FILESIZE:
@@ -97,12 +98,13 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_READ:
       get_args(f->esp, args, 3);
+      retval = write(args[0], (void *)args[1], args[2]);
       returnZ=true;
       break;
     case SYS_WRITE:
       //printf("SYS_WRITE\n");
       get_args(f->esp, args, 3);
-      retval = write(args[0], args[1], args[2]);
+      retval = write(args[0], (void *)args[1], args[2]);
       returnZ=true;
       break;
     }
