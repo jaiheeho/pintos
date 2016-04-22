@@ -256,18 +256,18 @@ int read (int fd, void *buffer, unsigned length)
   //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
   if(invalid_addr(buffer) || invalid_addr(buffer + length))
     exit(-1);
-  if(fd <= 0)
-  {
-    //error
-    return -1;
-  }
-  if(fd == 1)
+  if(fd == 0)
   {
     for(i = 0; i<length; i++)
     {
       *((char*)buffer +i) = input_getc();
     }
-    return length;
+    return length;    
+  }
+  if(fd == 1)
+  {
+    //error
+    return -1;
   }
   return 0;
 }
