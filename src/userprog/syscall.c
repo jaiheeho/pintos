@@ -285,9 +285,9 @@ int filesize(int fd)
 int read (int fd, void *buffer, unsigned length)
 {
   uint32_t i;
-  uint8_t* buf_char = buffer;
+  char* buf_char = (char *) buffer;
   int retval;
-  if(invalid_addr(buf_char) || invalid_addr(buf_char + length-1))
+  if(invalid_addr(buf_char) || invalid_addr(buffer + length-1))
     exit(-1);
 
   if(fd == 0)
