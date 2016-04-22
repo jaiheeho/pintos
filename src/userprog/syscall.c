@@ -251,14 +251,25 @@ int filesize(int fd)
  /*added function */
 int read (int fd, void *buffer, unsigned length)
 {
+  int actual_read = 0;
+  int i;
   //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
-  if(invalid_addr(buffer))
+  if(invalid_addr(buffer) || invalid_addr(buffer + length))
     exit(-1);
-  if(fd == 0)
+  if(fd <= 0)
+  {
+    //error
+    readbuf
+    return -1;
+  }
+  if(fd == 1)
+  {
+    for(i = 0; i<length; i++)
     {
-      //error
-      return -1;
+      buffer[i] =  input_getc();
     }
+    return length;
+  }
   return 0;
 }
 
@@ -270,25 +281,26 @@ int read (int fd, void *buffer, unsigned length)
 * when function is Called                                               *
 ************************************************************************/
  /*added function */
-int write(int fd, const void *buffer, unsigned size)
+int write(int fd, const void *buffer, unsigned length)
 {
-  //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
-  if(invalid_addr(buffer))
+  //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, length);
+  int actual_written = 0;
+  if(invalid_addr(buffer) || invalid_addr(buffer + length))
     exit(-1);
-  if(fd == 0)
+  if(fd <= 0)
     {
       //error
       return -1;
     }
   else if(fd == 1)
     {
-      putbuf(buffer, size);
-      return size;
+      putbuf(buffer, length);
+      return length;
     }
   else
     {
       struct file *file = get_struct_file(fd);
-      return file_write(file, buffer, size);
+      return file_write(file, buffer, length);
     }
     return 0;
 }
@@ -423,12 +435,4 @@ bool invalid_addr(void* addr){
   if(!pagedir_get_page (thread_current()->pagedir, addr))
     exit(-1);
   return false;
-}
-
-void * 
-get_kernel_addr(void* addr){
-  void * kernel_addr = pagedir_get_page (thread_current()->pagedir, addr);
-  if(!kernel_addr)
-    exit(-1);
-  return kernel_addr;
 }
