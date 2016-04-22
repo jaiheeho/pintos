@@ -294,7 +294,7 @@ int read (int fd, void *buffer, unsigned length)
   {
     for(i = 0; i<length; i++)
     {
-      *((char*)buffer +i) = input_getc();
+      *(buf_char + i) = input_getc();
     }
     retval =  length;    
   }
