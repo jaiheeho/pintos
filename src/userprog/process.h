@@ -9,7 +9,6 @@ void process_exit (void);
 void process_activate (void);
 
 /***** ADDED STUFF *****/
-
 struct file_descriptor
 {
   struct file *file;
@@ -17,4 +16,8 @@ struct file_descriptor
   struct list_elem elem;
 };
 
+//for global file locking, initialized to 1 sema_init(&filesys_global_lock , 1) at thread.c
+extern struct semaphore filesys_global_lock;
+
+/***** END of ADDED STUFF *****/
 #endif /* userprog/process.h */

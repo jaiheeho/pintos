@@ -98,7 +98,7 @@ struct thread
     struct list lock_holdings;
 
     //For Project 2
-    struct list file_descriptor_table;
+    struct list file_descriptor_table;  /* save the list_of_file_descriptor */
     struct list child_procs;            /* list of child processes */
     struct thread *parent_proc;         /* parent processes */
     struct lock thread_data_lock;       /* lock make thread data safe */     
@@ -109,6 +109,7 @@ struct thread
     int wait_status;                    /* store child's exit status when parent wait for it */
     bool is_process;                    /* check whether thread is proces of kernel thread*/
     bool is_loaded;                     /* check whether thread's child process is loaded successfully */
+    int fd_given;                       /* check last fd number give for the opened file */
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */

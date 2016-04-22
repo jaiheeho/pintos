@@ -4,12 +4,15 @@
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/init.h" // ADDED HEADER
+#include "threads/vaddr.h" // ADDED HEADER
+#include "threads/malloc.h" // ADDED HEADER
 #include "userprog/process.h" // ADDED HEADER
+#include "userprog/pagedir.h" // ADDED HEADER
 #include "filesys/file.h" // ADDED HEADER
 #include "filesys/filesys.h" // ADDED HEADER
 #include "lib/user/syscall.h" // ADDED HEADER
-#include "threads/vaddr.h" // ADDED HEADER
 #include <stdlib.h> // ADDED HEADER
+#include "devices/input.h" // ADDED HEADER
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
 
@@ -39,7 +42,7 @@ static void
 syscall_handler (struct intr_frame *f UNUSED) 
 {
   bool returnZ = false;
-  int retval;
+  int retval=0;
 
   uint32_t syscall_num;
   int args[12];
@@ -66,8 +69,7 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_EXEC:
       get_args(f->esp, args, 1);
-
-      retval=exec(args[0]);
+      retval=exec((char *)args[0]);
       returnZ=true;
       break;
     case SYS_WAIT:
@@ -77,17 +79,17 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_CREATE:
       get_args(f->esp, args, 2);
-      retval=create(args[0],args[1]);
+      retval=create((char *)args[0],args[1]);
       returnZ=true;
       break;
     case SYS_REMOVE:
       break;
       get_args(f->esp, args, 1);
-      retval=remove(args[0]);
+      retval=remove((char *)args[0]);
       returnZ=true;
     case SYS_OPEN:
       get_args(f->esp, args, 1);
-      retval = open(args[0]);
+      retval = open((char *)args[0]);
       returnZ=true;
       break;
     case SYS_FILESIZE:
@@ -97,12 +99,13 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_READ:
       get_args(f->esp, args, 3);
+      retval = write(args[0], (void *)args[1], args[2]);
       returnZ=true;
       break;
     case SYS_WRITE:
       //printf("SYS_WRITE\n");
       get_args(f->esp, args, 3);
-      retval = write(args[0], args[1], args[2]);
+      retval = write(args[0], (void *)args[1], args[2]);
       returnZ=true;
       break;
     }
@@ -157,7 +160,7 @@ pid_t
 exec (const char *cmd_line)
 {
   pid_t process_id;
-  if(invalid_addr(cmd_line))
+  if(invalid_addr((void*)cmd_line))
     exit(-1);
   process_id =  process_execute(cmd_line);
   return process_id;
@@ -186,9 +189,11 @@ wait(int pid){
 bool 
 create (const char *file, unsigned initial_size){
   bool success;
-  if(invalid_addr(file))
+  if(invalid_addr((void*)file))
     exit(-1);
+  sema_down(&filesys_global_lock);
   success = filesys_create(file, initial_size);
+  sema_up(&filesys_global_lock);
   return success;
 }
 
@@ -203,9 +208,11 @@ bool
 remove (const char *file)
 {
   bool success;
-  if(invalid_addr(file))
+  if(invalid_addr((void*)file))
     exit(-1);
+  sema_down(&filesys_global_lock);
   success = filesys_remove(file);
+  sema_up(&filesys_global_lock);
   return success;
 }
 
@@ -213,18 +220,40 @@ remove (const char *file)
 * FUNCTION : open                                                       *
 * Input : NONE                                                          *
 * Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Purporse : Open file with file name by using filesys_open             *
+* and return file descriptor                                            *
 ************************************************************************/
  /*added function */
 int 
 open(const char *file)
 {
-  if(invalid_addr(file))
-    exit(-1);
 
-  return;
-  struct file *filestruct = filesys_open(file);
+  struct file *filestruct;
+  struct thread *curr = thread_current(); 
+  
+  if(invalid_addr((void*)file))
+    exit(-1);
+  sema_down(&filesys_global_lock);
+  //open file with name (file)
+  filestruct = filesys_open(file);
+  //check wheter open was successful
+  if (!filestruct)
+  {
+    sema_up(&filesys_global_lock);
+    return -1;
+  }
+  //allocate memory
+  struct file_descriptor *new_fd;
+  new_fd = malloc (sizeof (struct file_descriptor));
+  if (!new_fd)
+    return -1;
+
+  //initialize new_fd
+  new_fd->file = filestruct;
+  new_fd->fd =  curr->fd_given ++;
+  list_push_back(&curr->file_descriptor_table, &new_fd->elem);
+  sema_up(&filesys_global_lock);
+  return new_fd->fd;
 }
 
 /************************************************************************
@@ -238,7 +267,13 @@ open(const char *file)
 int filesize(int fd)
 {
   struct file *file = get_struct_file(fd);
-  return file_length(file);
+  int size;
+  if (!file)
+    return -1;
+  sema_down(&filesys_global_lock);
+  size = file_length(file);
+  sema_up(&filesys_global_lock);
+  return size;
 }
 
 /************************************************************************
@@ -251,15 +286,38 @@ int filesize(int fd)
  /*added function */
 int read (int fd, void *buffer, unsigned length)
 {
-  //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
-  if(invalid_addr(buffer))
+  uint32_t i;
+  uint8_t* buf_char = (uint8_t *) buffer;
+  int retval;
+  if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1);
+
   if(fd == 0)
+  {
+    for(i = 0; i<length; i++)
     {
-      //error
+      *(buf_char + i) = input_getc();
+    }
+    retval = length;
+  }
+  else if(fd == 1)
+  {
+    //error
+    retval = -1;
+  }
+  else
+  {
+    sema_down(&filesys_global_lock);
+    struct file *file = get_struct_file(fd);
+    if (!file)
+    {
+      sema_up(&filesys_global_lock);
       return -1;
     }
-  return 0;
+    retval = file_read(file, buffer, length);
+    sema_up(&filesys_global_lock);
+  }
+  return retval;
 }
 
 /************************************************************************
@@ -270,27 +328,36 @@ int read (int fd, void *buffer, unsigned length)
 * when function is Called                                               *
 ************************************************************************/
  /*added function */
-int write(int fd, const void *buffer, unsigned size)
+int write(int fd, const void *buffer, unsigned length)
 {
-  //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
-  if(invalid_addr(buffer))
+  int retval;
+  uint8_t* buf_char = (uint8_t *) buffer;
+  if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1);
-  if(fd == 0)
+  if(fd <= 0)
     {
       //error
-      return -1;
+      retval = -1;
     }
   else if(fd == 1)
     {
-      putbuf(buffer, size);
-      return size;
+      putbuf(buf_char, length);
+      retval = length;
     }
   else
     {
+      sema_down(&filesys_global_lock);
       struct file *file = get_struct_file(fd);
-      return file_write(file, buffer, size);
+      if (!file)
+      {
+        sema_up(&filesys_global_lock);
+        return -1;
+      }
+      retval = file_write(file, buffer, length);
+      sema_up(&filesys_global_lock);
     }
-    return 0;
+
+  return retval;
 }
 
 /************************************************************************
@@ -304,12 +371,12 @@ int write(int fd, const void *buffer, unsigned size)
 
 void seek (int fd, unsigned position)
 {
-  if(fd == 0)
-  {
-    //error
+  struct file *file = get_struct_file(fd);
+  if (!file)
     return;
-  }
-  return;
+  sema_down(&filesys_global_lock);
+  file_seek(file, position);
+  sema_up(&filesys_global_lock);
 }
 
 /************************************************************************
@@ -322,13 +389,14 @@ void seek (int fd, unsigned position)
  /*added function */
 unsigned tell (int fd)
 {
-  if(fd == 0)
-    {
-      //error
-      return -1;
-    }
-
-  return 0;
+  struct file *file = get_struct_file(fd);
+  int off;
+  if (!file)
+    return -1;
+  sema_down(&filesys_global_lock);
+  off = file_tell(file);
+  sema_up(&filesys_global_lock);
+  return off;
 }
 
 /************************************************************************
@@ -341,13 +409,15 @@ unsigned tell (int fd)
  /*added function */
 void close (int fd)
 {
-  if(fd == 0)
-    {
-      //error
-      return;
-    }
-
+  struct file_descriptor *fdt;
+  fdt = get_struct_fd_struct(fd);
+  if (!fdt)
     return;
+  sema_down(&filesys_global_lock);
+  list_remove(&fdt->elem);
+  file_close(fdt->file);
+  free(fdt);
+  sema_up(&filesys_global_lock);
 }
 
 /************************************************************************
@@ -378,6 +448,27 @@ struct file* get_struct_file(int fd)
   return NULL;
 }
 
+struct file_descriptor* 
+get_struct_fd_struct(int fd)
+{
+  struct thread* curr = thread_current();
+  struct list *fdt = &curr->file_descriptor_table;
+  struct list_elem *iter_fd;
+  struct file_descriptor *f;
+
+  for(iter_fd = list_begin(fdt); iter_fd != list_tail(fdt);
+      iter_fd = list_next(iter_fd))
+    {
+      f = list_entry(iter_fd, struct file_descriptor, elem);
+      if(fd == f->fd)
+  {
+    return f;
+  }
+    }
+  return NULL;
+}
+
+
 
 /************************************************************************
 * FUNCTION : get_args                                                   *
@@ -393,7 +484,7 @@ void get_args(void* esp, int *args, int argsnum)
   int* esp_copy = (int*)esp;
 
   //in order to check whether address of arguments exceed PHYS_BASE [hint from : sc_bad_arg test]
-  if (esp_copy + argsnum  >= PHYS_BASE)
+  if ((void*)(esp_copy + argsnum) >= PHYS_BASE)
     exit(-1);
 
   for(i=0; i<argsnum; i++)
@@ -423,12 +514,4 @@ bool invalid_addr(void* addr){
   if(!pagedir_get_page (thread_current()->pagedir, addr))
     exit(-1);
   return false;
-}
-
-void * 
-get_kernel_addr(void* addr){
-  void * kernel_addr = pagedir_get_page (thread_current()->pagedir, addr);
-  if(!kernel_addr)
-    exit(-1);
-  return kernel_addr;
 }

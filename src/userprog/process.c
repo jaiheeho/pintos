@@ -22,6 +22,11 @@
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
+/***** ADDED CODE *****/
+//for global file locking
+struct semaphore filesys_global_lock;
+/***** END OF ADDED CODE *****/
+
 
 /************************************************************************
 * FUNCTION : process_execute                                            *
@@ -93,7 +98,13 @@ start_process (void *f_name)
   if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
+
+  /***** ADDED CODE *****/
+  //addeed filesys_lock
+  sema_down(&filesys_global_lock);
   success = load (file_name, &if_.eip, &if_.esp);
+  sema_up(&filesys_global_lock);
+  /***** END OF ADDED CODE *****/
 
   /* If load failed, quit. */
   palloc_free_page (file_name);
@@ -105,6 +116,12 @@ start_process (void *f_name)
     list_remove(&thread_current()->child_elem);
     thread_exit ();
   }
+
+  // initialize file descriptor table and is_process flag (because this is process)
+  list_init(&thread_current()->file_descriptor_table);
+  thread_current()->is_process = true;
+  thread_current()->fd_given = 2;
+
   /***** END OF ADDED CODE *****/
 
   /* Start the user process by simulating a return from an
@@ -347,10 +364,6 @@ load (const char *file_name, void (**eip) (void), void **esp)
 
   token_ptr = strtok_r(file_name, " ", &strtok_r_ptr);
 
-
-  // initialize file descriptor table(this is in struct thread)
-  list_init(&t->file_descriptor_table);
-  t->is_process=true;
   /*END OF ADDED CODE*/
 
   /* Allocate and activate page directory. */
