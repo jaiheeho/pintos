@@ -289,7 +289,7 @@ int read (int fd, void *buffer, unsigned length)
   uint32_t i;
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
-  if(invalid_addr(buf_char) || invalid_addr(buf_char + length-1))
+  if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1);
 
   if(fd == 0)
