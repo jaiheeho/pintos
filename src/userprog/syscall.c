@@ -312,7 +312,7 @@ int read (int fd, void *buffer, unsigned length)
       sema_up(&filesys_global_lock);
       return -1;
     }
-    retval = file_read(file, buffer, length);
+    retval = file_read(file, buf_char, length);
     sema_up(&filesys_global_lock);
   }
   return retval;
@@ -329,7 +329,8 @@ int read (int fd, void *buffer, unsigned length)
 int write(int fd, const void *buffer, unsigned length)
 {
   int retval;
-  if(invalid_addr((void*)buffer) || invalid_addr((void*)(buffer + length-1)))
+  char* buf_char = (char *) buffer;
+  if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1);
   if(fd <= 0)
     {
@@ -338,7 +339,7 @@ int write(int fd, const void *buffer, unsigned length)
     }
   else if(fd == 1)
     {
-      putbuf(buffer, length);
+      putbuf(buf_char, length);
       retval = length;
     }
   else
@@ -350,7 +351,7 @@ int write(int fd, const void *buffer, unsigned length)
         sema_up(&filesys_global_lock);
         return -1;
       }
-      retval = file_write(file, buffer, length);
+      retval = file_write(file, buf_char, length);
       sema_up(&filesys_global_lock);
     }
 
