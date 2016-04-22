@@ -866,8 +866,8 @@ init_thread (struct thread *t, const char *name, int priority)
     list_push_back (&thread_current()->child_procs, &t->child_elem);
     t->parent_proc = thread_current();
     //FOr syscall filedecripter
-    list_init(&thread_current()->file_descriptor_table);
-    thread_current()->fd_given = 2;  
+    // list_init(&thread_current()->file_descriptor_table);
+    // thread_current()->fd_given = 2;  
   }
   else
   {
