@@ -259,14 +259,13 @@ int read (int fd, void *buffer, unsigned length)
   if(fd <= 0)
   {
     //error
-    readbuf
     return -1;
   }
   if(fd == 1)
   {
     for(i = 0; i<length; i++)
     {
-      buffer[i] =  input_getc();
+      *((char*)buffer +i) = input_getc();
     }
     return length;
   }
