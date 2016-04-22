@@ -874,6 +874,12 @@ init_thread (struct thread *t, const char *name, int priority)
   t->is_process = false;
   t->exit_status = 0;
   t->is_loaded = true;
+  //FOR GLOBAL FILESYS LOCK in proj2//
+  if (thread_start_complete == 0)
+  {
+    sema_init(&filesys_global_lock, 1);
+  }
+
   ///WHERE WE ADDED END/////
 }
 

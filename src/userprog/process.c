@@ -22,6 +22,11 @@
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
+/***** ADDED CODE *****/
+//for global file locking
+struct semaphore filesys_global_lock;
+/***** END OF ADDED CODE *****/
+
 
 /************************************************************************
 * FUNCTION : process_execute                                            *
@@ -93,7 +98,13 @@ start_process (void *f_name)
   if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
+
+  /***** ADDED CODE *****/
+  //addeed filesys_lock
+  sema_down(&filesys_global_lock);
   success = load (file_name, &if_.eip, &if_.esp);
+  sema_up(&filesys_global_lock);
+  /***** END OF ADDED CODE *****/
 
   /* If load failed, quit. */
   palloc_free_page (file_name);

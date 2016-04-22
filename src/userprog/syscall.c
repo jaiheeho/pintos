@@ -191,7 +191,9 @@ create (const char *file, unsigned initial_size){
   bool success;
   if(invalid_addr((void*)file))
     exit(-1);
+  sema_down(&filesys_global_lock);
   success = filesys_create(file, initial_size);
+  sema_up(&filesys_global_lock);
   return success;
 }
 
@@ -208,7 +210,9 @@ remove (const char *file)
   bool success;
   if(invalid_addr((void*)file))
     exit(-1);
+  sema_down(&filesys_global_lock);
   success = filesys_remove(file);
+  sema_up(&filesys_global_lock);
   return success;
 }
 
@@ -229,9 +233,11 @@ open(const char *file)
   
   if(invalid_addr((void*)file))
     exit(-1);
+  sema_down(&filesys_global_lock);
   //open file with name (file)
   filestruct = filesys_open(file);
   //check wheter open was successful
+  sema_up(&filesys_global_lock);
   if (!filestruct)
     return -1;
 
@@ -259,9 +265,13 @@ open(const char *file)
 int filesize(int fd)
 {
   struct file *file = get_struct_file(fd);
+  int size;
   if (!file)
     return -1;
-  return file_length(file);
+  sema_down(&filesys_global_lock);
+  size = file_length(file);
+  sema_up(&filesys_global_lock);
+  return size;
 }
 
 /************************************************************************
@@ -277,30 +287,35 @@ int read (int fd, void *buffer, unsigned length)
   uint32_t i;
   char key;
   char* buf_char = buffer;
+  int retval;
   if(invalid_addr(buffer) || invalid_addr(buffer + length-1))
     exit(-1);
+  sema_down(&filesys_global_lock);
   if(fd == 0)
   {
     for(i = 0; i<length; i++)
     {
       buf_char[i] = input_getc();
     }
-    return length;    
+    retval =  length;    
   }
   else if(fd == 1)
   {
     //error
-    return -1;
+    retval = -1;
   }
   else
   {
     struct file *file = get_struct_file(fd);
     if (!file)
+    {
+      sema_up(&filesys_global_lock);
       return -1;
-
-    return file_read(file, buffer, length);
+    }
+    retval = file_read(file, buffer, length);
   }
-  return 0;
+  sema_up(&filesys_global_lock);
+  return retval;
 }
 
 /************************************************************************
@@ -313,26 +328,33 @@ int read (int fd, void *buffer, unsigned length)
  /*added function */
 int write(int fd, const void *buffer, unsigned length)
 {
+  int retval;
   if(invalid_addr((void*)buffer) || invalid_addr((void*)(buffer + length-1)))
     exit(-1);
+  sema_down(&filesys_global_lock);
   if(fd <= 0)
     {
       //error
-      return -1;
+      retval = -1;
     }
   else if(fd == 1)
     {
       putbuf(buffer, length);
-      return length;
+      retval = length;
     }
   else
     {
       struct file *file = get_struct_file(fd);
       if (!file)
+      {
         return -1;
-      return file_write(file, buffer, length);
+        sema_up(&filesys_global_lock);
+      }
+      retval = file_write(file, buffer, length);
     }
-    return 0;
+  sema_up(&filesys_global_lock);
+
+  return retval;
 }
 
 /************************************************************************
@@ -349,7 +371,9 @@ void seek (int fd, unsigned position)
   struct file *file = get_struct_file(fd);
   if (!file)
     return;
+  sema_down(&filesys_global_lock);
   file_seek(file, position);
+  sema_up(&filesys_global_lock);
 }
 
 /************************************************************************
@@ -363,9 +387,13 @@ void seek (int fd, unsigned position)
 unsigned tell (int fd)
 {
   struct file *file = get_struct_file(fd);
+  int off;
   if (!file)
     return -1;
-  return file_tell(file);
+  sema_down(&filesys_global_lock);
+  off = file_tell(file);
+  sema_up(&filesys_global_lock);
+  return off;
 }
 
 /************************************************************************
@@ -380,10 +408,13 @@ void close (int fd)
 {
   struct file_descriptor *fdt;
   fdt = get_struct_fd_struct(fd);
-
+  if (!fdt)
+    return;
+  sema_down(&filesys_global_lock);
   list_remove(&fdt->elem);
   file_close(fdt->file);
   free(fdt);
+  sema_up(&filesys_global_lock);
 }
 
 /************************************************************************
