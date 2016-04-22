@@ -285,7 +285,7 @@ int filesize(int fd)
 int read (int fd, void *buffer, unsigned length)
 {
   uint32_t i;
-  char* buf_char = (char *) buffer;
+  uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
   if(invalid_addr(buf_char) || invalid_addr(buffer + length-1))
     exit(-1);
@@ -294,7 +294,7 @@ int read (int fd, void *buffer, unsigned length)
   {
     for(i = 0; i<length; i++)
     {
-      buf_char[i] = input_getc();
+      *((char*)buffer +i) = input_getc();
     }
     retval =  length;    
   }
@@ -312,7 +312,7 @@ int read (int fd, void *buffer, unsigned length)
       sema_up(&filesys_global_lock);
       return -1;
     }
-    retval = file_read(file, buf_char, length);
+    retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
   }
   return retval;
@@ -329,7 +329,7 @@ int read (int fd, void *buffer, unsigned length)
 int write(int fd, const void *buffer, unsigned length)
 {
   int retval;
-  char* buf_char = (char *) buffer;
+  uint8_t* buf_char = (uint8_t *) buffer;
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1);
   if(fd <= 0)
@@ -351,7 +351,7 @@ int write(int fd, const void *buffer, unsigned length)
         sema_up(&filesys_global_lock);
         return -1;
       }
-      retval = file_write(file, buf_char, length);
+      retval = file_write(file, buffer, length);
       sema_up(&filesys_global_lock);
     }
 
