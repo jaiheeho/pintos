@@ -298,7 +298,7 @@ int read (int fd, void *buffer, unsigned length)
     {
       *(buf_char + i) = input_getc();
     }
-    retval =  length;    
+    retval = length;
   }
   else if(fd == 1)
   {
