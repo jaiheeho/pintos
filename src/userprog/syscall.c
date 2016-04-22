@@ -376,7 +376,7 @@ void close (int fd)
   struct file_descriptor *fdt;
   fdt = get_struct_fd_struct(fd);
 
-  list_remove(&fdt);
+  list_remove(&fdt->elem);
   file_close(fdt->file);
   free(fdt);
 }
