@@ -237,10 +237,11 @@ open(const char *file)
   //open file with name (file)
   filestruct = filesys_open(file);
   //check wheter open was successful
-  sema_up(&filesys_global_lock);
   if (!filestruct)
+  {
+    sema_up(&filesys_global_lock);
     return -1;
-
+  }
   //allocate memory
   struct file_descriptor *new_fd;
   new_fd = malloc (sizeof (struct file_descriptor));
@@ -251,6 +252,7 @@ open(const char *file)
   new_fd->file = filestruct;
   new_fd->fd =  curr->fd_given ++;
   list_push_back(&curr->file_descriptor_table, &new_fd->elem);
+  sema_up(&filesys_global_lock);
   return new_fd->fd;
 }
 
@@ -287,7 +289,7 @@ int read (int fd, void *buffer, unsigned length)
   uint32_t i;
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
-  if(invalid_addr(buf_char) || invalid_addr(buffer + length-1))
+  if(invalid_addr(buf_char) || invalid_addr(buf_char + length-1))
     exit(-1);
 
   if(fd == 0)
