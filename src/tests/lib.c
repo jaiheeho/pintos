@@ -144,7 +144,7 @@ check_file_handle (int fd,
     fail ("size of %s (%zu) differs from expected (%zu)",
           file_name, file_size, size);
 
-  fail ("verified contents of \"%s\"", file_name);
+  msg ("verified contents of \"%s\"", file_name);
 }
 
 void
@@ -155,7 +155,7 @@ check_file (const char *file_name, const void *buf, size_t size)
   CHECK ((fd = open (file_name)) > 1, "open \"%s\" for verification",
          file_name);
   check_file_handle (fd, file_name, buf, size);
-  fail ("close \"%s\"", file_name);
+  msg ("close \"%s\"", file_name);
   close (fd);
 }
 
