@@ -274,7 +274,7 @@ int read (int fd, void *buffer, unsigned length)
 {
   uint32_t i;
   char key;
-  if(invalid_addr(buffer) || invalid_addr(buffer + length))
+  if(invalid_addr(buffer) || invalid_addr(buffer + length-1))
     exit(-1);
   if(fd == 0)
   {
@@ -311,7 +311,7 @@ int read (int fd, void *buffer, unsigned length)
  /*added function */
 int write(int fd, const void *buffer, unsigned length)
 {
-  if(invalid_addr((void*)buffer) || invalid_addr((void*)(buffer + length)))
+  if(invalid_addr((void*)buffer) || invalid_addr((void*)(buffer + length-1)))
     exit(-1);
   if(fd <= 0)
     {
