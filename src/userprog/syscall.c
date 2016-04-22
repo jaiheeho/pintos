@@ -160,7 +160,7 @@ pid_t
 exec (const char *cmd_line)
 {
   pid_t process_id;
-  if(invalid_addr(cmd_line))
+  if(invalid_addr((void*)cmd_line))
     exit(-1);
   process_id =  process_execute(cmd_line);
   return process_id;
@@ -189,7 +189,7 @@ wait(int pid){
 bool 
 create (const char *file, unsigned initial_size){
   bool success;
-  if(invalid_addr(file))
+  if(invalid_addr((void*)file))
     exit(-1);
   success = filesys_create(file, initial_size);
   return success;
@@ -206,7 +206,7 @@ bool
 remove (const char *file)
 {
   bool success;
-  if(invalid_addr(file))
+  if(invalid_addr((void*)file))
     exit(-1);
   success = filesys_remove(file);
   return success;
@@ -227,7 +227,7 @@ open(const char *file)
   struct file *filestruct;
   struct thread *curr = thread_current(); 
   
-  if(invalid_addr(file))
+  if(invalid_addr((void*)file))
     exit(-1);
   //open file with name (file)
   filestruct = filesys_open(file);
@@ -272,7 +272,7 @@ int filesize(int fd)
  /*added function */
 int read (int fd, void *buffer, unsigned length)
 {
-  int i;
+  uint32_t i;
   char key;
   if(invalid_addr(buffer) || invalid_addr(buffer + length))
     exit(-1);
@@ -293,7 +293,7 @@ int read (int fd, void *buffer, unsigned length)
   else
   {
     struct file *file = get_struct_file(fd);
-    return file_read(fdt->file, buffer, length);
+    return file_read(file, buffer, length);
   }
 
   return 0;
@@ -309,9 +309,7 @@ int read (int fd, void *buffer, unsigned length)
  /*added function */
 int write(int fd, const void *buffer, unsigned length)
 {
-  //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, length);
-  int actual_written = 0;
-  if(invalid_addr(buffer) || invalid_addr(buffer + length))
+  if(invalid_addr((void*)buffer) || invalid_addr((void*)(buffer + length)))
     exit(-1);
   if(fd <= 0)
     {
