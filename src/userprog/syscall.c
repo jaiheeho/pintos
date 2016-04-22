@@ -369,13 +369,12 @@ unsigned tell (int fd)
  /*added function */
 void close (int fd)
 {
-  if(fd == 0)
-    {
-      //error
-      return;
-    }
+  struct file_descriptor *fdt;
+  fdt = get_struct_fd_struct(fd);
 
-    return;
+  list_remove(&fdt);
+  file_close(fdt->file);
+  free(fdt);
 }
 
 /************************************************************************
@@ -405,6 +404,26 @@ struct file* get_struct_file(int fd)
     }
   return NULL;
 }
+
+struct file* get_struct_fd_struct(int fd)
+{
+  struct thread* curr = thread_current();
+  struct list *fdt = &curr->file_descriptor_table;
+  struct list_elem *iter_fd;
+  struct file_descriptor *f;
+
+  for(iter_fd = list_begin(fdt); iter_fd != list_tail(fdt);
+      iter_fd = list_next(iter_fd))
+    {
+      f = list_entry(iter_fd, struct file_descriptor, elem);
+      if(fd == f->fd)
+  {
+    return f;
+  }
+    }
+  return NULL;
+}
+
 
 
 /************************************************************************

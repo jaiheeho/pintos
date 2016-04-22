@@ -21,6 +21,7 @@ unsigned tell (int fd);
 void close (int fd);
 
 struct file* get_struct_file(int fd);
+struct file* get_struct_fd_struct(int fd);
 bool invalid_addr(void *);
 void * get_kernel_addr(void*);
 
