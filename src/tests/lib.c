@@ -144,7 +144,7 @@ check_file_handle (int fd,
     fail ("size of %s (%zu) differs from expected (%zu)",
           file_name, file_size, size);
 
-  msg ("verified contents of \"%s\"", file_name);
+  fail ("verified contents of \"%s\"", file_name);
 }
 
 void
