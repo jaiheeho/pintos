@@ -248,7 +248,6 @@ open(const char *file)
     return -1;
 
   //initialize new_fd
-  printf("thread : %s fd : %d\n", thread_name(), curr->fd_given);
   new_fd->file = filestruct;
   new_fd->fd =  curr->fd_given ++;
   list_push_back(&curr->file_descriptor_table, &new_fd->elem);
