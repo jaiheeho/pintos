@@ -213,18 +213,35 @@ remove (const char *file)
 * FUNCTION : open                                                       *
 * Input : NONE                                                          *
 * Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Purporse : Open file with file name by using filesys_open             *
+* and return file descriptor                                            *
 ************************************************************************/
  /*added function */
 int 
 open(const char *file)
 {
+
+  struct file *filestruct;
+  struct thread *curr = thread_current(); 
+  
   if(invalid_addr(file))
     exit(-1);
+  //open file with name (file)
+  filestruct = filesys_open(file);
+  //check wheter open was successful
+  if (!filestruct)
+    return -1;
 
-  return;
-  struct file *filestruct = filesys_open(file);
+  //allocate memory
+  struct file_descriptor *new_fd;
+  new_fd = malloc (sizeof (struct file_descriptor));
+  if (!new_fd)
+    return -1;
+
+  //initialize new_fd
+  new_fd->file = filestruct;
+  new_fd->fd = ++ curr->fd_given;
+  list_insert(&curr->file_descriptor_table, &new_fd->elem);
 }
 
 /************************************************************************

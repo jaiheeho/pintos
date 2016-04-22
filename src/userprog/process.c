@@ -105,6 +105,12 @@ start_process (void *f_name)
     list_remove(&thread_current()->child_elem);
     thread_exit ();
   }
+
+  // initialize file descriptor table and is_process flag (because this is process)
+  list_init(&t->file_descriptor_table);
+  t->is_process = true;
+  t->fd_given = 1;
+
   /***** END OF ADDED CODE *****/
 
   /* Start the user process by simulating a return from an
@@ -347,10 +353,6 @@ load (const char *file_name, void (**eip) (void), void **esp)
 
   token_ptr = strtok_r(file_name, " ", &strtok_r_ptr);
 
-
-  // initialize file descriptor table(this is in struct thread)
-  list_init(&t->file_descriptor_table);
-  t->is_process=true;
   /*END OF ADDED CODE*/
 
   /* Allocate and activate page directory. */

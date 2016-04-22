@@ -9,12 +9,11 @@ void process_exit (void);
 void process_activate (void);
 
 /***** ADDED STUFF *****/
-
 struct file_descriptor
 {
   struct file *file;
   int fd;
   struct list_elem elem;
 };
-
+/***** END of ADDED STUFF *****/
 #endif /* userprog/process.h */
