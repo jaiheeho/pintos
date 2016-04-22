@@ -449,7 +449,7 @@ void get_args(void* esp, int *args, int argsnum)
   int* esp_copy = (int*)esp;
 
   //in order to check whether address of arguments exceed PHYS_BASE [hint from : sc_bad_arg test]
-  if (esp_copy + argsnum  >= (void *)PHYS_BASE)
+  if ((void*)(esp_copy + argsnum) >= PHYS_BASE)
     exit(-1);
 
   for(i=0; i<argsnum; i++)
