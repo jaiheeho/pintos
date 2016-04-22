@@ -108,8 +108,8 @@ start_process (void *f_name)
 
   // initialize file descriptor table and is_process flag (because this is process)
   list_init(&t->file_descriptor_table);
-  t->is_process = true;
-  t->fd_given = 1;
+  thread_current()->is_process = true;
+  thread_current()->fd_given = 1;
 
   /***** END OF ADDED CODE *****/
 
