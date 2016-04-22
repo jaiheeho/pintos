@@ -249,7 +249,7 @@ open(const char *file)
 
   //initialize new_fd
   new_fd->file = filestruct;
-  new_fd->fd = ++ (curr->fd_given);
+  new_fd->fd =  curr->fd_given ++;
   list_push_back(&curr->file_descriptor_table, &new_fd->elem);
   return new_fd->fd;
 }
