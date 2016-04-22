@@ -259,6 +259,8 @@ open(const char *file)
 int filesize(int fd)
 {
   struct file *file = get_struct_file(fd);
+  if (!file)
+    return -1;
   return file_length(file);
 }
 
@@ -274,16 +276,16 @@ int read (int fd, void *buffer, unsigned length)
 {
   uint32_t i;
   char key;
+  char* buf_char = buffer;
   if(invalid_addr(buffer) || invalid_addr(buffer + length-1))
     exit(-1);
   if(fd == 0)
   {
     for(i = 0; i<length; i++)
     {
-      key = input_getc();
-      *((char*)buffer +i) = key;
+      buf_char[i] = input_getc();
     }
-    return i;    
+    return length;    
   }
   else if(fd == 1)
   {
