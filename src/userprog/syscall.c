@@ -293,9 +293,11 @@ int read (int fd, void *buffer, unsigned length)
   else
   {
     struct file *file = get_struct_file(fd);
+    if (!file)
+      return -1;
+
     return file_read(file, buffer, length);
   }
-
   return 0;
 }
 
@@ -324,6 +326,8 @@ int write(int fd, const void *buffer, unsigned length)
   else
     {
       struct file *file = get_struct_file(fd);
+      if (!file)
+        return -1;
       return file_write(file, buffer, length);
     }
     return 0;
