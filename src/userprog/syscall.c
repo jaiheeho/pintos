@@ -245,6 +245,7 @@ open(const char *file)
   new_fd->file = filestruct;
   new_fd->fd = ++ curr->fd_given;
   list_insert(&curr->file_descriptor_table, &new_fd->elem);
+  return new_fd->fd;
 }
 
 /************************************************************************
