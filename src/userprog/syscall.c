@@ -272,24 +272,30 @@ int filesize(int fd)
  /*added function */
 int read (int fd, void *buffer, unsigned length)
 {
-  int actual_read = 0;
   int i;
-  //printf("fd: %d, buf: %s, size: %d\n", fd, buffer, size);
+  char key;
   if(invalid_addr(buffer) || invalid_addr(buffer + length))
     exit(-1);
   if(fd == 0)
   {
     for(i = 0; i<length; i++)
     {
-      *((char*)buffer +i) = input_getc();
+      key = input_getc();
+      *((char*)buffer +i) = key;
     }
-    return length;    
+    return i;    
   }
-  if(fd == 1)
+  else if(fd == 1)
   {
     //error
     return -1;
   }
+  else
+  {
+    struct file *file = get_struct_file(fd);
+    return file_read(fdt->file, buffer, length);
+  }
+
   return 0;
 }
 
