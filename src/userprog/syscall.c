@@ -12,6 +12,7 @@
 #include "filesys/filesys.h" // ADDED HEADER
 #include "lib/user/syscall.h" // ADDED HEADER
 #include <stdlib.h> // ADDED HEADER
+#include "devices/input.h" // ADDED HEADER
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
 
@@ -41,7 +42,7 @@ static void
 syscall_handler (struct intr_frame *f UNUSED) 
 {
   bool returnZ = false;
-  int retval;
+  int retval=0;
 
   uint32_t syscall_num;
   int args[12];
