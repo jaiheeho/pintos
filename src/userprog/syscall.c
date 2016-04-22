@@ -409,7 +409,8 @@ struct file* get_struct_file(int fd)
   return NULL;
 }
 
-struct file* get_struct_fd_struct(int fd)
+struct file_descriptor* 
+get_struct_fd_struct(int fd)
 {
   struct thread* curr = thread_current();
   struct list *fdt = &curr->file_descriptor_table;
@@ -444,7 +445,7 @@ void get_args(void* esp, int *args, int argsnum)
   int* esp_copy = (int*)esp;
 
   //in order to check whether address of arguments exceed PHYS_BASE [hint from : sc_bad_arg test]
-  if (esp_copy + argsnum  >= PHYS_BASE)
+  if (esp_copy + argsnum  >= (void *)PHYS_BASE)
     exit(-1);
 
   for(i=0; i<argsnum; i++)
