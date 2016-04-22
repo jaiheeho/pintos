@@ -285,7 +285,6 @@ int filesize(int fd)
 int read (int fd, void *buffer, unsigned length)
 {
   uint32_t i;
-  char key;
   char* buf_char = buffer;
   int retval;
   if(invalid_addr(buffer) || invalid_addr(buffer + length-1))
@@ -347,8 +346,8 @@ int write(int fd, const void *buffer, unsigned length)
       struct file *file = get_struct_file(fd);
       if (!file)
       {
-        return -1;
         sema_up(&filesys_global_lock);
+        return -1;
       }
       retval = file_write(file, buffer, length);
     }
