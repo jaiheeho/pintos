@@ -29,7 +29,7 @@ void
 msg (const char *format, ...) 
 {
   va_list args;
-
+  printf("inmsg\n");
   if (quiet)
     return;
   va_start (args, format);
