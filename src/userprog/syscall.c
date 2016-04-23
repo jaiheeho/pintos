@@ -247,14 +247,15 @@ open(const char *file)
   if (!new_fd)
     return -1;
 
-  char read_buffer[239];
-  file_read(filestruct, &read_buffer, 239);
-  printf("at open : %s\n content : %s", file, &read_buffer);
-
   //initialize new_fd
   new_fd->file = filestruct;
   new_fd->fd =  curr->fd_given ++;
   list_push_back(&curr->file_descriptor_table, &new_fd->elem);
+
+  char read_buffer[239];
+  file_read(new_fd->file, &read_buffer, 239);
+  printf("at open : %s\n content : %s\n", file, &read_buffer);
+
   sema_up(&filesys_global_lock);
   return new_fd->fd;
 }
