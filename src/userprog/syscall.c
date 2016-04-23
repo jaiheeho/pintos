@@ -243,7 +243,7 @@ open(const char *file)
   }
   //allocate memory
   struct file_descriptor *new_fd;
-  new_fd = malloc (sizeof (struct file_descriptor));
+  new_fd = (struct *file_descriptor)calloc (sizeof (struct file_descriptor));
   if (!new_fd)
     return -1;
 
@@ -319,6 +319,8 @@ int read (int fd, void *buffer, unsigned length)
       sema_up(&filesys_global_lock);
       return -1;
     }
+    char *read_buffer = (char *) malloc();
+
     printf("at read : filename, fd = %d\n", fd);
     retval = file_read(file,pagedir_get_page(thread_current()->pagedir, buffer), length);
     printf("at read : retval, fd = %d\n", retval);
