@@ -47,7 +47,7 @@ syscall_handler (struct intr_frame *f UNUSED)
   uint32_t syscall_num;
   int args[12];
   //check whether address is vaild
-  printf("f->esp : %d\n",  *(int*)f->esp);
+  // printf("f->esp : %d\n",  *(int*)f->esp);
   if (invalid_addr(f->esp))
     exit(-1);
   else
@@ -343,8 +343,6 @@ int write(int fd, const void *buffer, unsigned length)
 {
   int retval;
   uint8_t* buf_char = (uint8_t *) buffer; 
-  printf("start of write %s\n", buffer);
-
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1);
   if(fd <= 0)
@@ -354,10 +352,8 @@ int write(int fd, const void *buffer, unsigned length)
     }
   else if(fd == 1)
     {
-      printf("at write1 : %s\n", buf_char);
       putbuf(buf_char, length);
       retval = length;
-      printf("at write2: %s\n", buf_char);
     }
   else
     {

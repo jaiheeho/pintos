@@ -17,7 +17,6 @@ vmsg (const char *format, va_list args, const char *suffix)
      atomically.  Otherwise kernel messages like "foo: exit(0)"
      can end up being interleaved if we're unlucky. */
   static char buf[1024];
-  printf("in vmsg %s\n", buf);
 
   snprintf (buf, sizeof buf, "(%s) ", test_name);
   vsnprintf (buf + strlen (buf), sizeof buf - strlen (buf), format, args);
@@ -29,7 +28,7 @@ void
 msg (const char *format, ...) 
 {
   va_list args;
-  printf("inmsg\n");
+
   if (quiet)
     return;
   va_start (args, format);
