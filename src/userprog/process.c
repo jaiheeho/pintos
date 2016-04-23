@@ -102,7 +102,6 @@ start_process (void *f_name)
   /***** ADDED CODE *****/
   //addeed filesys_lock
   sema_down(&filesys_global_lock);
-  printf("proc name : %s\n", file_name);
   success = load (file_name, &if_.eip, &if_.esp);
   sema_up(&filesys_global_lock);
   /***** END OF ADDED CODE *****/
