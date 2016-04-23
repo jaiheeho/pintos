@@ -234,9 +234,7 @@ process_exit (void)
   }
 
   //allow write to executable 
-  if (!curr->executable){
-    printf("hererrrrr\n"); 
-    file_allow_write(curr->executable);
+  if (curr->executable){
     file_close(curr->executable);
   }
   /*END OF ADDED CODE*/
