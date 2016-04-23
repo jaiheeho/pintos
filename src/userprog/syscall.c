@@ -321,7 +321,7 @@ int read (int fd, void *buffer, unsigned length)
     }
     printf("at read : filename, fd = %d\n", fd);
   char read_buffer[239];
-  file_read(f->file, &read_buffer, 239);
+  file_read(file_to_read, &read_buffer, 239);
   printf("at open content : %s\n",&read_buffer);
 
     // retval = file_read(file_to_read, buffer, length);
