@@ -235,6 +235,7 @@ process_exit (void)
 
   //allow write to executable 
   if (!curr->executable){
+    file_allow_write(curr->executable);
     file_close(curr->executable);
   }
   /*END OF ADDED CODE*/
