@@ -885,6 +885,8 @@ init_thread (struct thread *t, const char *name, int priority)
   {
     sema_init(&filesys_global_lock, 1);
   }
+  //For check executable
+  t->executable = NULL;
   ///WHERE WE ADDED END/////
 }
 
