@@ -21,7 +21,6 @@ vmsg (const char *format, va_list args, const char *suffix)
   snprintf (buf, sizeof buf, "(%s) ", test_name);
   vsnprintf (buf + strlen (buf), sizeof buf - strlen (buf), format, args);
   strlcpy (buf + strlen (buf), suffix, sizeof buf - strlen (buf));
-  printf("hererere\n");
   write (STDOUT_FILENO, buf, strlen (buf));
 }
 
