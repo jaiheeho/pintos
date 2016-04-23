@@ -29,8 +29,8 @@ msg (const char *format, ...)
 {
   va_list args;
 
-  // if (quiet)
-  //   return;
+  if (quiet)
+    return;
   va_start (args, format);
   vmsg (format, args, "\n");
   va_end (args);
@@ -120,9 +120,6 @@ check_file_handle (int fd,
     msg ("size of %s (%zu) differs from expected (%zu)",
           file_name, file_size, size);
 
-  fail ("size of %s (%zu) same from expected (%zu)",
-          file_name, file_size, size);
-
   /* Read the file block-by-block, comparing data as we go. */
   while (ofs < size)
     {
@@ -134,8 +131,6 @@ check_file_handle (int fd,
         block_size = sizeof block;
 
       ret_val = read (fd, block, block_size);
-      msg ("read of %zu bytes at offset %zu in \"%s\" returned %zu",
-        block_size, ofs, file_name, ret_val);
       if (ret_val != block_size)
         fail ("read of %zu bytes at offset %zu in \"%s\" returned %zu",
               block_size, ofs, file_name, ret_val);
