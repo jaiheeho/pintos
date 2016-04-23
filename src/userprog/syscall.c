@@ -243,7 +243,7 @@ open(const char *file)
   }
   //allocate memory
   struct file_descriptor *new_fd;
-  new_fd = (struct file_descriptor *)calloc (sizeof (struct file_descriptor));
+  new_fd = (struct file_descriptor *)calloc (sizeof (struct file_descriptor),sizeof (struct file_descriptor));
   if (!new_fd)
     return -1;
 
