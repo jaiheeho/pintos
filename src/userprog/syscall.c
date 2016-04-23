@@ -320,12 +320,12 @@ int read (int fd, void *buffer, unsigned length)
       return -1;
     }
     printf("at read : filename, fd = %d\n", fd);
-  // char read_buffer[239];
-  // file_read(f->file, &read_buffer, 239);
-  // printf("at open content : %s\n",&read_buffer);
+  char read_buffer[239];
+  file_read(f->file, &read_buffer, 239);
+  printf("at open content : %s\n",&read_buffer);
 
-    retval = file_read(file_to_read, buffer, length);
-    printf("at read : retval, fd = %d\n", retval);
+    // retval = file_read(file_to_read, buffer, length);
+    // printf("at read : retval, fd = %d\n", retval);
 
     sema_up(&filesys_global_lock);
   }
