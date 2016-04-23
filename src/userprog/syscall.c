@@ -321,7 +321,7 @@ int read (int fd, void *buffer, unsigned length)
     }
     char *read_buffer = (char *) malloc(length);
     printf("at read : filename, fd = %d\n", fd);
-    retval = file_read(file, read_buffer, buffer), length);
+    retval = file_read(file, read_buffer, length);
     memcpy(buffer,read_buffer, retval);
     printf("at read : retval, fd = %d\n", retval);
 
