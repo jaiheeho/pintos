@@ -107,20 +107,28 @@ start_process (void *f_name)
   /***** END OF ADDED CODE *****/
 
   /* If load failed, quit. */
-  palloc_free_page (file_name);
-
   /***** ADDED CODE *****/
+  struct thread * curr = thread_current();
   if (!success) {
-    thread_current()->parent_proc->is_loaded = false;
+    palloc_free_page (file_name);
+    curr->parent_proc->is_loaded = false;
     //if loading was unsuccessful remove thread from parent's child list and exit();
-    list_remove(&thread_current()->child_elem);
+    list_remove(&curr->child_elem);
     thread_exit ();
   }
 
   // initialize file descriptor table and is_process flag (because this is process)
-  list_init(&thread_current()->file_descriptor_table);
-  thread_current()->is_process = true;
-  thread_current()->fd_given = 2;
+  list_init(&curr->file_descriptor_table);
+  curr->is_process = true;
+  curr->fd_given = 2;
+  //denying write to executable 
+  curr->executable = filesys_open(file_name);
+  file_deny_write(curr->executable);
+
+  palloc_free_page (file_name);
+  /*END OF ADDED CODE*/
+
+
 
   /***** END OF ADDED CODE *****/
 
@@ -224,6 +232,13 @@ process_exit (void)
     sema_try_down(&c->sema_wait);
     sema_up(&c->sema_wait);
   }
+
+  //allow write to executable 
+  if (curr->executable){
+    file_close(curr->executable);
+  }
+  /*END OF ADDED CODE*/
+
   /***** END OF ADDED CODE *****/
 
   /* Destroy the current process's page directory and switch back
