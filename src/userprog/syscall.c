@@ -346,11 +346,19 @@ int write(int fd, const void *buffer, unsigned length)
     {
       sema_down(&filesys_global_lock);
       struct file *file = get_struct_file(fd);
+      //if fd is bad 
       if (!file)
       {
         sema_up(&filesys_global_lock);
         return -1;
       }
+      //if file is write denied;
+      if (file->deny_write)
+      {
+        sema_up(&filesys_global_lock);
+        return -1;
+      }
+
       retval = file_write(file, buffer, length);
       sema_up(&filesys_global_lock);
     }

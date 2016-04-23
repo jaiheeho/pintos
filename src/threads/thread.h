@@ -110,6 +110,7 @@ struct thread
     bool is_process;                    /* check whether thread is proces of kernel thread*/
     bool is_loaded;                     /* check whether thread's child process is loaded successfully */
     int fd_given;                       /* check last fd number give for the opened file */
+    struct file * executable;           /* to deny and allow executable */
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */

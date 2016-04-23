@@ -224,6 +224,11 @@ process_exit (void)
     sema_try_down(&c->sema_wait);
     sema_up(&c->sema_wait);
   }
+
+  //allow write to executable 
+  file_allow_write(curr->executable);
+  /*END OF ADDED CODE*/
+
   /***** END OF ADDED CODE *****/
 
   /* Destroy the current process's page directory and switch back
@@ -379,6 +384,11 @@ load (const char *file_name, void (**eip) (void), void **esp)
       printf ("load: %s: open failed\n", file_name);
       goto done; 
     }
+  /*ADDED CODE*/
+  //denying write to executable 
+  t->executable = file;
+  file_deny_write(t->executable);
+  /*END OF ADDED CODE*/
 
   /* Read and verify executable header. */
   if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
