@@ -99,11 +99,10 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_READ:
       get_args(f->esp, args, 3);
-      retval = write(args[0], (void *)args[1], args[2]);
+      retval = read(args[0], (void *)args[1], args[2]);
       returnZ=true;
       break;
     case SYS_WRITE:
-      //printf("SYS_WRITE\n");
       get_args(f->esp, args, 3);
       retval = write(args[0], (void *)args[1], args[2]);
       returnZ=true;
@@ -244,7 +243,7 @@ open(const char *file)
   }
   //allocate memory
   struct file_descriptor *new_fd;
-  new_fd = malloc (sizeof (struct file_descriptor));
+  new_fd = (struct file_descriptor *)malloc (sizeof (struct file_descriptor));
   if (!new_fd)
     return -1;
 
@@ -290,8 +289,7 @@ int read (int fd, void *buffer, unsigned length)
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
-    exit(-1);
-
+    exit(-1); 
   if(fd == 0)
   {
     for(i = 0; i<length; i++)
@@ -443,7 +441,6 @@ struct file* get_struct_file(int fd)
 	{
 	  return f->file;
 	}
-
     }
   return NULL;
 }

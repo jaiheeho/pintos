@@ -173,6 +173,9 @@ void update_load_avg(void);
 void update_recent_cpus(void);
 void update_priorities(void);
 int calc_priority(int, int);
-///WHERE WE ADDED END/////
+
+//for global file locking, initialized to 1 sema_init(&filesys_global_lock , 1) for proj2
+extern struct semaphore filesys_global_lock;
+///WHERE WE ADDED END///
 
 #endif /* threads/thread.h */

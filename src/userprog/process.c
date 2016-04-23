@@ -24,7 +24,7 @@ static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
 /***** ADDED CODE *****/
 //for global file locking
-struct semaphore filesys_global_lock;
+//struct semaphore filesys_global_lock;
 /***** END OF ADDED CODE *****/
 
 
@@ -660,7 +660,6 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
     //printf("addr: %x  |  content: 0x%08x\n", (int*)(*esp) + a ,*((int*)(*esp) + a));
   }
   /*END OF ADDED CODE*/
-
 
   return success;
 }
