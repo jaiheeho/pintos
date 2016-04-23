@@ -272,6 +272,7 @@ int filesize(int fd)
   printf("at filesys: %d\n",fd);
   sema_down(&filesys_global_lock);
   size = file_length(file);
+  printf("at filesys : size  %d\n",size);
   sema_up(&filesys_global_lock);
   return size;
 }
