@@ -247,6 +247,10 @@ open(const char *file)
   if (!new_fd)
     return -1;
 
+  char read_buffer[239];
+  file_read(filestruct, &read_buffer, 239);
+  printf("at open : %s\n content : %s", file, &read_buffer);
+
   //initialize new_fd
   new_fd->file = filestruct;
   new_fd->fd =  curr->fd_given ++;
