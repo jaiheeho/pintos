@@ -354,10 +354,10 @@ int write(int fd, const void *buffer, unsigned length)
     }
   else if(fd == 1)
     {
-      printf("at write1 : %d\n", retval);
+      printf("at write1 : %s\n", buf_char);
       putbuf(buf_char, length);
-      printf("at write2: %d\n", retval);
       retval = length;
+      printf("at write2: %s\n", buf_char);
     }
   else
     {
