@@ -107,6 +107,19 @@ syscall_handler (struct intr_frame *f UNUSED)
       retval = write(args[0], (void *)args[1], args[2]);
       returnZ=true;
       break;
+    case SYS_SEEK:
+      get_args(f->esp, args, 2);
+      seek(args[0], args[1]);
+      break;
+    case SYS_TELL:
+      get_args(f->esp, args, 1);
+      retval = tell(args[0]);
+      returnZ=true;
+      break;
+    case SYS_CLOSE:
+      get_args(f->esp, args, 1);
+      close(args[0]);
+      break;    
     }
   // if return value is needed, plug in the return value
   if(returnZ)
