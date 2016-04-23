@@ -120,7 +120,7 @@ check_file_handle (int fd,
     msg ("size of %s (%zu) differs from expected (%zu)",
           file_name, file_size, size);
 
-  msg ("size of %s (%zu) same from expected (%zu)",
+  fail ("size of %s (%zu) same from expected (%zu)",
           file_name, file_size, size);
 
   /* Read the file block-by-block, comparing data as we go. */
