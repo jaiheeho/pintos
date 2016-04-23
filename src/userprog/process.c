@@ -389,7 +389,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
   /*ADDED CODE*/
   //denying write to executable 
   t->executable = file;
-  file_deny_write(t->executable);
+  file_deny_write(file);
   /*END OF ADDED CODE*/
 
   /* Read and verify executable header. */
