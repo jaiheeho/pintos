@@ -309,6 +309,8 @@ int read (int fd, void *buffer, unsigned length)
   else
   {
     sema_down(&filesys_global_lock);
+    printf("before at read : filename, fd = %d\n", fd);
+
     struct file *file = get_struct_file(fd);
     if (!file)
     {
