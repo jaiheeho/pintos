@@ -251,11 +251,6 @@ open(const char *file)
   new_fd->file = filestruct;
   new_fd->fd =  curr->fd_given ++;
   list_push_back(&curr->file_descriptor_table, &new_fd->elem);
-
-  char read_buffer[239];
-  file_read(new_fd->file, &read_buffer, 239);
-  printf("at open : %s\n content : %s\n", file, &read_buffer);
-
   sema_up(&filesys_global_lock);
   return new_fd->fd;
 }
@@ -456,6 +451,11 @@ struct file* get_struct_file(int fd)
       f = list_entry(iter_fd, struct file_descriptor, elem);
       if(fd == f->fd)
 	{
+
+
+  char read_buffer[239];
+  file_read(f->file, &read_buffer, 239);
+  printf("at open content : %s\n",&read_buffer);
 	  return f->file;
 	}
 
