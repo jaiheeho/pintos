@@ -108,20 +108,28 @@ start_process (void *f_name)
   /***** END OF ADDED CODE *****/
 
   /* If load failed, quit. */
-  palloc_free_page (file_name);
-
   /***** ADDED CODE *****/
+  struct thread * curr = thread_current();
   if (!success) {
-    thread_current()->parent_proc->is_loaded = false;
+    palloc_free_page (file_name);
+    curr->parent_proc->is_loaded = false;
     //if loading was unsuccessful remove thread from parent's child list and exit();
-    list_remove(&thread_current()->child_elem);
+    list_remove(&curr->child_elem);
     thread_exit ();
   }
 
   // initialize file descriptor table and is_process flag (because this is process)
-  list_init(&thread_current()->file_descriptor_table);
-  thread_current()->is_process = true;
-  thread_current()->fd_given = 2;
+  list_init(&curr->file_descriptor_table);
+  curr->is_process = true;
+  curr->fd_given = 2;
+  //denying write to executable 
+  curr->executable = filesys_open(file_name);
+  file_deny_write(curr->executable);
+
+  palloc_free_page (file_name);
+  /*END OF ADDED CODE*/
+
+
 
   /***** END OF ADDED CODE *****/
 
@@ -387,11 +395,6 @@ load (const char *file_name, void (**eip) (void), void **esp)
       printf ("load: %s: open failed\n", file_name);
       goto done; 
     }
-  /*ADDED CODE*/
-  //denying write to executable 
-  t->executable = file;
-  file_deny_write(file);
-  /*END OF ADDED CODE*/
 
   /* Read and verify executable header. */
   if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
