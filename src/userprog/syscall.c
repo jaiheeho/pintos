@@ -342,7 +342,9 @@ int read (int fd, void *buffer, unsigned length)
 int write(int fd, const void *buffer, unsigned length)
 {
   int retval;
-  uint8_t* buf_char = (uint8_t *) buffer;
+  uint8_t* buf_char = (uint8_t *) buffer; 
+  printf("start of write \n");
+
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1);
   if(fd <= 0)
@@ -365,8 +367,9 @@ int write(int fd, const void *buffer, unsigned length)
         sema_up(&filesys_global_lock);
         return -1;
       }
+
       retval = file_write(file, buffer, length);
-      //printf("at write : %d\n", retval);
+      printf("at write : %d\n", retval);
       sema_up(&filesys_global_lock);
     }
 
