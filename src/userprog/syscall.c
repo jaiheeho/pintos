@@ -99,7 +99,7 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_READ:
       get_args(f->esp, args, 3);
-      retval = write(args[0], (void *)args[1], args[2]);
+      retval = read(args[0], (void *)args[1], args[2]);
       returnZ=true;
       break;
     case SYS_WRITE:
@@ -290,12 +290,8 @@ int read (int fd, void *buffer, unsigned length)
   uint32_t i;
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
-  struct file * file_to_read;
-
-  printf("before 1at read : filename, fd = %d\n", fd);
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1);
-
   if(fd == 0)
   {
     for(i = 0; i<length; i++)
@@ -312,21 +308,13 @@ int read (int fd, void *buffer, unsigned length)
   else
   {
     sema_down(&filesys_global_lock);
-    printf("before at read : filename, fd = %d\n", fd);
-    file_to_read = get_struct_file(fd);
-    if (!file_to_read)
+    struct file *file = get_struct_file(fd);
+    if (!file)
     {
       sema_up(&filesys_global_lock);
       return -1;
     }
-    printf("at read : filename, fd = %d\n", fd);
-  char read_buffer[239];
-  file_read(file_to_read, &read_buffer, 239);
-  printf("at open content : %s\n",&read_buffer);
-
-    // retval = file_read(file_to_read, buffer, length);
-    // printf("at read : retval, fd = %d\n", retval);
-
+    retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
   }
   return retval;
