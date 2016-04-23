@@ -320,7 +320,7 @@ int read (int fd, void *buffer, unsigned length)
       return -1;
     }
     printf("at read : filename, fd = %d\n", fd);
-    retval = file_read(file,user_to_kernel_ptr(buffer), length);
+    retval = file_read(file,pagedir_get_page(thread_current()->pagedir, buffer), length);
     printf("at read : retval, fd = %d\n", retval);
 
     sema_up(&filesys_global_lock);
