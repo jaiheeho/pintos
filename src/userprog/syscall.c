@@ -290,6 +290,7 @@ int read (int fd, void *buffer, unsigned length)
   uint32_t i;
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
+  struct file * file_to_read;
 
   printf("before 1at read : filename, fd = %d\n", fd);
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
@@ -312,17 +313,18 @@ int read (int fd, void *buffer, unsigned length)
   {
     sema_down(&filesys_global_lock);
     printf("before at read : filename, fd = %d\n", fd);
-
-    struct file *file = get_struct_file(fd);
-    if (!file)
+    file_to_read = get_struct_file(fd);
+    if (!file_to_read)
     {
       sema_up(&filesys_global_lock);
       return -1;
     }
-    char *read_buffer = (char *) malloc(length);
     printf("at read : filename, fd = %d\n", fd);
-    retval = file_read(file, read_buffer, length);
-    memcpy(buffer,read_buffer, retval);
+  // char read_buffer[239];
+  // file_read(f->file, &read_buffer, 239);
+  // printf("at open content : %s\n",&read_buffer);
+
+    retval = file_read(file_to_read, buffer, length);
     printf("at read : retval, fd = %d\n", retval);
 
     sema_up(&filesys_global_lock);
@@ -451,11 +453,6 @@ struct file* get_struct_file(int fd)
       f = list_entry(iter_fd, struct file_descriptor, elem);
       if(fd == f->fd)
 	{
-
-
-  char read_buffer[239];
-  file_read(f->file, &read_buffer, 239);
-  printf("at open content : %s\n",&read_buffer);
 	  return f->file;
 	}
 
