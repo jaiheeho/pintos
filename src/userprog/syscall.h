@@ -25,7 +25,7 @@ struct file_descriptor* get_struct_fd_struct(int fd);
 bool invalid_addr(void *);
 void * get_kernel_addr(void*);
 
-
+struct file;
 
 // void halt (void) NO_RETURN;
 // void exit (int status) NO_RETURN;
