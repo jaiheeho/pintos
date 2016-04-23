@@ -313,7 +313,6 @@ int read (int fd, void *buffer, unsigned length)
       return -1;
     }
     retval = file_read(file, buffer, length);
-    printf("at write : retval %d \n", int(file->deny_write));
     sema_up(&filesys_global_lock);
   }
   return retval;
@@ -354,6 +353,7 @@ int write(int fd, const void *buffer, unsigned length)
         return -1;
       }
       retval = file_write(file, buffer, length);
+      printf("at write : retval %d \n", retval);
       sema_up(&filesys_global_lock);
     }
 
