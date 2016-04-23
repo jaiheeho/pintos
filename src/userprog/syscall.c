@@ -269,10 +269,8 @@ int filesize(int fd)
   int size;
   if (!file)
     return -1;
-  printf("at filesys: %d\n",fd);
   sema_down(&filesys_global_lock);
   size = file_length(file);
-  printf("at filesys : size  %d\n",size);
   sema_up(&filesys_global_lock);
   return size;
 }
@@ -291,7 +289,7 @@ int read (int fd, void *buffer, unsigned length)
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
-    exit(-1);
+    exit(-1); 
   if(fd == 0)
   {
     for(i = 0; i<length; i++)
@@ -443,7 +441,6 @@ struct file* get_struct_file(int fd)
 	{
 	  return f->file;
 	}
-
     }
   return NULL;
 }
