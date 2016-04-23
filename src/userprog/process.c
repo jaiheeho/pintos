@@ -121,7 +121,9 @@ start_process (void *f_name)
   list_init(&curr->file_descriptor_table);
   curr->is_process = true;
   curr->fd_given = 2;
-  //denying write to executable 
+
+  //deny write to executable by closing it in write deny part of proj2
+  //executable of thread is saved in struct thread
   curr->executable = filesys_open(file_name);
   file_deny_write(curr->executable);
 
@@ -233,7 +235,7 @@ process_exit (void)
     sema_up(&c->sema_wait);
   }
 
-  //allow write to executable 
+  //allow write to executable by closing it in write deny part of proj2
   if (curr->executable){
     file_close(curr->executable);
   }
