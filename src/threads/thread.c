@@ -66,9 +66,12 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
    Controlled by kernel command-line option "-o mlfqs". */
 bool thread_mlfqs;
 
-
+/***** ADDED CODE *****/
 /* ADDED GLOBAL VARIABLES */
 static int thread_start_complete = 0;
+//for global file locking, initialized to 1 sema_init(&filesys_global_lock , 1) for proj2
+struct semaphore filesys_global_lock;
+/***** END OF ADDED CODE *****/
 
 static void kernel_thread (thread_func *, void *aux);
 

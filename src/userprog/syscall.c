@@ -103,7 +103,6 @@ syscall_handler (struct intr_frame *f UNUSED)
       returnZ=true;
       break;
     case SYS_WRITE:
-      //printf("SYS_WRITE\n");
       get_args(f->esp, args, 3);
       retval = write(args[0], (void *)args[1], args[2]);
       returnZ=true;
