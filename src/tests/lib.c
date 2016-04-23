@@ -29,8 +29,8 @@ msg (const char *format, ...)
 {
   va_list args;
 
-  if (quiet)
-    return;
+  // if (quiet)
+  //   return;
   va_start (args, format);
   vmsg (format, args, "\n");
   va_end (args);
@@ -154,8 +154,6 @@ check_file (const char *file_name, const void *buf, size_t size)
 
   CHECK ((fd = open (file_name)) > 1, "open \"%s\" for verification",
          file_name);
-  fail ("opened \"%s\" with fd %d", file_name, fd);
-
   check_file_handle (fd, file_name, buf, size);
   msg ("close \"%s\"", file_name);
   close (fd);
