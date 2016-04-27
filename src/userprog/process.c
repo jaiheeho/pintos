@@ -24,16 +24,10 @@
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
-/***** ADDED CODE *****/
-//for global file locking
-//struct semaphore filesys_global_lock;
-/***** END OF ADDED CODE *****/
-
-
 /************************************************************************
 * FUNCTION : process_execute                                            *
 * Input : file_name                                                     *
-* Output : new process id                                               *
+* Output : new process id if successful                                 *
 ************************************************************************/
  /*fixed function */
 /* Starts a new thread running a user program loaded from
@@ -71,6 +65,7 @@ process_execute (const char *file_name)
 
   /***** ADDED CODE *****/
   //Loading elf was not successful return tid -1
+  //To make chile it should be check by parent process
   if (thread_current()->is_loaded == false){
     return TID_ERROR;
   }
@@ -110,6 +105,7 @@ start_process (void *f_name)
 
   /* If load failed, quit. */
   /***** ADDED CODE *****/
+  //Palloc_free_page has to be done to free memory for proc name.
   struct thread * curr = thread_current();
   if (!success) {
     palloc_free_page (file_name);
@@ -122,6 +118,7 @@ start_process (void *f_name)
   // initialize file descriptor table and is_process flag (because this is process)
   list_init(&curr->file_descriptor_table);
   curr->is_process = true;
+  // fd starts from 2 since 0 and 1 is allocated for stdin & stdout.
   curr->fd_given = 2;
 
   //deny write to executable by closing it in write deny part of proj2
@@ -130,10 +127,6 @@ start_process (void *f_name)
   file_deny_write(curr->executable);
 
   palloc_free_page (file_name);
-  /*END OF ADDED CODE*/
-
-
-
   /***** END OF ADDED CODE *****/
 
   /* Start the user process by simulating a return from an
@@ -170,6 +163,7 @@ process_wait (tid_t child_tid)
   struct thread *curr = thread_current ();
   struct list_elem *iter_child;
   struct list *child_list = &curr->child_procs;
+  struct thread *child=NULL;
   struct thread *c=NULL;
   int retval;
 
@@ -177,13 +171,16 @@ process_wait (tid_t child_tid)
   for(iter_child = list_begin(child_list);
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
-    c = list_entry(iter_child, struct thread, child_elem);
-    if (c->tid == child_tid)
+    child = list_entry(iter_child, struct thread, child_elem);
+    if (child->tid == child_tid)
+    {
+      c = child;
       break;
+    }
   }
 
   //Check whether TID is invalid, invalid -> return -1
-  if (c==NULL || c->status == THREAD_DYING)
+  if (c == NULL || c->status == THREAD_DYING)
     return -1;
   //process_wait() has already been successfully called for the given TID, return -1
   if (c->is_wait_called)
