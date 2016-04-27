@@ -9,6 +9,7 @@ void process_exit (void);
 void process_activate (void);
 
 /***** ADDED STUFF *****/
+/* ADT for file_descripto which contains file pointer and fd number */
 struct file_descriptor
 {
   struct file *file;

@@ -18,20 +18,16 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 #include <list.h> // ADDED HEADER
+#include "threads/malloc.h" // ADDED HEADER
+
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
-/***** ADDED CODE *****/
-//for global file locking
-//struct semaphore filesys_global_lock;
-/***** END OF ADDED CODE *****/
-
-
 /************************************************************************
 * FUNCTION : process_execute                                            *
 * Input : file_name                                                     *
-* Output : new process id                                               *
+* Output : new process id if successful                                 *
 ************************************************************************/
  /*fixed function */
 /* Starts a new thread running a user program loaded from
@@ -69,6 +65,7 @@ process_execute (const char *file_name)
 
   /***** ADDED CODE *****/
   //Loading elf was not successful return tid -1
+  //To make chile it should be check by parent process
   if (thread_current()->is_loaded == false){
     return TID_ERROR;
   }
@@ -108,6 +105,7 @@ start_process (void *f_name)
 
   /* If load failed, quit. */
   /***** ADDED CODE *****/
+  //Palloc_free_page has to be done to free memory for proc name.
   struct thread * curr = thread_current();
   if (!success) {
     palloc_free_page (file_name);
@@ -120,16 +118,15 @@ start_process (void *f_name)
   // initialize file descriptor table and is_process flag (because this is process)
   list_init(&curr->file_descriptor_table);
   curr->is_process = true;
+  // fd starts from 2 since 0 and 1 is allocated for stdin & stdout.
   curr->fd_given = 2;
-  //denying write to executable 
+
+  //deny write to executable 
+  //executable of thread is saved in struct thread
   curr->executable = filesys_open(file_name);
   file_deny_write(curr->executable);
 
   palloc_free_page (file_name);
-  /*END OF ADDED CODE*/
-
-
-
   /***** END OF ADDED CODE *****/
 
   /* Start the user process by simulating a return from an
@@ -166,6 +163,7 @@ process_wait (tid_t child_tid)
   struct thread *curr = thread_current ();
   struct list_elem *iter_child;
   struct list *child_list = &curr->child_procs;
+  struct thread *child=NULL;
   struct thread *c=NULL;
   int retval;
 
@@ -173,13 +171,16 @@ process_wait (tid_t child_tid)
   for(iter_child = list_begin(child_list);
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
-    c = list_entry(iter_child, struct thread, child_elem);
-    if (c->tid == child_tid)
+    child = list_entry(iter_child, struct thread, child_elem);
+    if (child->tid == child_tid)
+    {
+      c = child;
       break;
+    }
   }
 
   //Check whether TID is invalid, invalid -> return -1
-  if (c==NULL || c->status == THREAD_DYING)
+  if (c == NULL || c->status == THREAD_DYING)
     return -1;
   //process_wait() has already been successfully called for the given TID, return -1
   if (c->is_wait_called)
@@ -188,15 +189,19 @@ process_wait (tid_t child_tid)
   //Wait for tid to be exited
   //At first, try_sema_down to acquire semaphor for child's wait
   //if semaphore is acquired, wait for child
-  //else, child has already exited but it is waiting in case of late wait call. (release semaphore for child)
+  //else, child has already exited but it is waiting in case of late wait call. 
+  // (=> release semaphore for child and make it exited completely)
   if(sema_try_down(&c->sema_wait))
   {
     c->is_wait_called = true;
+    //this is waiting call sema-down agaain
     sema_down(&c->sema_wait);
+    //when c is exited and return value
     retval = c->exit_status;
   }
   else
   {
+    //late wait calls, so get exit_status of child and releas child.
     retval = c->exit_status;
     sema_up(&c->sema_wait);
   }
@@ -222,23 +227,37 @@ process_exit (void)
   struct thread *c;
   struct list_elem *iter_child;
 
+  /***** ADDED CODE *****/
   for(iter_child = list_begin(child_list);
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
     //first for every child in this thread's children list, make their parent pointer to NULL
     c = list_entry(iter_child, struct thread, child_elem);
     c->parent_proc = NULL;
-    //if exit was called for child but is block to wait for parent's wait call release lock and make it dead.
+    //if exit was called in child process but child is blocked 
+    // because of parent's wait call, then release lock of child and make it dead completely.
+    // to make it simple first call sema_try_down and call sema_up
     sema_try_down(&c->sema_wait);
     sema_up(&c->sema_wait);
   }
 
-  //allow write to executable 
+  //allow write to executable by closing it in write deny part of proj2
+  sema_down(&filesys_global_lock);
   if (curr->executable){
     file_close(curr->executable);
   }
-  /*END OF ADDED CODE*/
-
+  struct list *fdt = &curr->file_descriptor_table;
+  struct list_elem *iter_fd;
+  struct file_descriptor *f;
+  //empty file_descriptor table for the process which was malloced when files were opened.
+  while (!list_empty (fdt) && curr->parent_proc->is_loaded == true)
+  {
+    iter_fd = list_pop_front (fdt);
+    f = list_entry(iter_fd, struct file_descriptor, elem);
+    file_close(f->file);
+    free(f);  
+  }
+  sema_up(&filesys_global_lock);
   /***** END OF ADDED CODE *****/
 
   /* Destroy the current process's page directory and switch back
@@ -264,7 +283,7 @@ process_exit (void)
     sema_up(&curr->sema_wait);
   }
   else {
-    //If, parent didn't call wait() for this process yet, wait for parent until parent calls exit() or call wait()
+    //If, parent didn't call wait() for this process yet, wait for parent until parent calls exit() itself or calls wait()
     sema_down(&curr->sema_wait);
     sema_down(&curr->sema_wait);
   }
@@ -377,7 +396,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
   char *strtok_r_ptr;
   char *token_ptr;
 
-  token_ptr = strtok_r(file_name, " ", &strtok_r_ptr);
+  token_ptr = strtok_r((char*)file_name, " ", &strtok_r_ptr);
 
   /*END OF ADDED CODE*/
 
@@ -468,7 +487,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
     }
 
   /* Set up stack. */
-  if (!setup_stack (esp, file_name, &strtok_r_ptr))
+  if (!setup_stack (esp, (char*)file_name, &strtok_r_ptr))
     goto done;
 
   /* Start address. */
@@ -591,12 +610,11 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 }
 
 /************************************************************************
-* FUNCTION : setup_stack                                               *
+* FUNCTION : setup_stack                                                *
 * Input : void **esp, char *file_name, char **strtok_r_ptr              *
-* Output :                                                              *
+* Output : true of false                                                *
 ************************************************************************/
 /*fixed function */
-
 /* Create a minimal stack by mapping a zeroed page at the top of
    user virtual memory. */
 static bool

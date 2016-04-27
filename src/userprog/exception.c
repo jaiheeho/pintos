@@ -4,6 +4,7 @@
 #include "userprog/gdt.h"
 #include "threads/interrupt.h"
 #include "threads/thread.h"
+#include "userprog/syscall.h" // ADDED HEADER
 
 /* Number of page faults processed. */
 static long long page_fault_cnt;
@@ -136,6 +137,13 @@ page_fault (struct intr_frame *f)
      (#PF)". */
   asm ("movl %%cr2, %0" : "=r" (fault_addr));
 
+  /***** ADDED CODE *****/
+  /*Deferencing NULL should be exited instead of killed (test : bad_read)*/
+  /*Deferencing addr above 0xC0000000 should be exited instead of killed (test : bad_read)*/
+  if (fault_addr == NULL || fault_addr >= (void*)0xC0000000)
+    exit(-1);
+  /***** END OF ADDED CODE *****/
+  
   /* Turn interrupts back on (they were only off so that we could
      be assured of reading CR2 before it changed). */
   intr_enable ();
