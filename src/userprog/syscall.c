@@ -523,7 +523,9 @@ bool invalid_addr(void* addr){
     return true;
   if (addr == NULL)
     return true;
-  if(!pagedir_get_page (thread_current()->pagedir, addr))
-    exit(-1);
+  //Not within pagedir
+  // if(!pagedir_get_page (thread_current()->pagedir, addr))
+  //   return true;
+  
   return false;
 }

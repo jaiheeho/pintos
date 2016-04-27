@@ -868,25 +868,26 @@ init_thread (struct thread *t, const char *name, int priority)
   {
     list_push_back (&thread_current()->child_procs, &t->child_elem);
     t->parent_proc = thread_current();
-    //FOr syscall filedecripter
+    //For syscall filedecripter
     // list_init(&thread_current()->file_descriptor_table);
     // thread_current()->fd_given = 2;  
   }
   else
   {
+    //main process does not have parent process
     t->parent_proc = NULL;
   }
   t->is_wait_called = false;
   t->is_process = false;
   t->exit_status = 0;
   t->is_loaded = true;
-  //FOR GLOBAL FILESYS LOCK in proj2//
+  //To check executable
+  t->executable = NULL;
+  //FOR GLOBAL FILESYS LOCK in proj2 only 'main' init this//
   if (thread_start_complete == 0)
   {
     sema_init(&filesys_global_lock, 1);
   }
-  //For check executable
-  t->executable = NULL;
   ///WHERE WE ADDED END/////
 }
 
