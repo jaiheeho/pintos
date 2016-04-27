@@ -18,6 +18,8 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 #include <list.h> // ADDED HEADER
+#include "threads/malloc.h" // ADDED HEADER
+
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
@@ -392,7 +394,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
   char *strtok_r_ptr;
   char *token_ptr;
 
-  token_ptr = strtok_r(file_name, " ", &strtok_r_ptr);
+  token_ptr = strtok_r((char*)file_name, " ", &strtok_r_ptr);
 
   /*END OF ADDED CODE*/
 
@@ -483,7 +485,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
     }
 
   /* Set up stack. */
-  if (!setup_stack (esp, file_name, &strtok_r_ptr))
+  if (!setup_stack (esp, (char*)file_name, &strtok_r_ptr))
     goto done;
 
   /* Start address. */
