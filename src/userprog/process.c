@@ -247,7 +247,7 @@ process_exit (void)
   struct list_elem *iter_fd;
   struct file_descriptor *f;
   //empty file_descriptor table for the process.
-  while (!list_empty (fdt) || curr->parent_proc->is_loaded == true)
+  while (!list_empty (fdt) && curr->parent_proc->is_loaded == true)
   {
     iter_fd = list_pop_front (fdt);
     f = list_entry(iter_fd, struct file_descriptor, elem);
