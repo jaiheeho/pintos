@@ -20,8 +20,7 @@ void get_args(void* esp, int *args, int argsnum);
 * FUNCTION : syscall_init                                               *
 * Input : NONE                                                          *
 * Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Purporse : register syscall handler interrupt                         *
 ************************************************************************/
  /*added function */
 void
@@ -34,8 +33,8 @@ syscall_init (void)
 * FUNCTION : syscall_handler                                            *
 * Input : NONE                                                          *
 * Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Purporse : syscall_handler which is called when interrupt occurs      *
+* calls approriate systemm call                                         *
 ************************************************************************/
  /*added function */
 static void
@@ -46,8 +45,7 @@ syscall_handler (struct intr_frame *f UNUSED)
 
   uint32_t syscall_num;
   int args[12];
-  //check whether address is vaild
-  // printf("f->esp : %d\n",  *(int*)f->esp);
+  //check whether esp is vaild
   if (invalid_addr(f->esp))
     exit(-1);
   else
@@ -57,7 +55,6 @@ syscall_handler (struct intr_frame *f UNUSED)
   if (syscall_num > SYS_INUMBER)
     exit(-1);
 
-  //printf("THREAD <%s> CALLED SYSCALL NUMBER : %d\n", thread_name(), *((int*)f->esp));
   switch(syscall_num)
     {
     case SYS_HALT:
@@ -230,8 +227,8 @@ remove (const char *file)
 
 /************************************************************************
 * FUNCTION : open                                                       *
-* Input : NONE                                                          *
-* Output : NONE                                                         *
+* Input : file                                                          *
+* Output : fd number                                                    *
 * Purporse : Open file with file name by using filesys_open             *
 * and return file descriptor                                            *
 ************************************************************************/
@@ -270,10 +267,9 @@ open(const char *file)
 
 /************************************************************************
 * FUNCTION : filesize                                                   *
-* Input : NONE                                                          *
-* Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Input : file desciptor number                                         *
+* Output : size of file                                                 *
+* Purporse : return filesize                                            *
 ************************************************************************/
  /*added function */
 int filesize(int fd)
@@ -289,11 +285,10 @@ int filesize(int fd)
 }
 
 /************************************************************************
-* FUNCTION : read                                                      *
-* Input : NONE                                                          *
-* Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* FUNCTION : read                                                       *
+* Input : fild desciptor number, buffer, length to read                 *
+* Output : read bytes actuall read                                      *
+* Purporse : read bytes from fd and write it to buffer                  *
 ************************************************************************/
  /*added function */
 int read (int fd, void *buffer, unsigned length)
@@ -305,6 +300,7 @@ int read (int fd, void *buffer, unsigned length)
     exit(-1); 
   if(fd == 0)
   {
+    //std out 
     for(i = 0; i<length; i++)
     {
       *(buf_char + i) = input_getc();
@@ -333,10 +329,9 @@ int read (int fd, void *buffer, unsigned length)
 
 /************************************************************************
 * FUNCTION : write                                                      *
-* Input : NONE                                                          *
-* Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Input : fild desciptor number, buffer, length to read                 *
+* Output : actually written bytes                                       *
+* Purporse : write buffer to file with fd                               *
 ************************************************************************/
  /*added function */
 int write(int fd, const void *buffer, unsigned length)
@@ -352,6 +347,7 @@ int write(int fd, const void *buffer, unsigned length)
     }
   else if(fd == 1)
     {
+      //std in
       putbuf(buf_char, length);
       retval = length;
     }
@@ -365,7 +361,6 @@ int write(int fd, const void *buffer, unsigned length)
         sema_up(&filesys_global_lock);
         return -1;
       }
-
       retval = file_write(file, buffer, length);
       sema_up(&filesys_global_lock);
     }
@@ -374,14 +369,12 @@ int write(int fd, const void *buffer, unsigned length)
 }
 
 /************************************************************************
-* FUNCTION : seek                                                      *
-* Input : NONE                                                          *
+* FUNCTION : seek                                                       *
+* Input : file desciptor number                                         *
 * Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Purporse : change next read byte of file                              *
 ************************************************************************/
  /*added function */
-
 void seek (int fd, unsigned position)
 {
   struct file *file = get_struct_file(fd);
@@ -393,11 +386,10 @@ void seek (int fd, unsigned position)
 }
 
 /************************************************************************
-* FUNCTION : tell                                                      *
-* Input : NONE                                                          *
-* Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* FUNCTION : tell                                                       *
+* Input : file desciptor number                                         *
+* Output : off-set                                                      *
+* Purporse : return off-set of file                                     *
 ************************************************************************/
  /*added function */
 unsigned tell (int fd)
@@ -414,10 +406,9 @@ unsigned tell (int fd)
 
 /************************************************************************
 * FUNCTION : close                                                      *
-* Input : NONE                                                          *
+* Input : file desciptor number                                         *
 * Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Purporse : close file with fd number                                  *
 ************************************************************************/
  /*added function */
 void close (int fd)
@@ -435,10 +426,10 @@ void close (int fd)
 
 /************************************************************************
 * FUNCTION : get_struct_file                                            *
-* Input : NONE                                                          *
-* Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Input : file desciptor number                                         *
+* Output : file pointer                                                 *
+* Purporse : from file descriptor number extract file pointer           *
+in file_desriptor adt                                                   *
 ************************************************************************/
  /*added function */
 struct file* get_struct_file(int fd)
@@ -460,6 +451,13 @@ struct file* get_struct_file(int fd)
   return NULL;
 }
 
+/************************************************************************
+* FUNCTION : get_struct_fd_struct                                       *
+* Input : file desciptor number                                         *
+* Output : file_descriptor pointer                                      *
+* Purporse : from file descriptor number extract file_desriptor adt     *
+************************************************************************/
+ /*added function */
 struct file_descriptor* 
 get_struct_fd_struct(int fd)
 {
@@ -480,14 +478,12 @@ get_struct_fd_struct(int fd)
   return NULL;
 }
 
-
-
 /************************************************************************
 * FUNCTION : get_args                                                   *
-* Input : NONE                                                          *
+* Input : oid* esp, int *args, int argsnum                              *
 * Output : NONE                                                         *
-* Purporse : update priority values of all threads                      *
-* when function is Called                                               *
+* Purporse : from esp, extract argument to syscall                      *
+with agrsnum arguments                                                  *
 ************************************************************************/
  /*added function */
 void get_args(void* esp, int *args, int argsnum)
@@ -502,11 +498,13 @@ void get_args(void* esp, int *args, int argsnum)
   for(i=0; i<argsnum; i++)
     {
       esp_copy += 1;
+      //check if each argument is vaild
       if (invalid_addr(esp_copy))
         exit(-1);
       args[i] = *esp_copy;
     }
 }
+
 /************************************************************************
 * FUNCTION : invalid_addr                                               *
 * Input : addr                                                          *
@@ -526,6 +524,6 @@ bool invalid_addr(void* addr){
   //Not within pagedir
   if(!pagedir_get_page (thread_current()->pagedir, addr))
     return true;
-  
+
   return false;
 }
