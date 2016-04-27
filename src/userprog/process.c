@@ -224,6 +224,7 @@ process_exit (void)
   struct thread *c;
   struct list_elem *iter_child;
 
+  /***** ADDED CODE *****/
   for(iter_child = list_begin(child_list);
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
@@ -236,11 +237,24 @@ process_exit (void)
   }
 
   //allow write to executable by closing it in write deny part of proj2
+  sema_down(&filesys_global_lock);
   if (curr->executable){
     file_close(curr->executable);
   }
-  /*END OF ADDED CODE*/
+  
+  struct list *fdt = &curr->file_descriptor_table;
+  struct list_elem *iter_fd;
+  struct file_descriptor *f;
 
+  while (!list_empty (&fdt))
+  {
+    *iter_fd = list_pop_front (&fdt);
+    f = list_entry(iter_fd, struct file_descriptor, elem);
+    list_remove(&f->elem);
+    file_close(f->file);
+    free(f);  
+  }
+  sema_up(&filesys_global_lock);
   /***** END OF ADDED CODE *****/
 
   /* Destroy the current process's page directory and switch back
