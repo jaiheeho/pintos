@@ -101,12 +101,10 @@ struct thread
     struct list file_descriptor_table;  /* save the list_of_file_descriptor */
     struct list child_procs;            /* list of child processes */
     struct thread *parent_proc;         /* parent processes */
-    struct lock thread_data_lock;       /* lock make thread data safe */     
     struct list_elem child_elem;        /* child_elem used in parent's child list */
     bool is_wait_called;                /* check whether wait function is called for thread */
     struct semaphore sema_wait;         /* semaphore that blocks parent proceess who wait for this thread*/
     int exit_status;                    /* store exit_status when it is called */
-    int wait_status;                    /* store child's exit status when parent wait for it */
     bool is_process;                    /* check whether thread is proces of kernel thread*/
     bool is_loaded;                     /* check whether thread's child process is loaded successfully */
     int fd_given;                       /* check last fd number give for the opened file */

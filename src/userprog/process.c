@@ -121,7 +121,7 @@ start_process (void *f_name)
   // fd starts from 2 since 0 and 1 is allocated for stdin & stdout.
   curr->fd_given = 2;
 
-  //deny write to executable by closing it in write deny part of proj2
+  //deny write to executable 
   //executable of thread is saved in struct thread
   curr->executable = filesys_open(file_name);
   file_deny_write(curr->executable);
@@ -189,15 +189,19 @@ process_wait (tid_t child_tid)
   //Wait for tid to be exited
   //At first, try_sema_down to acquire semaphor for child's wait
   //if semaphore is acquired, wait for child
-  //else, child has already exited but it is waiting in case of late wait call. (release semaphore for child)
+  //else, child has already exited but it is waiting in case of late wait call. 
+  // (=> release semaphore for child and make it exited completely)
   if(sema_try_down(&c->sema_wait))
   {
     c->is_wait_called = true;
+    //this is waiting call sema-down agaain
     sema_down(&c->sema_wait);
+    //when c is exited and return value
     retval = c->exit_status;
   }
   else
   {
+    //late wait calls, so get exit_status of child and releas child.
     retval = c->exit_status;
     sema_up(&c->sema_wait);
   }
@@ -230,7 +234,9 @@ process_exit (void)
     //first for every child in this thread's children list, make their parent pointer to NULL
     c = list_entry(iter_child, struct thread, child_elem);
     c->parent_proc = NULL;
-    //if exit was called for child but is block to wait for parent's wait call release lock and make it dead.
+    //if exit was called in child process but child is blocked 
+    // because of parent's wait call, then release lock of child and make it dead completely.
+    // to make it simple first call sema_try_down and call sema_up
     sema_try_down(&c->sema_wait);
     sema_up(&c->sema_wait);
   }
@@ -277,7 +283,7 @@ process_exit (void)
     sema_up(&curr->sema_wait);
   }
   else {
-    //If, parent didn't call wait() for this process yet, wait for parent until parent calls exit() or call wait()
+    //If, parent didn't call wait() for this process yet, wait for parent until parent calls exit() itself or calls wait()
     sema_down(&curr->sema_wait);
     sema_down(&curr->sema_wait);
   }
@@ -604,12 +610,11 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 }
 
 /************************************************************************
-* FUNCTION : setup_stack                                               *
+* FUNCTION : setup_stack                                                *
 * Input : void **esp, char *file_name, char **strtok_r_ptr              *
-* Output :                                                              *
+* Output : true of false                                                *
 ************************************************************************/
 /*fixed function */
-
 /* Create a minimal stack by mapping a zeroed page at the top of
    user virtual memory. */
 static bool
