@@ -137,7 +137,9 @@ page_fault (struct intr_frame *f)
   asm ("movl %%cr2, %0" : "=r" (fault_addr));
 
   /***** ADDED CODE *****/
-  if (fault_addr == NULL)
+  /*Deferencing NULL should be exited instead of killed (test : bad_read)*/
+  /*Deferencing addr above 0xC0000000 should be exited instead of killed (test : bad_read)*/
+  if (fault_addr == NULL || fault_addr >= 0xC0000000)
     exit(-1);
   /***** END OF ADDED CODE *****/
   /* Turn interrupts back on (they were only off so that we could
