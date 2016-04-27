@@ -4,6 +4,7 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
+#include "threads/synch.h"
 
 /* States in a thread's life cycle. */
 enum thread_status
@@ -95,6 +96,19 @@ struct thread
     int nice;                           /* nice */
     int priority_rollback;              /* prioty value to be rolled back */
     struct list lock_holdings;
+
+    //For Project 2
+    struct list file_descriptor_table;  /* save the list_of_file_descriptor */
+    struct list child_procs;            /* list of child processes */
+    struct thread *parent_proc;         /* parent processes */
+    struct list_elem child_elem;        /* child_elem used in parent's child list */
+    bool is_wait_called;                /* check whether wait function is called for thread */
+    struct semaphore sema_wait;         /* semaphore that blocks parent proceess who wait for this thread*/
+    int exit_status;                    /* store exit_status when it is called */
+    bool is_process;                    /* check whether thread is proces of kernel thread*/
+    bool is_loaded;                     /* check whether thread's child process is loaded successfully */
+    int fd_given;                       /* check last fd number give for the opened file */
+    struct file * executable;           /* to deny and allow executable */
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */
@@ -158,6 +172,9 @@ void update_load_avg(void);
 void update_recent_cpus(void);
 void update_priorities(void);
 int calc_priority(int, int);
-///WHERE WE ADDED END/////
+
+//for global file locking, initialized to 1 sema_init(&filesys_global_lock , 1) for proj2
+extern struct semaphore filesys_global_lock;
+///WHERE WE ADDED END///
 
 #endif /* threads/thread.h */

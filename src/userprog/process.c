@@ -17,10 +17,19 @@
 #include "threads/palloc.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
+#include <list.h> // ADDED HEADER
+#include "threads/malloc.h" // ADDED HEADER
+
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
+/************************************************************************
+* FUNCTION : process_execute                                            *
+* Input : file_name                                                     *
+* Output : new process id if successful                                 *
+************************************************************************/
+ /*fixed function */
 /* Starts a new thread running a user program loaded from
    FILENAME.  The new thread may be scheduled (and may even exit)
    before process_execute() returns.  Returns the new process's
@@ -30,6 +39,7 @@ process_execute (const char *file_name)
 {
   char *fn_copy;
   tid_t tid;
+  //printf("process_execute :  %s to execute : %s\n", thread_current()->name, file_name);
 
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
@@ -38,13 +48,39 @@ process_execute (const char *file_name)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
 
+  /***** ADDED CODE *****/
+  char file_name_temp[128];
+  int i;
+  for(i=0; !((fn_copy[i] == '\0')|| (fn_copy[i] == ' ')); i++);
+  if(i != 0)
+    {
+      strlcpy(file_name_temp, fn_copy, i+1);
+    }
+  /***** END OF ADDED CODE *****/
+
   /* Create a new thread to execute FILE_NAME. */
-  tid = thread_create (file_name, PRI_DEFAULT, start_process, fn_copy);
+  tid = thread_create (file_name_temp, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy); 
+
+  /***** ADDED CODE *****/
+  //Loading elf was not successful return tid -1
+  //To make chile it should be check by parent process
+  if (thread_current()->is_loaded == false){
+    return TID_ERROR;
+  }
+  /***** END OF ADDED CODE *****/
+
   return tid;
 }
 
+
+/************************************************************************
+* FUNCTION : start_process                                              *
+* Input : f_name                                                        *
+* Output : None                                                         *
+************************************************************************/
+/*fixed function */
 /* A thread function that loads a user process and makes it start
    running. */
 static void
@@ -59,12 +95,39 @@ start_process (void *f_name)
   if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
+
+  /***** ADDED CODE *****/
+  //addeed filesys_lock
+  sema_down(&filesys_global_lock);
   success = load (file_name, &if_.eip, &if_.esp);
+  sema_up(&filesys_global_lock);
+  /***** END OF ADDED CODE *****/
 
   /* If load failed, quit. */
-  palloc_free_page (file_name);
-  if (!success) 
+  /***** ADDED CODE *****/
+  //Palloc_free_page has to be done to free memory for proc name.
+  struct thread * curr = thread_current();
+  if (!success) {
+    palloc_free_page (file_name);
+    curr->parent_proc->is_loaded = false;
+    //if loading was unsuccessful remove thread from parent's child list and exit();
+    list_remove(&curr->child_elem);
     thread_exit ();
+  }
+
+  // initialize file descriptor table and is_process flag (because this is process)
+  list_init(&curr->file_descriptor_table);
+  curr->is_process = true;
+  // fd starts from 2 since 0 and 1 is allocated for stdin & stdout.
+  curr->fd_given = 2;
+
+  //deny write to executable 
+  //executable of thread is saved in struct thread
+  curr->executable = filesys_open(file_name);
+  file_deny_write(curr->executable);
+
+  palloc_free_page (file_name);
+  /***** END OF ADDED CODE *****/
 
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
@@ -76,6 +139,14 @@ start_process (void *f_name)
   NOT_REACHED ();
 }
 
+
+/************************************************************************
+* FUNCTION : process_wait                                               *
+* Input : child_tid                                                     *
+* Output : exit_status of child                                         *
+************************************************************************/
+/*fixed function */
+
 /* Waits for thread TID to die and returns its exit status.  If
    it was terminated by the kernel (i.e. killed due to an
    exception), returns -1.  If TID is invalid or if it was not a
@@ -86,10 +157,65 @@ start_process (void *f_name)
    This function will be implemented in problem 2-2.  For now, it
    does nothing. */
 int
-process_wait (tid_t child_tid UNUSED) 
+process_wait (tid_t child_tid) 
 {
-  return -1;
+  /***** ADDED CODE *****/
+  struct thread *curr = thread_current ();
+  struct list_elem *iter_child;
+  struct list *child_list = &curr->child_procs;
+  struct thread *child=NULL;
+  struct thread *c=NULL;
+  int retval;
+
+  //Check whether child of the calling process, -> not child process return -1
+  for(iter_child = list_begin(child_list);
+    iter_child != list_tail(child_list); iter_child = list_next(iter_child))
+  {
+    child = list_entry(iter_child, struct thread, child_elem);
+    if (child->tid == child_tid)
+    {
+      c = child;
+      break;
+    }
+  }
+
+  //Check whether TID is invalid, invalid -> return -1
+  if (c == NULL || c->status == THREAD_DYING)
+    return -1;
+  //process_wait() has already been successfully called for the given TID, return -1
+  if (c->is_wait_called)
+    return -1;
+
+  //Wait for tid to be exited
+  //At first, try_sema_down to acquire semaphor for child's wait
+  //if semaphore is acquired, wait for child
+  //else, child has already exited but it is waiting in case of late wait call. 
+  // (=> release semaphore for child and make it exited completely)
+  if(sema_try_down(&c->sema_wait))
+  {
+    c->is_wait_called = true;
+    //this is waiting call sema-down agaain
+    sema_down(&c->sema_wait);
+    //when c is exited and return value
+    retval = c->exit_status;
+  }
+  else
+  {
+    //late wait calls, so get exit_status of child and releas child.
+    retval = c->exit_status;
+    sema_up(&c->sema_wait);
+  }
+  return retval;
+  /***** END OF ADDED CODE *****/
 }
+
+
+/************************************************************************
+* FUNCTION : process_exit                                               *
+* Input : None                                                          *
+* Output : None                                                         *
+************************************************************************/
+/*fixed function */
 
 /* Free the current process's resources. */
 void
@@ -97,6 +223,42 @@ process_exit (void)
 {
   struct thread *curr = thread_current ();
   uint32_t *pd;
+  struct list *child_list = &curr->child_procs;
+  struct thread *c;
+  struct list_elem *iter_child;
+
+  /***** ADDED CODE *****/
+  for(iter_child = list_begin(child_list);
+    iter_child != list_tail(child_list); iter_child = list_next(iter_child))
+  {
+    //first for every child in this thread's children list, make their parent pointer to NULL
+    c = list_entry(iter_child, struct thread, child_elem);
+    c->parent_proc = NULL;
+    //if exit was called in child process but child is blocked 
+    // because of parent's wait call, then release lock of child and make it dead completely.
+    // to make it simple first call sema_try_down and call sema_up
+    sema_try_down(&c->sema_wait);
+    sema_up(&c->sema_wait);
+  }
+
+  //allow write to executable by closing it in write deny part of proj2
+  sema_down(&filesys_global_lock);
+  if (curr->executable){
+    file_close(curr->executable);
+  }
+  struct list *fdt = &curr->file_descriptor_table;
+  struct list_elem *iter_fd;
+  struct file_descriptor *f;
+  //empty file_descriptor table for the process which was malloced when files were opened.
+  while (!list_empty (fdt) && curr->parent_proc->is_loaded == true)
+  {
+    iter_fd = list_pop_front (fdt);
+    f = list_entry(iter_fd, struct file_descriptor, elem);
+    file_close(f->file);
+    free(f);  
+  }
+  sema_up(&filesys_global_lock);
+  /***** END OF ADDED CODE *****/
 
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
@@ -114,6 +276,21 @@ process_exit (void)
       pagedir_activate (NULL);
       pagedir_destroy (pd);
     }
+
+  /***** ADDED CODE *****/
+  //Finally, wake up parent who waiting for this thread*/
+  if (curr->is_wait_called){
+    sema_up(&curr->sema_wait);
+  }
+  else {
+    //If, parent didn't call wait() for this process yet, wait for parent until parent calls exit() itself or calls wait()
+    sema_down(&curr->sema_wait);
+    sema_down(&curr->sema_wait);
+  }
+  //Disconncect with its parent (i.e remove itself from children list of parent)
+  if (curr->parent_proc != NULL)
+    list_remove (&curr->child_elem);
+  /***** END OF ADDED CODE *****/
 }
 
 /* Sets up the CPU for running user code in the current
@@ -195,7 +372,7 @@ struct Elf32_Phdr
 #define PF_W 2          /* Writable. */
 #define PF_R 4          /* Readable. */
 
-static bool setup_stack (void **esp);
+static bool setup_stack (void **esp, char *file_name, char **strtok_r_ptr);
 static bool validate_segment (const struct Elf32_Phdr *, struct file *);
 static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
                           uint32_t read_bytes, uint32_t zero_bytes,
@@ -214,6 +391,14 @@ load (const char *file_name, void (**eip) (void), void **esp)
   off_t file_ofs;
   bool success = false;
   int i;
+
+  /*ADDED CODE*/
+  char *strtok_r_ptr;
+  char *token_ptr;
+
+  token_ptr = strtok_r((char*)file_name, " ", &strtok_r_ptr);
+
+  /*END OF ADDED CODE*/
 
   /* Allocate and activate page directory. */
   t->pagedir = pagedir_create ();
@@ -247,13 +432,13 @@ load (const char *file_name, void (**eip) (void), void **esp)
   for (i = 0; i < ehdr.e_phnum; i++) 
     {
       struct Elf32_Phdr phdr;
-
       if (file_ofs < 0 || file_ofs > file_length (file))
         goto done;
       file_seek (file, file_ofs);
 
       if (file_read (file, &phdr, sizeof phdr) != sizeof phdr)
         goto done;
+
       file_ofs += sizeof phdr;
       switch (phdr.p_type) 
         {
@@ -302,7 +487,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
     }
 
   /* Set up stack. */
-  if (!setup_stack (esp))
+  if (!setup_stack (esp, (char*)file_name, &strtok_r_ptr))
     goto done;
 
   /* Start address. */
@@ -424,13 +609,20 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
   return true;
 }
 
+/************************************************************************
+* FUNCTION : setup_stack                                                *
+* Input : void **esp, char *file_name, char **strtok_r_ptr              *
+* Output : true of false                                                *
+************************************************************************/
+/*fixed function */
 /* Create a minimal stack by mapping a zeroed page at the top of
    user virtual memory. */
 static bool
-setup_stack (void **esp) 
+setup_stack (void **esp, char *file_name, char **strtok_r_ptr) 
 {
   uint8_t *kpage;
   bool success = false;
+
 
   kpage = palloc_get_page (PAL_USER | PAL_ZERO);
   if (kpage != NULL) 
@@ -441,6 +633,67 @@ setup_stack (void **esp)
       else
         palloc_free_page (kpage);
     }
+
+  /*ADDED CODE*/
+  char *token_ptr;
+  int argc = 0;
+  char* argv[128];
+
+  //insert file name argv[0]
+  *esp -= strlen(file_name) + 1;
+  strlcpy(*esp, file_name, strlen(file_name)+1);
+  argv[argc] = *esp;
+  argc++;  
+
+  //insert argv strings
+
+  for(token_ptr = strtok_r(NULL, " ", strtok_r_ptr);
+      token_ptr != NULL; token_ptr = strtok_r(NULL, " ", strtok_r_ptr))
+    {
+      //printf("Tokens: %s\n", token_ptr);
+      *esp -= strlen(token_ptr) + 1;
+      strlcpy(*esp, token_ptr, strlen(token_ptr)+1);
+      argv[argc] = *esp;
+      argc++;
+    }
+
+
+  // Insert padding
+  if((PHYS_BASE - *esp)%4)
+    { 
+      *esp -= 4 - (PHYS_BASE - *esp)%4;
+    }
+  // Insert NULL
+  argv[argc] = NULL;
+  argc++;
+  
+  //insert argv pointer array
+  int i = argc - 1;
+  for(; i >= 0; i--)
+    {
+      *esp -= sizeof(char *);
+      *((char**)(*esp)) = argv[i];
+    }
+
+  *esp -= sizeof(char**);
+  *((char***)(*esp)) = *esp + sizeof(char**);
+
+  //insert argc
+  argc--;
+  *esp -= sizeof(int);
+  memcpy(*esp, &argc, sizeof(int));
+
+  //insert dummy return address
+  *esp -= sizeof(void*);
+  *(int*)(*esp) = 0;
+
+  //printf("ESP : %x\n", *esp);
+  int a = 0;
+  for(a=0; 4*a < (PHYS_BASE - *esp); a++){
+    //printf("addr: %x  |  content: 0x%08x\n", (int*)(*esp) + a ,*((int*)(*esp) + a));
+  }
+  /*END OF ADDED CODE*/
+
   return success;
 }
 

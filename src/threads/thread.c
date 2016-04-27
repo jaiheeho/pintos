@@ -66,9 +66,12 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
    Controlled by kernel command-line option "-o mlfqs". */
 bool thread_mlfqs;
 
-
+/***** ADDED CODE *****/
 /* ADDED GLOBAL VARIABLES */
 static int thread_start_complete = 0;
+//for global file locking, initialized to 1 sema_init(&filesys_global_lock , 1) for proj2
+struct semaphore filesys_global_lock;
+/***** END OF ADDED CODE *****/
 
 static void kernel_thread (thread_func *, void *aux);
 
@@ -223,11 +226,6 @@ thread_create (const char *name, int priority,
   /* Stack frame for switch_threads(). */
   sf = alloc_frame (t, sizeof *sf);
   sf->eip = switch_entry;
-
-  ///WHERE WE ADDED/////////
-  /* NICE  INHERITENCE*/
-  t->nice = thread_current()->nice;
-  ///WHERE WE ADDED END/////
 
   /* Add to run queue. */
   thread_unblock (t);
@@ -432,19 +430,22 @@ thread_get_priority (void)
   if (thread_mlfqs)
     return thread_current()->priority;
 
+  //we should compare with priority_rollback instead of priority itself because priority can be donated priority
   max_priority = max_priority_thread->priority_rollback; 
   lock_holding = &max_priority_thread->lock_holdings;
 
+  //for every lock current thread own
   for(iter_lock = list_begin(lock_holding);
     iter_lock != list_tail(lock_holding); iter_lock = iter_lock->next)
   {
     l = list_entry(iter_lock, struct lock, elem);
     waiting = &(&l->semaphore)->waiters;
-
+    //for every thread waiting for the lock that current thread own
     for(iter_waiting = list_begin(waiting);
     iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
     {
       t = list_entry(iter_waiting, struct thread, elem);
+      //use recursion for deeper chain
       if (t->priority > max_priority){
         max_priority_thread = thread_get_priority_donation(t, depth-1);
         max_priority = max_priority_thread->priority;
@@ -477,18 +478,21 @@ thread_get_priority_for_thread (struct thread *target)
   if (thread_mlfqs)
     return thread_current()->priority;
 
+  //we should compare with priority_rollback instead of priority itself because priority can be donated priority
   max_priority = max_priority_thread->priority_rollback; 
   lock_holding = &max_priority_thread->lock_holdings;
 
+  //for every lock current thread own
   for(iter_lock = list_begin(lock_holding);
     iter_lock != list_tail(lock_holding); iter_lock = iter_lock->next)
   {
     l = list_entry(iter_lock, struct lock, elem);
     waiting = &(&l->semaphore)->waiters;
-
+    //for every thread waiting for the lock that current thread own
     for(iter_waiting = list_begin(waiting);
     iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
     {
+      //use recursion for deeper chain
       t = list_entry(iter_waiting, struct thread, elem);
       if (t->priority > max_priority){
         max_priority_thread = thread_get_priority_donation(t, depth-1);
@@ -519,15 +523,17 @@ thread_get_priority_donation(struct thread *t, int depth)
   if (depth == 0)
     return max_priority_thread;
 
+  //for every lock current thread own
   for(iter_lock = list_begin(lock_holding);
     iter_lock != list_tail(lock_holding); iter_lock = iter_lock->next)
   {
     l = list_entry(iter_lock, struct lock, elem);
     waiting = &(&l->semaphore)->waiters;
-
+    //for every thread waiting for the lock that current thread own
     for(iter_waiting = list_begin(waiting);
     iter_waiting != list_tail(waiting); iter_waiting = iter_waiting->next)
     {
+      //use recursion for deeper chain
       t = list_entry(iter_waiting, struct thread, elem);
       if (t->priority > max_priority){
         max_priority_thread = thread_get_priority_donation(t, depth-1);
@@ -846,9 +852,42 @@ init_thread (struct thread *t, const char *name, int priority)
 
   ///WHERE WE ADDED/////////
   //IMLEMENTIAION TO INITIALIZE recent_cpu to 0//
+  //FOR BSD Scheduler//
+  if (thread_start_complete == 1)
+  {
+    t->nice = thread_current()->nice;
+  }
   t->recent_cpu = 0;
+  //FOR PRIORITY DONTATION//
   list_init (&t->lock_holdings);
   t->priority_rollback = priority;
+  //FOR PROCESS INHERITANE in Proj2//
+  list_init (&t->child_procs);
+  sema_init(&t->sema_wait, 1);
+  if (thread_start_complete == 1)
+  {
+    list_push_back (&thread_current()->child_procs, &t->child_elem);
+    t->parent_proc = thread_current();
+    //For syscall filedecripter
+    // list_init(&thread_current()->file_descriptor_table);
+    // thread_current()->fd_given = 2;  
+  }
+  else
+  {
+    //main process does not have parent process
+    t->parent_proc = NULL;
+  }
+  t->is_wait_called = false;
+  t->is_process = false;
+  t->exit_status = 0;
+  t->is_loaded = true;
+  //To check executable
+  t->executable = NULL;
+  //FOR GLOBAL FILESYS LOCK in proj2 only 'main' init this//
+  if (thread_start_complete == 0)
+  {
+    sema_init(&filesys_global_lock, 1);
+  }
   ///WHERE WE ADDED END/////
 }
 
@@ -909,8 +948,8 @@ schedule_tail (struct thread *prev)
   thread_ticks = 0;
 
 #ifdef USERPROG
-  /* Activate the new address space. */
-  process_activate ();[]
+  /* activate the new address space. */
+  process_activate ();
 #endif
 
   /* If the thread we switched from is dying, destroy its struct
@@ -921,7 +960,7 @@ schedule_tail (struct thread *prev)
   if (prev != NULL && prev->status == THREAD_DYING && prev != initial_thread)  
     {
       ASSERT (prev != curr);
-      palloc_free_page (prev);
+      palloc_free_page(prev);
     }
 }
 
