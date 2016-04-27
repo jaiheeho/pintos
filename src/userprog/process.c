@@ -241,16 +241,15 @@ process_exit (void)
   if (curr->executable){
     file_close(curr->executable);
   }
-  
+
   struct list *fdt = &curr->file_descriptor_table;
   struct list_elem *iter_fd;
   struct file_descriptor *f;
 
-  while (!list_empty (&fdt))
+  while (!list_empty (fdt))
   {
-    *iter_fd = list_pop_front (&fdt);
+    iter_fd = list_pop_front (fdt);
     f = list_entry(iter_fd, struct file_descriptor, elem);
-    list_remove(&f->elem);
     file_close(f->file);
     free(f);  
   }
