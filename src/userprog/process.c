@@ -246,7 +246,7 @@ process_exit (void)
   struct list *fdt = &curr->file_descriptor_table;
   struct list_elem *iter_fd;
   struct file_descriptor *f;
-  //empty file_descriptor table for the process.
+  //empty file_descriptor table for the process which was malloced when files were opened.
   while (!list_empty (fdt) && curr->parent_proc->is_loaded == true)
   {
     iter_fd = list_pop_front (fdt);
