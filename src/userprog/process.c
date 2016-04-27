@@ -243,12 +243,11 @@ process_exit (void)
   if (curr->executable){
     file_close(curr->executable);
   }
-
   struct list *fdt = &curr->file_descriptor_table;
   struct list_elem *iter_fd;
   struct file_descriptor *f;
-
-  while (!list_empty (fdt))
+  //empty file_descriptor table for the process.
+  while (!list_empty (fdt) || curr->parent_proc->is_loaded == true)
   {
     iter_fd = list_pop_front (fdt);
     f = list_entry(iter_fd, struct file_descriptor, elem);
