@@ -120,6 +120,8 @@ start_process (void *f_name)
   curr->is_process = true;
   // fd starts from 2 since 0 and 1 is allocated for stdin & stdout.
   curr->fd_given = 2;
+  curr->parent_proc->is_loaded = true;
+
 
   //deny write to executable 
   //executable of thread is saved in struct thread
@@ -284,8 +286,10 @@ process_exit (void)
   }
   else {
     //If, parent didn't call wait() for this process yet, wait for parent until parent calls exit() itself or calls wait()
-    sema_down(&curr->sema_wait);
-    sema_down(&curr->sema_wait);
+    if (curr->parent_proc != NULL){
+      sema_down(&curr->sema_wait);
+      sema_down(&curr->sema_wait);
+    }
   }
   //Disconncect with its parent (i.e remove itself from children list of parent)
   if (curr->parent_proc != NULL)
@@ -638,6 +642,7 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
   char *token_ptr;
   int argc = 0;
   char* argv[128];
+  uint32_t esp_limit = (uint32_t)*esp;
 
   //insert file name argv[0]
   *esp -= strlen(file_name) + 1;
@@ -686,6 +691,10 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
   //insert dummy return address
   *esp -= sizeof(void*);
   *(int*)(*esp) = 0;
+
+  //check if stack is safe//
+  if (((uint32_t)*esp-esp_limit) < PGSIZE)
+    success = false;
 
   //printf("ESP : %x\n", *esp);
   int a = 0;
