@@ -120,6 +120,8 @@ start_process (void *f_name)
   curr->is_process = true;
   // fd starts from 2 since 0 and 1 is allocated for stdin & stdout.
   curr->fd_given = 2;
+  curr->parent_proc->is_loaded = true;
+
 
   //deny write to executable 
   //executable of thread is saved in struct thread
@@ -284,8 +286,10 @@ process_exit (void)
   }
   else {
     //If, parent didn't call wait() for this process yet, wait for parent until parent calls exit() itself or calls wait()
-    sema_down(&curr->sema_wait);
-    sema_down(&curr->sema_wait);
+    if (curr->parent_proc != NULL){
+      sema_down(&curr->sema_wait);
+      sema_down(&curr->sema_wait);
+    }
   }
   //Disconncect with its parent (i.e remove itself from children list of parent)
   if (curr->parent_proc != NULL)
