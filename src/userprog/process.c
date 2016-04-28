@@ -642,7 +642,7 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
   char *token_ptr;
   int argc = 0;
   char* argv[128];
-  uint32_t esp_limit = *esp;
+  uint32_t esp_limit = (uint32_t)*esp;
 
   //insert file name argv[0]
   *esp -= strlen(file_name) + 1;
@@ -693,7 +693,7 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
   *(int*)(*esp) = 0;
 
   //check if stack is safe//
-  if ((*esp-esp_limit < PGSIZE)
+  if (((uint32_t)*esp-esp_limit) < PGSIZE)
     success = false;
 
   //printf("ESP : %x\n", *esp);
