@@ -1,0 +1,13 @@
+#include <hash.h>
+
+struct fte {
+  void* frame;
+  
+
+
+
+};
+
+
+void* frame_allocate();
+void frame_free();

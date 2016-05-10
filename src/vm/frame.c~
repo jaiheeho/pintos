@@ -1,0 +1,42 @@
+#include "userprog/pagedir.h"
+#include "threads/palloc.h"
+#include "frame.h"
+
+
+
+
+// must protect frame table with lock cuz frame table is shared
+// across processes
+
+
+
+void* frame_allocate()
+{
+
+  void* new_frame = palloc_get_page(palloc_flags);
+
+  if(new_frame == NULL)
+    {
+      // all frame slots are full
+
+
+    }
+  else
+    {
+      // can allocate frame
+      install_page(); // here? or in page.c?
+
+
+    }
+
+
+
+}
+
+void frame_free(void* frame_to_free)
+{
+  // free frame table entry
+
+  // free palloc'd page too? or keep?
+
+}
