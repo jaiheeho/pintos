@@ -69,8 +69,6 @@ void* frame_allocate()
       // insert into frame table
       hash_insert(&frame_table, &new_fte_entry->elem);
 
-      install_page(); // here? or in page.c?
-
 
     }
 
