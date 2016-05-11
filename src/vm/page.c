@@ -4,7 +4,8 @@
 #include "threads/vaddr.h"
 
 
-#define STACK_MAX 8000000
+#define STACK_MAX 2000 * PGSIZE
+#define STACK_STRIDE 32
 
 
 static unsigned spte_hash_func(const struct hash_elem *e, void *aux)
@@ -52,7 +53,7 @@ void sup_page_table_free(struct hash* sup_page_table)
 }
 
 
-int load_page(void* faulted_user_addr)
+int load_page(void* user_addr)
 {
 
   bool writable = true;
@@ -60,14 +61,14 @@ int load_page(void* faulted_user_addr)
 
   //get the spte for this addr
   struct sup_page_table* spt = thread_current()->spt;
-  void* faulted_user_page = pg_round_down(faulted_user_addr);
+  void* user_page = pg_round_down(user_addr);
 
   // find the spte with infos above(traverse spt)
   struct spte spte_temp;
   struct hash_elem *e;
   struct spte* spte_target;
 
-  spte_temp.user_addr = faulted_user_page;
+  spte_temp.user_addr = user_page;
   e = hash_find(&spt, &spte_temp.hash_elem);
 
   if(e == NULL)
@@ -77,7 +78,7 @@ int load_page(void* faulted_user_addr)
       
       // create new spte
       struct spte* new_spte = (struct spte*)malloc(sizeof(struct spte));
-      new_spte->user_addr =faulted_user_page;
+      new_spte->user_addr =user_page;
       new_spte->phys_addr = new_frame;
       new_spte->status = ON_MEM;
       new_spte->present = true;
@@ -90,7 +91,7 @@ int load_page(void* faulted_user_addr)
 
 
 
-      // load n. if this fails, kernel will panic.
+      // get new frame. if this fails, kernel will panic.
       // thus, we dont have to cleanup new_spte
       void* new_frame = frame_allocate(new_spte);
 
@@ -121,31 +122,13 @@ int load_page(void* faulted_user_addr)
 }
 
 
+
+
 int stack_growth(void *user_esp)
 {
 
-  if((PHYS_BASE - user_esp) > STACK_MAX)
-  
-
-  void* new_stack_page = pg_round_down(user_esp);
-
-
-  load_page();
-  
-
-  //get the spte for this addr
-  struct sup_page_table* spt = thread_current()->spt;
-  void* faulted_user_page = pg_round_down(faulted_user_addr);
-
-  // find the spte with infos above(traverse spt)
-  struct spte spte_temp;
-  struct hash_elem *e;
-  struct spte* spte_target;
-
-  spte_temp.user_addr = faulted_user_page;
-  e = hash_find(&spt, &spte_temp.hash_elem);
-
-
+  void* new_stack_page = pg_round_down(user_esp) - PGSIZE;
+  load_page(new_stack_page);
 
 
 }
