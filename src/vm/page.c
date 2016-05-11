@@ -2,6 +2,7 @@
 #include "vm/frame.h"
 #include "vm/page.h"
 #include "threads/vaddr.h"
+#include "threads/thread.h"
 #include "userprog/pagedir.h"
 
 #define STACK_MAX 8000000
@@ -63,7 +64,6 @@ int load_page(void* faulted_user_addr)
 {
 
   bool writable = true;
-
 
   //get the spte for this addr
   struct sup_page_table* spt = thread_current()->spt;
