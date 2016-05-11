@@ -5,6 +5,7 @@
 #include "threads/thread.h"
 #include "threads/malloc.h"
 #include "userprog/pagedir.h"
+#include "userprog/p"
 
 #define STACK_MAX 8000000
 
@@ -13,7 +14,7 @@ static bool spte_less_func(const struct hash_elem *a,
         const struct hash_elem *b,
         void *aux);
 static void spte_destroyer_func(struct hash_elem *e, void *aux);
-
+bool install_page (void *upage, void *kpage, bool writable);
 
 static unsigned spte_hash_func(const struct hash_elem *e, void *aux)
 {
@@ -130,7 +131,6 @@ int stack_growth(void *user_esp)
 
   load_page();
   
-
   //get the spte for this addr
   struct sup_page_table* spt = thread_current()->spt;
   void* faulted_user_page = pg_round_down(faulted_user_addr);
@@ -143,4 +143,14 @@ int stack_growth(void *user_esp)
   spte_temp.user_addr = faulted_user_page;
   e = hash_find(&spt, &spte_temp.hash_elem);
 
+}
+bool
+install_page (void *upage, void *kpage, bool writable)
+{
+  struct thread *t = thread_current ();
+
+  /* Verify that there's not already a page at that virtual
+     address, then map our page there. */
+  return (pagedir_get_page (t->pagedir, upage) == NULL
+          && pagedir_set_page (t->pagedir, upage, kpage, writable));
 }
