@@ -40,7 +40,7 @@ int swap_alloc(char *addr){
 	int i;
 	int sector_num;
 	//scan swap_table which is not allocated and flip the bit first False bit to True
-	idx = bitmap_scan_and_flip (&swap_bitmap, 0, 1, False);
+	idx = bitmap_scan_and_flip (swap_bitmap, 0, 1, false);
 
 	//If swot if full, panic!
 	if (idx == BITMAP_ERROR)
@@ -67,10 +67,10 @@ void swap_remove(char *addr, size_t idx){
 	int sector_num;
 
 	//check whether swap index is correct
-	if (bitmap_test(swap_disk, idx) == False)
+	if (bitmap_test(swap_bitmap, idx) == false)
 		PANIC ("EMPTY SWAP SPACE");
 	//fip the swop talbe from True to False so that make swap-table slot empty
-	bitmap_flip(idx);
+	bitmap_flip(swap_bitmap, idx);
 
 	//read from the swap_disk and write to frame
 	for (i = 0; i < SECTORSINPAGE; i++)
@@ -87,7 +87,7 @@ void swap_remove(char *addr, size_t idx){
 ************************************************************************/
 void swap_table_free(){
 	//destroty swap_table (bitmap destroy)
-	bitmap_destroy(&swap_bitmap);
+	bitmap_destroy(swap_bitmap);
 	//in case of unnecessary lock.
 	sema_up(&swap_lock);
 }
