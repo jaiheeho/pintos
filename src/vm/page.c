@@ -66,7 +66,7 @@ int load_page(void* faulted_user_addr)
   bool writable = true;
 
   //get the spte for this addr
-  struct hash* spt = thread_current()->spt;
+  struct hash *spt = &thread_current()->spt;
   void* faulted_user_page = pg_round_down(faulted_user_addr);
 
   // find the spte with infos above(traverse spt)
@@ -93,13 +93,9 @@ int load_page(void* faulted_user_addr)
       // insert in spt
       hash_insert(spt, &(new_spte->elem));
 
-
-
       // load n. if this fails, kernel will panic.
       // thus, we dont have to cleanup new_spte
       void* new_frame = frame_allocate(new_spte);
-
-
 
       //install the page in user page table
       install_page(new_spte->user_addr, new_spte->phys_addr, writable);
