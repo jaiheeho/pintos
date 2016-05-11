@@ -4,7 +4,10 @@
 #include "userprog/gdt.h"
 #include "threads/interrupt.h"
 #include "threads/thread.h"
+/*ADDED HEADERS*/
 #include "userprog/syscall.h" // ADDED HEADER
+#include "vm/page.h"
+#include "threads/vaddr.h"
 
 /* Number of page faults processed. */
 static long long page_fault_cnt;
@@ -14,17 +17,14 @@ static void page_fault (struct intr_frame *);
 
 /* Registers handlers for interrupts that can be caused by user
    programs.
-
    In a real Unix-like OS, most of these interrupts would be
    passed along to the user process in the form of signals, as
    described in [SV-386] 3-24 and 3-25, but we don't implement
    signals.  Instead, we'll make them simply kill the user
    process.
-
    Page faults are an exception.  Here they are treated the same
    way as other exceptions, but this will need to change to
    implement virtual memory.
-
    Refer to [IA32-v3a] section 5.15 "Exception and Interrupt
    Reference" for a description of each of these exceptions. */
 void
@@ -112,7 +112,6 @@ kill (struct intr_frame *f)
 /* Page fault handler.  This is a skeleton that must be filled in
    to implement virtual memory.  Some solutions to project 2 may
    also require modifying this code.
-
    At entry, the address that faulted is in CR2 (Control Register
    2) and information about the fault, formatted as described in
    the PF_* macros in exception.h, is in F's error_code member.  The
@@ -136,13 +135,6 @@ page_fault (struct intr_frame *f)
      [IA32-v3a] 5.15 "Interrupt 14--Page Fault Exception
      (#PF)". */
   asm ("movl %%cr2, %0" : "=r" (fault_addr));
-
-  /***** ADDED CODE *****/
-  /*Deferencing NULL should be exited instead of killed (test : bad_read)*/
-  /*Deferencing addr above 0xC0000000 should be exited instead of killed (test : bad_read)*/
-  if (fault_addr == NULL || fault_addr >= (void*)0xC0000000)
-    exit(-1);
-  /***** END OF ADDED CODE *****/
   
   /* Turn interrupts back on (they were only off so that we could
      be assured of reading CR2 before it changed). */
@@ -156,14 +148,46 @@ page_fault (struct intr_frame *f)
   write = (f->error_code & PF_W) != 0;
   user = (f->error_code & PF_U) != 0;
 
-  /* To implement virtual memory, delete the rest of the function
-     body, and replace it with code that brings in the page to
-     which fault_addr refers. */
-  printf ("Page fault at %p: %s error %s page in %s context.\n",
-          fault_addr,
-          not_present ? "not present" : "rights violation",
-          write ? "writing" : "reading",
-          user ? "user" : "kernel");
-  kill (f);
-}
 
+
+  /***** ADDED CODE *****/
+  /*Deferencing NULL should be exited instead of killed (test : bad_read)*/
+  /*Deferencing addr above 0xC0000000 should be exited instead of killed (test : bad_read)*/
+  if (fault_addr == NULL || fault_addr >= (void*)0xC0000000)
+    exit(-1);
+  /***** END OF ADDED CODE *****/
+
+  if((not_present) && (user) &&(is_user_vaddr(fault_addr))
+     && (fault_addr > (void*)0x08048000))
+    {
+      // valid to load page
+
+      // stack or heap(or other segment)?
+      if(((PHYS_BASE - fault_addr) < STACK_MAX))
+  {
+    if(((f->esp - fault_addr) < STACK_STRIDE))
+      stack_growth(f->esp);
+    else exit(-1); // it is stack segment, but stride aint right
+  }
+      else
+  {
+    load_page(fault_addr);
+  }
+
+    }
+
+
+  if(0)
+    {
+      
+      /* To implement virtual memory, delete the rest of the function
+   body, and replace it with code that brings in the page to
+   which fault_addr refers. */
+      printf ("Page fault at %p: %s error %s page in %s context.\n",
+        fault_addr,
+        not_present ? "not present" : "rights violation",
+        write ? "writing" : "reading",
+        user ? "user" : "kernel");
+      kill (f);
+    }
+}
