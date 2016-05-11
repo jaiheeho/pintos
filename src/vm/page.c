@@ -108,7 +108,7 @@ int load_page(void* faulted_user_addr)
   {
     // page is already on memory. wth?
   }
-      else if(spte->target.status == ON_SWAP)
+      else if(spte_target->status == ON_SWAP)
   {
     // the page is in swap space. bring it in
     void* new_frame = frame_allocate(spte_target);
@@ -148,7 +148,6 @@ bool
 install_page (void *upage, void *kpage, bool writable)
 {
   struct thread *t = thread_current ();
-
   /* Verify that there's not already a page at that virtual
      address, then map our page there. */
   return (pagedir_get_page (t->pagedir, upage) == NULL
