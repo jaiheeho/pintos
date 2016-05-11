@@ -1,5 +1,4 @@
 #include <hash.h>
-#include <vm/frame.h>
 enum spte_status{
 
   ON_SWAP,
@@ -17,4 +16,10 @@ struct spte {
   int swap_idx;
 
   struct hash_elem elem;
+};
+
+struct fte {
+  void* frame_addr;
+  struct list_elem elem;
+  struct spte supplement_page;
 };
