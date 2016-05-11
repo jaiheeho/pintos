@@ -155,7 +155,7 @@ page_fault (struct intr_frame *f)
   /*Deferencing addr above 0xC0000000 should be exited instead of killed (test : bad_read)*/
 
   if (fault_addr == NULL || fault_addr >= (void*)0xC0000000
-      || fault_addr < (void*)0x08048000 || (!not_present && write))
+      || fault_addr < (void*)0x08048000 || (!not_present))
     exit(-1);
   /***** END OF ADDED CODE *****/
 
