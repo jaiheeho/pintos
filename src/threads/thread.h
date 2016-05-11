@@ -111,7 +111,7 @@ struct thread
     struct file * executable;           /* to deny and allow executable */
 
     //For Project 3
-    struct 
+    struct hash spt;                    /* hash table for supplemental page table */
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */
