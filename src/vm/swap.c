@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <bitmap.h>
 #include "devices/disk.h"
 #include "threads/sync.h"
 #include "vm/swap.h"
-
 #define SECTORSINPAGE 8
 static uint32_t swap_size;
 static struct disk *swap_disk;
