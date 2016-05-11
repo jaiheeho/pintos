@@ -7,7 +7,7 @@
 #include "threads/palloc.h"
 #include "vm/frame.h"
 
-static struct list *frame_table;
+static struct list frame_table;
 static struct semaphore frame_table_lock;
 
 
@@ -48,7 +48,7 @@ void frame_destroyer_func(struct list_elem *e, void *aux)
 // across processes
 void frame_table_init()
 {
-  list_init(frame_table);
+  list_init(&frame_table);
   sema_init(&frame_table_lock,1);
 }
 
@@ -63,7 +63,7 @@ void frame_table_free()
 {
   sema_down(&frame_table_lock);
   sema_up(&frame_table_lock);
-  while (!list_empty (frame_table))
+  while (!list_empty (&frame_table))
   {
     struct list_elem *e = list_pop_front (&frame_table);
     struct fte *frame_entry = list_entry(e, struct fte, elem);
