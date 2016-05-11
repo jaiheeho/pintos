@@ -22,7 +22,7 @@ void swap_table_init()
 	/* get swap disk */
 	swap_disk = disk_get(1,1);
 	if (swap_disk ==NULL)
-		{disk_print_stats();
+		{//disk_print_stats();
 			return;
 		}
 
