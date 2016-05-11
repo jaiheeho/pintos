@@ -1,14 +1,10 @@
 #include "userprog/pagedir.h"
 #include "threads/palloc.h"
 #include "frame.h"
+#include <list.h>
 
 
 
-unsigned frame_hash_func(const struct hash_elem *e, void *aux)
-{
-  struct fte* f = hash_entry(e, struct fte, elem);
-  return hash_int(f->frame_addr);
-}
 
 bool frame_less_func(const struct hash_elem *a, const struct hash_elem *b,
 		     void *aux)
@@ -34,66 +30,90 @@ void frame_destroyer_func(struct hash_elem *e, void *aux)
 // must protect frame table with lock cuz frame table is shared
 // across processes
 
-void frame_table_init(struct hash* frame_table)
+void frame_table_init(struct list* ft)
 {
-  hash_init(frame_table, frame_hash_func, frame_less_func, NULL);
-
-}
-
-void frame_table_free(struct hash* frame_table)
-{
-  hash_destroy(frame_table, frame_destroyer_func);
+  list_init(ft);
 
 }
 
 
-
-
-void* frame_allocate()
+// is this necessary??
+void frame_table_free(struct list* ft)
 {
+  hash_destroy(ft, frame_destroyer_func);
 
-  void* new_frame = palloc_get_page(palloc_flags);
+}
 
-  if(new_frame == NULL)
+
+
+
+void* frame_allocate(struct spte *sup_page)
+{
+  
+  while(1)
     {
-      // all frame slots are full; commence eviction
+      void* new_frame = palloc_get_page(palloc_flags);
+      
+      if(new_frame == NULL)
+	{
+	  // all frame slots are full; commence eviction & retry
+	  if (frame_evict())
+	    {
+	      // eviction succeeded. retry palloc
+	      continue;
+	    }
+	  else
+	    {
+	      // eviction failed(swap space is full). kernel panic
+	      PANIC("SWAP SPACE FULL\n");
+	      return NULL; // must not reach here
+	    }
+	}
+      else
+	{
+	  // frame allocation succeeded; add to frame table
+	  struct fte* new_fte_entry = (struct fte*)malloc(sizeof(struct fte));
+	  // configure elements of fte
+	  new_fte_entry->frame_addr = new_frame;
+	  // insert into frame table
+	  list_push_back(&frame_table, &new_fte_entry->elem);
+	  //link to spte
+	  sup_page->phys_addr = new_frame;
+	  sup_page->frame = new_fte_entry;
+	  new_fte_entry->sup_page = sup_page;
 
-
+	  break;
+	}
     }
-  else
-    {
-      // frame allocation succeeded; add to frame table
-      struct fte* new_fte_entry = (struct fte*)malloc(sizeof(struct fte));
-      // configure elements of fte
-      new_fte_entry->frame_addr = new_frame;
-      // insert into frame table
-      hash_insert(&frame_table, &new_fte_entry->elem);
 
-
-    }
-
-
-
+  return new_frame;
+  
 }
 
-void frame_free(void* frame_to_free)
+void frame_free(struct fte* fte_to_free)
 {
   // free frame table entry
-  struct fte fte_temp;
-  struct hash_elem *e;
-  struct fte* fte_tobefreed;
 
-  fte_temp.frame_addr = frame_to_free;
-  e = hash_find(&frame_table, &fte_temp.hash_elem);
-  fte_tobefreed = hash_entry(e, struct fte, elem);
+
+
+  // free palloc'd page
+  palloc_free_page(fte_to_free->frame_addr);
+
+
   //detach fte from frame table
-  hash_delete(&frame_table, &fte_tobefreed->hash_elem);
+  list_remove(fte_to_free->elem);
 
-  // free palloc'd page too? or keep? -> freeing is easier I think
-  palloc_free_page(frame_to_free);
+  //detach frame from spte (this is for ensurance)
+  pagedir_clear_page(thread_current()->pagedir, fte_to_free->sup_page->user_addr);
 
   // free malloc'd memory
-  free(fte_tobefreed);
+  free(fte_to_free);
 
+
+}
+
+int frame_evict()
+{
+  
 
 }

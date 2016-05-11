@@ -4,7 +4,7 @@
 
 typedef enum {
   ON_SWAP;
-  LOADED;
+  ON_MEM;
   ON_DISK;
 
 } status;
@@ -14,6 +14,7 @@ struct spte {
   spte_status status;
   void* user_addr;
   void* phys_addr;
+  struct fte frame;
   bool present;
   bool dirty;
 

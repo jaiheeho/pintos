@@ -3,7 +3,7 @@
 struct fte {
   void* frame_addr;
   struct hash_elem elem;
-
+  struct spte sup_page;
 
 
 };

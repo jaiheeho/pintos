@@ -71,6 +71,8 @@ bool thread_mlfqs;
 static int thread_start_complete = 0;
 //for global file locking, initialized to 1 sema_init(&filesys_global_lock , 1) for proj2
 struct semaphore filesys_global_lock;
+//frame table (proj3)
+struct list frame_table;
 /***** END OF ADDED CODE *****/
 
 static void kernel_thread (thread_func *, void *aux);
@@ -106,8 +108,11 @@ thread_init (void)
   ASSERT (intr_get_level () == INTR_OFF);
 
   lock_init (&tid_lock);
+  // ADDED CODE //
   list_init (&ready_list);
   list_init (&sleep_list);
+  frame_table_init(&frame_table);
+  // END OF ADDED CODE//
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
