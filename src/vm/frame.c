@@ -120,7 +120,7 @@ void frame_free(struct fte* fte_to_free)
   palloc_free_page(fte_to_free);
 }
 
-int frame_evict(struct spte *supplement_page)
+void frame_evict(struct spte *supplement_page)
 {
   struct list_elem *e = list_pop_front (&frame_table);
   struct fte *frame_entry = list_entry(e, struct fte, elem);
