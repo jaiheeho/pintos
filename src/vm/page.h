@@ -1,5 +1,4 @@
 #include <hash.h>
-#include "vm/frame.h"
 
 typedef enum {
   ON_SWAP;
