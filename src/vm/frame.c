@@ -6,21 +6,11 @@
 #include "userprog/pagedir.h"
 #include "threads/palloc.h"
 #include "vm/frame.h"
+#include "threads/synch.h"
 
 static struct list frame_table;
 static struct semaphore frame_table_lock;
-
-/************************************************************************
-* FUNCTION : swap_init                                                *
-* Input : file_name                                                     *
-* Output : new process id if successful                                 *
-* Purpose : initialize swap-table                   *
-************************************************************************/
-bool frame_less_func(const struct list_elem *a, const struct hash_elem *b,
-         void *aux)
-{
-  return;
-}
+void frame_destroyer_func(struct list_elem *e, void *aux);
 
 /************************************************************************
 * FUNCTION : frame_destroyer_func                                                *
