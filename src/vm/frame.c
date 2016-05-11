@@ -6,10 +6,11 @@
 
 
 
-bool frame_less_func(const struct hash_elem *a, const struct hash_elem *b,
+bool frame_less_func(const struct list_elem *a, const struct list_elem *b,
 		     void *aux)
 {
-  
+  struct fte *alpha = list_entry(a, struct fte, elem);
+  struct fte *beta = list_entry(b, struct fte, elem);
 
 }
 
@@ -52,7 +53,7 @@ void* frame_allocate(struct spte *sup_page)
   
   while(1)
     {
-      void* new_frame = palloc_get_page(palloc_flags);
+      void* new_frame = palloc_get_page(PAL_ZERO | PAL_USER);
       
       if(new_frame == NULL)
 	{
@@ -103,7 +104,7 @@ void frame_free(struct fte* fte_to_free)
   //detach fte from frame table
   list_remove(fte_to_free->elem);
 
-  //detach frame from spte (this is for ensurance)
+  //detach frame from pt (this is for ensurance)
   pagedir_clear_page(thread_current()->pagedir, fte_to_free->sup_page->user_addr);
 
   // free malloc'd memory

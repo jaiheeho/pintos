@@ -1,17 +1,19 @@
 #include <hash.h>
 #include "vm/frame.h"
 #include "vm/page.h"
+#include "threads/vaddr.h"
 
 
+#define STACK_MAX 8000000
 
 
-unsigned spte_hash_func(const struct hash_elem *e, void *aux)
+static unsigned spte_hash_func(const struct hash_elem *e, void *aux)
 {
   struct spte* s = hash_entry(e, struct spte, elem);
   return hash_int(f->user_addr);
 }
 
-bool spte_less_func(const struct hash_elem *a,
+static bool spte_less_func(const struct hash_elem *a,
 		    const struct hash_elem *b,
 		    void *aux)
 {
@@ -24,20 +26,33 @@ bool spte_less_func(const struct hash_elem *a,
 
 }
 
-void spte_destroyer_func()
+static void spte_destroyer_func(struct hash_elem *e, void *aux)
 {
+  // 0) get the spte
+  struct spte *target = hash_entry(e, struct spte, elem);
 
+  // 1) free the underlying frame
+  frame_free(target->frame);
 
+  // 2) detach from pt(this is also done in frame_free. doublechecking)
+  pagedir_clear_page(thread_current()->pagedir, target->user_addr);
+
+  // 3) free spte
+  free(target);
 }
 
 void sup_page_table_init(struct hash* sup_page_table)
 {
   hash_init(sup_page_table, spte_hash_func, spte_less_func, NULL);
+}
 
+void sup_page_table_free(struct hash* sup_page_table)
+{
+  hash_destroy(sup_page_table, spte_destroyer_func);
 }
 
 
-int load_page_on_fault(void* faulted_user_addr)
+int load_page(void* faulted_user_addr)
 {
 
   bool writable = true;
@@ -64,18 +79,21 @@ int load_page_on_fault(void* faulted_user_addr)
       struct spte* new_spte = (struct spte*)malloc(sizeof(struct spte));
       new_spte->user_addr =faulted_user_page;
       new_spte->phys_addr = new_frame;
-      new_spte->status = LOADED;
+      new_spte->status = ON_MEM;
       new_spte->present = true;
       new_spte->dirty = false;
 
 
-      // load new frame
-      void* new_frame = frame_allocate(new_spte);
-      
-
 
       // insert in spt
       hash_insert(spt, &(new_spte->elem));
+
+
+
+      // load n. if this fails, kernel will panic.
+      // thus, we dont have to cleanup new_spte
+      void* new_frame = frame_allocate(new_spte);
+
 
 
       //install the page in user page table
@@ -103,8 +121,30 @@ int load_page_on_fault(void* faulted_user_addr)
 }
 
 
-int load_page_new()
+int stack_growth(void *user_esp)
 {
+
+  if((PHYS_BASE - user_esp) > STACK_MAX)
+  
+
+  void* new_stack_page = pg_round_down(user_esp);
+
+
+  load_page();
+  
+
+  //get the spte for this addr
+  struct sup_page_table* spt = thread_current()->spt;
+  void* faulted_user_page = pg_round_down(faulted_user_addr);
+
+  // find the spte with infos above(traverse spt)
+  struct spte spte_temp;
+  struct hash_elem *e;
+  struct spte* spte_target;
+
+  spte_temp.user_addr = faulted_user_page;
+  e = hash_find(&spt, &spte_temp.hash_elem);
+
 
 
 
