@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <list.h>
 #include "vm/frame.h"
+#include "vm/swap.h"
 #include "userprog/pagedir.h"
 #include "threads/synch.h"
 #include "threads/palloc.h"
@@ -25,7 +26,7 @@ void frame_destroyer_func(struct list_elem *e, void *aux)
   // free the palloc'd frame
   palloc_free_page(frame_entry->frame_addr);
   // free fte
-  free(frame_entry);
+  palloc_free_page(frame_entry);
 }
 
 /************************************************************************
@@ -114,7 +115,7 @@ void frame_free(struct fte* fte_to_free)
   //detach fte from frame table list
   list_remove(&fte_to_free->elem);
   //detach frame from spte (this is for ensurance)
-  pagedir_clear_page(thread_current()->pagedir, fte_to_free->supplement_page->user_addr);
+  pagedir_clear_page(thread_current()->pagedir, ((struct spte *)fte_to_free->supplement_page)->user_addr);
   // free malloc'd memory
   palloc_free_page(fte_to_free);
 }
