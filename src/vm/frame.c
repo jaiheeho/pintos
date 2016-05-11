@@ -3,10 +3,11 @@
 #include <string.h>
 #include <stdbool.h>
 #include <list.h>
-#include "userprog/pagedir.h"
-#include "threads/palloc.h"
 #include "vm/frame.h"
+#include "userprog/pagedir.h"
 #include "threads/synch.h"
+#include "threads/palloc.h"
+#include "threads/thread.h"
 
 static struct list frame_table;
 static struct semaphore frame_table_lock;
@@ -57,7 +58,7 @@ void frame_table_free()
     struct list_elem *e = list_pop_front (&frame_table);
     struct fte *frame_entry = list_entry(e, struct fte, elem);
     palloc_free_page(frame_entry->frame_addr);
-    free(frame_entry);
+    palloc_free_page(frame_entry);
   }
 }
 
@@ -69,10 +70,11 @@ void frame_table_free()
 ************************************************************************/
 void* frame_allocate(struct spte *supplement_page)
 {
-  sema_down(&frame_table_lock);
+  sema_down(&frame_table_lock);;
+  void * new_frame=NULL;
   while(1)
   {
-    void* new_frame = palloc_get_page(PAL_USER | PAL_ZERO);
+    new_frame = palloc_get_page(PAL_USER | PAL_ZERO);
     if(new_frame == NULL)
     {
       // all frame slots are full; commence eviction & retry
@@ -110,11 +112,11 @@ void frame_free(struct fte* fte_to_free)
   // free palloc'd page
   palloc_free_page(fte_to_free->frame_addr);
   //detach fte from frame table list
-  list_remove(fte_to_free->elem);
+  list_remove(&fte_to_free->elem);
   //detach frame from spte (this is for ensurance)
   pagedir_clear_page(thread_current()->pagedir, fte_to_free->supplement_page->user_addr);
   // free malloc'd memory
-  free(fte_to_free);
+  palloc_free_page(fte_to_free);
 }
 
 int frame_evict(struct spte *supplement_page)
