@@ -76,7 +76,7 @@ int load_page(void* faulted_user_addr)
   struct spte* spte_target;
 
   spte_temp.user_addr = faulted_user_page;
-  e = hash_find(spt, &spte_temp.hash_elem);
+  e = hash_find(spt, &spte_temp.elem);
 
   if(e == NULL)
     {
@@ -112,7 +112,7 @@ int load_page(void* faulted_user_addr)
   {
     // the page is in swap space. bring it in
     void* new_frame = frame_allocate(spte_target);
-    some_swap_function();
+    swap_remove(new_frame, spte_tage->swap_idx);
     install_page(spte_target->user_addr, sptr_target->phys_addr, writable);
   }
       
