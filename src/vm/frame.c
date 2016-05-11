@@ -12,31 +12,11 @@
 
 static struct list frame_table;
 static struct semaphore frame_table_lock;
-void frame_destroyer_func(struct list_elem *e, void *aux);
 
 /************************************************************************
-* FUNCTION : frame_destroyer_func                                                *
-* Input : file_name                                                     *
-* Output : new process id if successful                                 *
-* Purpose : initialize swap-table                   *
+* FUNCTION : frame_table_init                                           *
+* Purpose : initialize frame-table                                      *
 ************************************************************************/
-void frame_destroyer_func(struct list_elem *e, void *aux)
-{
-  struct fte* frame_entry = list_entry(e, struct fte, elem);
-  // free the palloc'd frame
-  palloc_free_page(frame_entry->frame_addr);
-  // free fte
-  palloc_free_page(frame_entry);
-}
-
-/************************************************************************
-* FUNCTION : frame_table_init                                                *
-* Input : file_name                                                     *
-* Output : new process id if successful                                 *
-* Purpose : initialize swap-table                   *
-************************************************************************/
-// must protect frame table with lock cuz frame table is shared
-// across processes
 void frame_table_init()
 {
   list_init(&frame_table);
@@ -44,16 +24,15 @@ void frame_table_init()
 }
 
 /************************************************************************
-* FUNCTION : frame_table_free                                                *
-* Input : file_name                                                     *
-* Output : new process id if successful                                 *
-* Purpose : initialize swap-table                   *
+* FUNCTION : frame_table_free                                           *
+* Purpose : free entire frame_table                                     *
 ************************************************************************/
 // is this necessary??
 void frame_table_free()
 {
   sema_down(&frame_table_lock);
   sema_up(&frame_table_lock);
+  //empty frame_table list;
   while (!list_empty (&frame_table))
   {
     struct list_elem *e = list_pop_front (&frame_table);
@@ -64,10 +43,10 @@ void frame_table_free()
 }
 
 /************************************************************************
-* FUNCTION : frame_allocate                                                *
-* Input : file_name                                                     *
-* Output : new process id if successful                                 *
-* Purpose : initialize swap-table                   *
+* FUNCTION : frame_allocate                                             *
+* Input : supplement_page pointer                                       *
+* Output : allocated frame pointer for supplement_page                  *
+* Purpose : allocating frame and add frame informatino to frame table   *
 ************************************************************************/
 void* frame_allocate(struct spte *supplement_page)
 {
@@ -102,10 +81,9 @@ void* frame_allocate(struct spte *supplement_page)
 }
 
 /************************************************************************
-* FUNCTION : frame_table_free                                                *
-* Input : file_name                                                     *
-* Output : new process id if successful                                 *
-* Purpose : initialize swap-table                   *
+* FUNCTION : frame_free                                                 *
+* Input : fte pointer to freee                                          *
+* Purpose : free a frame entry of frame table and free allocated pages  *
 ************************************************************************/
 void frame_free(struct fte* fte_to_free)
 {
@@ -120,6 +98,13 @@ void frame_free(struct fte* fte_to_free)
   palloc_free_page(fte_to_free);
 }
 
+/************************************************************************
+* FUNCTION : frame_evict                                                *
+* Input : supplement_page pointer                                       *
+* Purpose : evict frame from frame table and move to swap space using   *
+* functions in swap.c, spte for the frame should be fixed and framd table*
+* entry should be freed. we used (FIRST ALLOCATED REMOVE scheme)        *
+************************************************************************/
 void frame_evict(struct spte *supplement_page)
 {
   struct list_elem *e = list_pop_front (&frame_table);

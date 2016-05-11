@@ -13,9 +13,7 @@ static struct semaphore swap_lock;
 static struct bitmap *swap_bitmap;
 
 /************************************************************************
-* FUNCTION : swap_table_init                                         		    *
-* Input : file_name                                                     *
-* Output : new process id if successful                                 *
+* FUNCTION : swap_table_init                                        	*
 * Purpose : initialize swap-table										*
 ************************************************************************/
 void swap_table_init()
@@ -31,9 +29,9 @@ void swap_table_init()
 }
 
 /************************************************************************
-* FUNCTION : swap_init                                         		    *
-* Input : file_name                                                     *
-* Output : new process id if successful                                 *
+* FUNCTION : swap_alloc                                         		*
+* Input : address of frame                                              *
+* Output : swap index number that frame has saved                       *
 * Purpose : initialize swap-table										*
 ************************************************************************/
 int swap_alloc(char *addr){
@@ -59,10 +57,9 @@ int swap_alloc(char *addr){
 }
 
 /************************************************************************
-* FUNCTION : swap_init                                         		    *
-* Input : file_name                                                     *
-* Output : new process id if successful                                 *
-* Purpose : initialize swap-table										*
+* FUNCTION : swap_remove                                         		*
+* Input : frame addr, swap index                                        *
+* Purpose : reconstruct data in idx to frame with addr					*
 ************************************************************************/
 void swap_remove(char *addr, size_t idx){
 	sema_down(&swap_lock);
@@ -85,10 +82,8 @@ void swap_remove(char *addr, size_t idx){
 }
 
 /************************************************************************
-* FUNCTION : swap_table_free                                         		    *
-* Input : file_name                                                     *
-* Output : new process id if successful                                 *
-* Purpose : initialize swap-table										*
+* FUNCTION : swap_table_free                                        	*
+* Purpose : free entire bitmap of swap table							*
 ************************************************************************/
 void swap_table_free(){
 	//destroty swap_table (bitmap destroy)
