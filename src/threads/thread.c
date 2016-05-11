@@ -896,7 +896,7 @@ init_thread (struct thread *t, const char *name, int priority)
     sema_init(&filesys_global_lock, 1);
     //swap_table_init for proj3 in main thread
     disk_print_stats();
-    swap_table_init();
+    //swap_table_init();
     //frema_table_init  for proj3 in main thread
     frame_table_init();
   }
