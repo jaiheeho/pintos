@@ -7,7 +7,6 @@
 #include "userprog/pagedir.h"
 #include "userprog/p"
 
-#define STACK_MAX 8000000
 
 static unsigned spte_hash_func(const struct hash_elem *e, void *aux);
 static bool spte_less_func(const struct hash_elem *a,

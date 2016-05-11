@@ -3,6 +3,8 @@
 
 #include <hash.h>
 
+#define STACK_MAX 2000 * PGSIZE
+#define STACK_STRIDE 32
 enum spte_status{
   ON_SWAP,
   ON_MEM,
