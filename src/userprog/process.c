@@ -22,7 +22,6 @@
 //for proj3 
 #include "vm/frame.h"
 #include "vm/swap.h"
-#include "vm/page.h"
 
 
 static thread_func start_process NO_RETURN;
