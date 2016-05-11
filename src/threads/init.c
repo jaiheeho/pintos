@@ -104,18 +104,22 @@ main (void)
   syscall_init ();
 #endif
 
-#ifdef FILESYS
-  /* Initialize file system. */
-  disk_init ();
-  filesys_init (format_filesys);
-#endif
-  
   /* Start thread scheduler and enable interrupts. */
   thread_start ();
   serial_init_queue ();
   timer_calibrate ();
 
-
+#ifdef FILESYS
+  /* Initialize file system. */
+  disk_init ();
+  filesys_init (format_filesys);
+  //where we added///
+  //swap_table_init for proj3 in main thread
+  swap_table_init();
+  //frema_table_init  for proj3 in main thread
+  //where we added END///
+  frame_table_init();
+#endif
 
   printf ("Boot complete.\n");
   
