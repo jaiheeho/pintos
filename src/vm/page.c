@@ -1,6 +1,7 @@
 #include <hash.h>
 #include "vm/frame.h"
 #include "vm/page.h"
+#include "vm/swap.h"
 #include "threads/vaddr.h"
 #include "threads/thread.h"
 #include "threads/malloc.h"
@@ -101,7 +102,7 @@ int load_page(void* faulted_user_addr)
     }
   else  // page is in spte.(in swap space)
     {
-      spte_target = hash_entry(e, struct fte, hash_elem);
+      spte_target = hash_entry(e, struct fte, elem);
       
       if(spte_target->status == ON_MEM)
   {
