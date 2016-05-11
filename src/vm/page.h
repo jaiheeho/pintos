@@ -31,3 +31,6 @@ void sup_page_table_init(struct hash*);
 void sup_page_table_free(struct hash*);
 int load_page(void*);
 int stack_growth(void*);
+
+
+#endif
