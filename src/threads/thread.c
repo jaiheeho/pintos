@@ -898,6 +898,8 @@ init_thread (struct thread *t, const char *name, int priority)
     swap_table_init();
     //frema_table_init  for proj3 in main thread
     frame_table_init();
+    //supplemental page table  for proj3 in main thread
+    sup_page_table_init();
   }
   ///WHERE WE ADDED END/////
 }

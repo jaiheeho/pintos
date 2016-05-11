@@ -91,4 +91,3 @@ void swap_table_free(){
 	//in case of unnecessary lock.
 	sema_up(&swap_lock);
 }
-
