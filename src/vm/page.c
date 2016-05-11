@@ -112,8 +112,8 @@ int load_page(void* faulted_user_addr)
   {
     // the page is in swap space. bring it in
     void* new_frame = frame_allocate(spte_target);
-    swap_remove(new_frame, spte_tage->swap_idx);
-    install_page(spte_target->user_addr, sptr_target->phys_addr, writable);
+    swap_remove(new_frame, spte_target->swap_idx);
+    install_page(spte_target->user_addr, spte_target->phys_addr, writable);
   }
       
     }
@@ -123,25 +123,8 @@ int load_page(void* faulted_user_addr)
 int stack_growth(void *user_esp)
 {
 
-  if((PHYS_BASE - user_esp) > STACK_MAX)
-  
-
-  void* new_stack_page = pg_round_down(user_esp);
-
-
-  load_page();
-  
-  //get the spte for this addr
-  struct sup_page_table* spt = thread_current()->spt;
-  void* faulted_user_page = pg_round_down(faulted_user_addr);
-
-  // find the spte with infos above(traverse spt)
-  struct spte spte_temp;
-  struct hash_elem *e;
-  struct spte* spte_target;
-
-  spte_temp.user_addr = faulted_user_page;
-  e = hash_find(&spt, &spte_temp.hash_elem);
+  void* new_stack_page = pg_round_down(user_esp) - PGSIZE;
+  load_page(new_stack_page);
 
 }
 bool
