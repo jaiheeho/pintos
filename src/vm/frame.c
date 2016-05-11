@@ -10,7 +10,6 @@
 static struct list frame_table;
 static struct semaphore frame_table_lock;
 
-
 /************************************************************************
 * FUNCTION : swap_init                                                *
 * Input : file_name                                                     *

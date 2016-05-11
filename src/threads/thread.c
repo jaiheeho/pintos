@@ -113,7 +113,6 @@ thread_init (void)
   // ADDED CODE //
   list_init (&ready_list);
   list_init (&sleep_list);
-  frame_table_init(&frame_table);
   // END OF ADDED CODE//
 
   /* Set up a thread structure for the running thread. */
