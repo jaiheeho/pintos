@@ -14,7 +14,6 @@
 //for proj3 
 #include "vm/frame.h"
 #include "vm/swap.h"
-#include "vm/page.h"
 
 #ifdef USERPROG
 #include "userprog/process.h"

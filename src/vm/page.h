@@ -4,7 +4,7 @@ enum spte_status{
   ON_MEM,
   ON_DISK
 };
-struct fte;
+
 struct spte {
   enum spte_status status;
   void* user_addr;
