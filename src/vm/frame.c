@@ -92,7 +92,7 @@ void* frame_allocate(struct spte *supplement_page)
       
       //link to spte
       supplement_page->phys_addr = new_frame;
-      supplement_page->frame = (void *)new_fte_entry;
+      supplement_page->fte = (void *)new_fte_entry;
       new_fte_entry->supplement_page = (struct spte *)supplement_page;
       break;
     }
