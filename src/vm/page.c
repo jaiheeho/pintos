@@ -6,7 +6,6 @@
 #include "threads/thread.h"
 #include "threads/malloc.h"
 #include "userprog/pagedir.h"
-#include "userprog/p"
 
 
 static unsigned spte_hash_func(const struct hash_elem *e, void *aux);
@@ -117,6 +116,7 @@ int load_page(void* faulted_user_addr)
   }
       
     }
+    return 0;
 }
 
 
