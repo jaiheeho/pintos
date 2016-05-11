@@ -153,6 +153,8 @@ exit(int status)
   printf("%s: exit(%d)\n", thread_name(), status);
   struct thread *curr = thread_current();
   curr->exit_status=status;
+        printf("exit %d\n", status);
+
   if (status == -1)
     sema_up(&filesys_global_lock);
   thread_exit();
@@ -363,7 +365,10 @@ int write(int fd, const void *buffer, unsigned length)
         sema_up(&filesys_global_lock);
         return -1;
       }
+      printf("write\n");
       retval = file_write(file, buffer, length);
+            printf("write\n");
+
       sema_up(&filesys_global_lock);
     }
 
