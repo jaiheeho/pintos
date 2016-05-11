@@ -1,6 +1,6 @@
 #include <hash.h>
 
-enum status{
+enum spte_status{
   ON_SWAP;
   ON_MEM;
   ON_DISK;
@@ -9,7 +9,7 @@ enum status{
 
 struct spte {
 
-  enum status spte_status;
+  enum spte_status status;
   void* user_addr;
   void* phys_addr;
   struct fte frame;
