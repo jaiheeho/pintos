@@ -5,6 +5,14 @@
 
 #define STACK_MAX 8000000
 
+static unsigned spte_hash_func(const struct hash_elem *e, void *aux);
+static bool spte_less_func(const struct hash_elem *a,
+        const struct hash_elem *b,
+        void *aux);
+static void spte_destroyer_func(struct hash_elem *e, void *aux);
+
+
+
 static unsigned spte_hash_func(const struct hash_elem *e, void *aux)
 {
   struct spte* s = hash_entry(e, struct spte, elem);

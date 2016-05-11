@@ -1,4 +1,8 @@
+#ifndef VM_PAGE_H
+#define VM_PAGE_H
+
 #include <hash.h>
+
 enum spte_status{
   ON_SWAP,
   ON_MEM,
@@ -22,3 +26,8 @@ struct fte {
   struct list_elem elem;
   void* supplement_page;
 };
+
+void sup_page_table_init(struct hash*);
+void sup_page_table_free(struct hash*);
+int load_page(void*);
+int stack_growth(void*);
