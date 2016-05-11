@@ -75,17 +75,14 @@ int load_page(void* faulted_user_addr)
   struct spte* spte_target;
 
   spte_temp.user_addr = faulted_user_page;
-  e = hash_find(&spt, &spte_temp.hash_elem);
+  e = hash_find(spt, &spte_temp.hash_elem);
 
   if(e == NULL)
     {
       // no such page. check validity of addr and load new page?
-
-      
       // create new spte
       struct spte* new_spte = (struct spte*)malloc(sizeof(struct spte));
       new_spte->user_addr =faulted_user_page;
-      new_spte->phys_addr = new_frame;
       new_spte->status = ON_MEM;
       new_spte->present = true;
       new_spte->dirty = false;
@@ -96,6 +93,7 @@ int load_page(void* faulted_user_addr)
       // load n. if this fails, kernel will panic.
       // thus, we dont have to cleanup new_spte
       void* new_frame = frame_allocate(new_spte);
+      new_spte->phys_addr = new_frame;
 
       //install the page in user page table
       install_page(new_spte->user_addr, new_spte->phys_addr, writable);
@@ -103,7 +101,7 @@ int load_page(void* faulted_user_addr)
     }
   else  // page is in spte.(in swap space)
     {
-      spte_target = hash_entry(e, struct fte, elem);
+      spte_target = hash_entry(e, struct fte, hash_elem);
       
       if(spte->target.status == ON_MEM)
   {
