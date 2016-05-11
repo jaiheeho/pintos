@@ -1,4 +1,5 @@
 #include <hash.h>
+#include "vm/page.h"
 
 struct fte {
   void* frame_addr;
