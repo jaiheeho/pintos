@@ -15,11 +15,10 @@ static bool spte_less_func(const struct hash_elem *a,
 static void spte_destroyer_func(struct hash_elem *e, void *aux);
 
 
-
 static unsigned spte_hash_func(const struct hash_elem *e, void *aux)
 {
   struct spte* s = hash_entry(e, struct spte, elem);
-  return hash_int(int(s->user_addr);
+  return hash_int((int)s->user_addr);
 }
 
 static bool spte_less_func(const struct hash_elem *a,

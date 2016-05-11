@@ -3,9 +3,9 @@
 
 #include <debug.h>
 #include <list.h>
+#include <hash.h>
 #include <stdint.h>
 #include "threads/synch.h"
-
 /* States in a thread's life cycle. */
 enum thread_status
   {
@@ -109,6 +109,9 @@ struct thread
     bool is_loaded;                     /* check whether thread's child process is loaded successfully */
     int fd_given;                       /* check last fd number give for the opened file */
     struct file * executable;           /* to deny and allow executable */
+
+    //For Project 3
+    struct 
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */
