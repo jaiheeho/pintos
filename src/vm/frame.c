@@ -132,7 +132,7 @@ int frame_evict(struct spte *supplement_page)
 {
   struct list_elem *e = list_pop_front (&frame_table);
   struct fte *frame_entry = list_entry(e, struct fte, elem);
-  supplement_page->swap_idx = swap_alloc(frame_entry->frame_addr);
+  supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
   supplement_page->present = false;
   frame_free(frame_entry);
 }
