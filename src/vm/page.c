@@ -116,7 +116,7 @@ int load_page(void* faulted_user_addr)
   }
       
     }
-    return 0;
+    return 1;
 }
 
 
