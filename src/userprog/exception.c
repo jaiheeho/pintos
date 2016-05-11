@@ -153,7 +153,9 @@ page_fault (struct intr_frame *f)
   /***** ADDED CODE *****/
   /*Deferencing NULL should be exited instead of killed (test : bad_read)*/
   /*Deferencing addr above 0xC0000000 should be exited instead of killed (test : bad_read)*/
-  if (fault_addr == NULL || fault_addr >= (void*)0xC0000000)
+
+  if (fault_addr == NULL || fault_addr >= (void*)0xC0000000
+      || fault_addr < (void*)0x08048000)
     exit(-1);
   /***** END OF ADDED CODE *****/
 
@@ -166,7 +168,10 @@ page_fault (struct intr_frame *f)
       if(((PHYS_BASE - fault_addr) < STACK_MAX))
   {
     if(((f->esp - fault_addr) < STACK_STRIDE))
-      stack_growth(f->esp);
+      {
+	//printf("GROW : esp = %0x || fault_addr = %0x", f->esp, fault_addr);
+	stack_growth(fault_addr);
+      }
     else exit(-1); // it is stack segment, but stride aint right
   }
       else
