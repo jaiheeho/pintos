@@ -104,16 +104,18 @@ main (void)
   syscall_init ();
 #endif
 
-  /* Start thread scheduler and enable interrupts. */
-  thread_start ();
-  serial_init_queue ();
-  timer_calibrate ();
-
 #ifdef FILESYS
   /* Initialize file system. */
   disk_init ();
   filesys_init (format_filesys);
 #endif
+  
+  /* Start thread scheduler and enable interrupts. */
+  thread_start ();
+  serial_init_queue ();
+  timer_calibrate ();
+
+
 
   printf ("Boot complete.\n");
   
