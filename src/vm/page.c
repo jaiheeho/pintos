@@ -3,6 +3,7 @@
 #include "vm/page.h"
 #include "threads/vaddr.h"
 #include "threads/thread.h"
+#include "threads/malloc.h"
 #include "userprog/pagedir.h"
 
 #define STACK_MAX 8000000
@@ -18,7 +19,7 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux);
 static unsigned spte_hash_func(const struct hash_elem *e, void *aux)
 {
   struct spte* s = hash_entry(e, struct spte, elem);
-  return hash_int(s->user_addr);
+  return hash_int(int(s->user_addr);
 }
 
 static bool spte_less_func(const struct hash_elem *a,
@@ -121,7 +122,6 @@ int load_page(void* faulted_user_addr)
     void* new_frame = frame_allocate(spte_target);
     some_swap_function();
     install_page(spte_target->user_addr, sptr_target->phys_addr, writable);
-
   }
       
     }
