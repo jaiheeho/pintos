@@ -1,10 +1,10 @@
 #include <hash.h>
 
 enum spte_status{
-  ON_SWAP;
-  ON_MEM;
-  ON_DISK;
 
+  ON_SWAP,
+  ON_MEM,
+  ON_DISK,
 };
 
 struct spte {
