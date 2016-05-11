@@ -1,15 +1,15 @@
 #include <hash.h>
 
-typedef enum {
+enum status{
   ON_SWAP;
   ON_MEM;
   ON_DISK;
 
-} status;
+};
 
 struct spte {
 
-  spte_status status;
+  enum status spte_status;
   void* user_addr;
   void* phys_addr;
   struct fte frame;
@@ -18,4 +18,4 @@ struct spte {
   int swap_idx;
 
   struct hash_elem elem;
-}
+};
