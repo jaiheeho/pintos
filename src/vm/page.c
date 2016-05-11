@@ -102,7 +102,7 @@ int load_page(void* faulted_user_addr)
     }
   else  // page is in spte.(in swap space)
     {
-      spte_target = hash_entry(e, struct fte, elem);
+      spte_target = hash_entry(e, struct spte, elem);
       
       if(spte_target->status == ON_MEM)
   {
