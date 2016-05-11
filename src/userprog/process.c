@@ -19,6 +19,10 @@
 #include "threads/vaddr.h"
 #include <list.h> // ADDED HEADER
 #include "threads/malloc.h" // ADDED HEADER
+//for proj3 
+#include "vm/frame.h"
+#include "vm/swap.h"
+#include "vm/page.h"
 
 
 static thread_func start_process NO_RETURN;

@@ -11,6 +11,11 @@
 #include "threads/switch.h"
 #include "threads/synch.h"
 #include "threads/vaddr.h"
+//for proj3 
+#include "vm/frame.h"
+#include "vm/swap.h"
+#include "vm/page.h"
+
 #ifdef USERPROG
 #include "userprog/process.h"
 #endif
@@ -71,6 +76,8 @@ bool thread_mlfqs;
 static int thread_start_complete = 0;
 //for global file locking, initialized to 1 sema_init(&filesys_global_lock , 1) for proj2
 struct semaphore filesys_global_lock;
+//frame table (proj3)
+struct list frame_table;
 /***** END OF ADDED CODE *****/
 
 static void kernel_thread (thread_func *, void *aux);
@@ -106,8 +113,11 @@ thread_init (void)
   ASSERT (intr_get_level () == INTR_OFF);
 
   lock_init (&tid_lock);
+  // ADDED CODE //
   list_init (&ready_list);
   list_init (&sleep_list);
+  frame_table_init(&frame_table);
+  // END OF ADDED CODE//
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
@@ -883,10 +893,17 @@ init_thread (struct thread *t, const char *name, int priority)
   t->is_loaded = true;
   //To check executable
   t->executable = NULL;
-  //FOR GLOBAL FILESYS LOCK in proj2 only 'main' init this//
+  //initialize only in Main thread.
   if (thread_start_complete == 0)
   {
+    //FOR GLOBAL FILESYS LOCK in proj2 only 'main' init this//
     sema_init(&filesys_global_lock, 1);
+    //swap_table_init for proj3 in main thread
+    swap_table_init();
+    //frema_table_init  for proj3 in main thread
+    frame_table_init();
+
+
   }
   ///WHERE WE ADDED END/////
 }
