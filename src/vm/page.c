@@ -104,7 +104,7 @@ int load_page(void* faulted_user_addr)
     {
       spte_target = hash_entry(e, struct fte, hash_elem);
       
-      if(spte->target.status == ON_MEM)
+      if(spte_target->status == ON_MEM)
   {
     // page is already on memory. wth?
   }
