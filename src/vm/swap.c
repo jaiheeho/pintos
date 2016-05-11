@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <bitmap.h>
 #include "devices/disk.h"
-#include "threads/sync.h"
+#include "threads/synch.h"
 #include "vm/swap.h"
 #define SECTORSINPAGE 8
 static uint32_t swap_size;
