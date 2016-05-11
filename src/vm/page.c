@@ -66,7 +66,7 @@ int load_page(void* faulted_user_addr)
   bool writable = true;
 
   //get the spte for this addr
-  struct sup_page_table* spt = thread_current()->spt;
+  struct hash* spt = thread_current()->spt;
   void* faulted_user_page = pg_round_down(faulted_user_addr);
 
   // find the spte with infos above(traverse spt)
@@ -89,8 +89,6 @@ int load_page(void* faulted_user_addr)
       new_spte->status = ON_MEM;
       new_spte->present = true;
       new_spte->dirty = false;
-
-
 
       // insert in spt
       hash_insert(spt, &(new_spte->elem));
