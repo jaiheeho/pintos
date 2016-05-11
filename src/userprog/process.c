@@ -125,6 +125,8 @@ start_process (void *f_name)
   curr->fd_given = 2;
   curr->parent_proc->is_loaded = true;
 
+  //supplemental page table  for proj3 in main thread
+  sup_page_table_init(&curr->spt);
 
   //deny write to executable 
   //executable of thread is saved in struct thread
