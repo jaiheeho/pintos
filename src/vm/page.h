@@ -1,6 +1,4 @@
 #include <hash.h>
-#include "vm/frame.h"
-
 enum spte_status{
   ON_SWAP,
   ON_MEM,
