@@ -172,7 +172,7 @@ page_fault (struct intr_frame *f)
 	//printf("GROW : esp = %0x || fault_addr = %0x", f->esp, fault_addr);
 	stack_growth(fault_addr);
       }
-    else exit(-1); // it is stack segment, but stride aint right
+    else exit(0); // it is stack segment, but stride aint right
   }
       else
   {
