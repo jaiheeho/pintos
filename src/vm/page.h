@@ -1,5 +1,5 @@
 #include <hash.h>
-
+#include <vm/frame.h>
 enum spte_status{
 
   ON_SWAP,
@@ -8,7 +8,6 @@ enum spte_status{
 };
 
 struct spte {
-
   enum spte_status status;
   void* user_addr;
   void* phys_addr;
