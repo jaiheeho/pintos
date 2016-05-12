@@ -22,6 +22,7 @@ void swap_table_init()
 	/* get swap disk */
 	swap_disk = disk_get(1,1);
 	/* get bitmap for swap slots*/
+	swap_size = disk_size(swap_disk)*DISK_SECTOR_SIZE;
 	swap_bitmap = bitmap_create(swap_size);
 	if (swap_bitmap == NULL)
 		PANIC ("CANNOT ACHIEVE SWAPTABLE");
