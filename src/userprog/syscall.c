@@ -297,13 +297,18 @@ int read (int fd, void *buffer, unsigned length)
   int retval;
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1); 
+
+
+
   if(fd == 0)
   {
     //std out 
     for(i = 0; i<length; i++)
     {
-      *(buf_char + i) = input_getc();
-    }
+      if(!put_user (buf_char + i , input_getc())
+        exit(-1)
+    } 
+  }
     retval = length;
   }
   else if(fd == 1)
@@ -320,14 +325,16 @@ int read (int fd, void *buffer, unsigned length)
       sema_up(&filesys_global_lock);
       return -1;
     }
+    
     for (i = 0; i< length ; i++)
     {
-      if (!put_user (((char*)buffer) + i , 1))
+      if (!put_user (buf_char + i , 1))
       {
         sema_up(&filesys_global_lock);
         exit(-1);
       }
-    }
+    }      
+
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
   }
