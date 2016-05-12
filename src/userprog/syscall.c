@@ -306,7 +306,6 @@ int read (int fd, void *buffer, unsigned length)
       if(!put_user (buf_char + i , input_getc()))
         exit(-1);
     } 
-  }
     retval = length;
   }
   else if(fd == 1)
