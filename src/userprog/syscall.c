@@ -322,7 +322,7 @@ int read (int fd, void *buffer, unsigned length)
       return -1;
     }
     
-    printf("here")
+    printf("here");
     for (i = 0; i< length ; i++)
     {
       if (!put_user (buf_char + i , 1))
