@@ -238,7 +238,7 @@ open(const char *file)
 
   struct file *filestruct;
   struct thread *curr = thread_current(); 
-  
+  printf("open\n");
   if(invalid_addr((void*)file))
     exit(-1);
   sema_down(&filesys_global_lock);
@@ -297,7 +297,6 @@ int read (int fd, void *buffer, unsigned length)
   int retval;
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1); 
-
   if(fd == 0)
   {
     //std out 
