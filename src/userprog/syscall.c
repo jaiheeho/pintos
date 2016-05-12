@@ -238,7 +238,6 @@ open(const char *file)
 
   struct file *filestruct;
   struct thread *curr = thread_current(); 
-  
   if(invalid_addr((void*)file))
     exit(-1);
   sema_down(&filesys_global_lock);
@@ -303,7 +302,9 @@ int read (int fd, void *buffer, unsigned length)
     for(i = 0; i<length; i++)
     {
       *(buf_char + i) = input_getc();
-    }
+      // if(!put_user (buf_char + i , input_getc()))
+      //   exit(-1);
+    } 
     retval = length;
   }
   else if(fd == 1)
@@ -320,14 +321,16 @@ int read (int fd, void *buffer, unsigned length)
       sema_up(&filesys_global_lock);
       return -1;
     }
-    for (i = 0; i< length ; i++)
-    {
-      if (!put_user (((char*)buffer) + i , 1))
-      {
-        sema_up(&filesys_global_lock);
-        exit(-1);
-      }
-    }
+    
+    // for (i = 0; i< length ; i++)
+    // {
+    //   if (!put_user (buf_char + i , 1))
+    //   {
+    //     sema_up(&filesys_global_lock);
+    //     exit(-1);
+    //   }
+    // }      
+
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
   }
@@ -347,6 +350,7 @@ int write(int fd, const void *buffer, unsigned length)
   uint8_t* buf_char = (uint8_t *) buffer; 
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1);
+
   if(fd <= 0)
     {
       //error
