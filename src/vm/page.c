@@ -120,10 +120,11 @@ int load_page(void* faulted_user_addr)
 }
 
 
-int stack_growth(void *user_esp)
+int stack_growth(void *user_addr)
 {
 
-  void* new_stack_page = pg_round_down(user_esp) - PGSIZE;
+  void* new_stack_page = pg_round_down(user_addr);
+  //printf("STACK_GROWTH: user_addr = %0x, newstackpage  = %0x\n", user_addr, new_stack_page);
   load_page(new_stack_page);
 
 }
