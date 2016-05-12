@@ -238,7 +238,6 @@ open(const char *file)
 
   struct file *filestruct;
   struct thread *curr = thread_current(); 
-  printf("open\n");
   if(invalid_addr((void*)file))
     exit(-1);
   sema_down(&filesys_global_lock);
