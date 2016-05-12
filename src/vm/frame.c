@@ -121,24 +121,35 @@ void frame_evict(struct spte *supplement_page)
   //choose victim
   struct list_elem *iter;
   bool success;
-
-  for (iter = clock_head ; iter != list_end(&frame_table) ; iter = list_next())
+  //start from the clock_head
+  for (iter = clock_head ; iter != list_end(&frame_table) ; iter = list_next(iter))
   {
     if(iter->use == 1)
       iter->use =0;
     else
+    {
+      if (list_next(iter) == list_end(&frame_table);
+        clock_head = list_begin(&frame_table);
+      else
+        clock_head = list_next(clock_head);
       break;
-
+    }
   }
-
+  //start from the beginning of table.
   if (iter == list_end(&frame_table))
   {
-    for (iter = list_begin(&frame_table);; iter != list_end(&frame_table) ; iter = list_next())
+    for (iter = list_begin(&frame_table);; iter != list_end(&frame_table) ; iter = list_next(iter))
     {
       if(iter->use == 1)
         iter->use =0;
       else
+      {
+        if (list_next(iter) == list_end(&frame_table);
+          clock_head = list_begin(&frame_table);
+        else
+          clock_head = list_next(clock_head);
         break;
+      }
     }
   }
   struct fte *frame_entry = list_entry(iter, struct fte, elem);
