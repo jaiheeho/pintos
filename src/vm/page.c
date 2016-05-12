@@ -113,10 +113,26 @@ int load_page(void* faulted_user_addr)
     {
       spte_target = hash_entry(e, struct spte, elem);
       
+
       if(!load_page_swap(spte_target))
 	{
 	  return 0;
 	}
+
+      if(spte_target->status == ON_MEM)
+  {
+    // page is already on memory. wth?
+    PANIC("...");
+  }
+      else if(spte_target->status == ON_SWAP)
+  {
+    // the page is in swap space. bring it in
+    void* new_frame = frame_allocate(spte_target);
+    swap_remove(new_frame, spte_target->swap_idx);
+    install_page(spte_target->user_addr, spte_target->phys_addr, writable);
+  }
+      
+
     }
   return 1;
 }

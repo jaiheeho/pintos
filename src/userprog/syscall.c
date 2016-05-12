@@ -15,6 +15,7 @@
 #include "devices/input.h" // ADDED HEADER
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
+static bool put_user (uint8_t *udst, uint8_t byte);
 
 /************************************************************************
 * FUNCTION : syscall_init                                               *
@@ -217,8 +218,6 @@ bool
 remove (const char *file)
 {
   bool success;
-  if(invalid_addr((void*)file))
-    exit(-1);
   sema_down(&filesys_global_lock);
   success = filesys_remove(file);
   sema_up(&filesys_global_lock);
@@ -239,7 +238,6 @@ open(const char *file)
 
   struct file *filestruct;
   struct thread *curr = thread_current(); 
-  
   if(invalid_addr((void*)file))
     exit(-1);
   sema_down(&filesys_global_lock);
@@ -304,7 +302,9 @@ int read (int fd, void *buffer, unsigned length)
     for(i = 0; i<length; i++)
     {
       *(buf_char + i) = input_getc();
-    }
+      // if(!put_user (buf_char + i , input_getc()))
+      //   exit(-1);
+    } 
     retval = length;
   }
   else if(fd == 1)
@@ -321,6 +321,17 @@ int read (int fd, void *buffer, unsigned length)
       sema_up(&filesys_global_lock);
       return -1;
     }
+    
+    printf("here");
+    for (i = 0; i< length ; i++)
+    {
+      if (!put_user (buf_char + i , 1))
+      {
+        sema_up(&filesys_global_lock);
+        exit(-1);
+      }
+    }      
+
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
   }
@@ -340,6 +351,7 @@ int write(int fd, const void *buffer, unsigned length)
   uint8_t* buf_char = (uint8_t *) buffer; 
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1);
+
   if(fd <= 0)
     {
       //error
@@ -526,4 +538,13 @@ bool invalid_addr(void* addr){
     return true;
 
   return false;
+}
+
+static bool 
+put_user (uint8_t *udst, uint8_t byte)
+{
+  int error_code;
+  asm("movl $1f, %0; movb %b2, %1; 1:"
+      : "=&a" (error_code), "=m" (*udst) : "r" (byte));
+  return error_code != -1;
 }
