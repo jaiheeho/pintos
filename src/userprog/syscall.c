@@ -298,14 +298,12 @@ int read (int fd, void *buffer, unsigned length)
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1); 
 
-
-
   if(fd == 0)
   {
     //std out 
     for(i = 0; i<length; i++)
     {
-      if(!put_user (buf_char + i , input_getc())
+      if(!put_user (buf_char + i , input_getc()))
         exit(-1)
     } 
   }
