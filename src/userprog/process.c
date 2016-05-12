@@ -501,8 +501,8 @@ load (const char *file_name, void (**eip) (void), void **esp)
 
   /* Start address. */
   *eip = (void (*) (void)) ehdr.e_entry;
-  printf("eip : %0x", eip);
-  printf("in eip : %0x", (int)*eip);
+  printf("eip : %0x", (int)*eip);
+  printf("in eip : %0x", (int)**eip);
 
   success = true;
 
