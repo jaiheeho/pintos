@@ -12,6 +12,7 @@
 
 static struct list frame_table;
 static struct semaphore frame_table_lock;
+static struct list_elem *clock_head; 
 
 /************************************************************************
 * FUNCTION : frame_table_init                                           *
@@ -21,6 +22,7 @@ void frame_table_init()
 {
   list_init(&frame_table);
   sema_init(&frame_table_lock,1);
+  clock_head = list_head(&frame_table);
 }
 
 /************************************************************************
@@ -63,12 +65,20 @@ void* frame_allocate(struct spte *supplement_page)
     else
     {
       // frame allocation succeeded; add to frame table
-      struct fte* new_fte_entry = (struct fte*)palloc_get_page(PAL_USER);
+      struct fte* new_fte_entry = (struct fte*)malloc(sizeof(struct fte));
       // configure elements of fte
       new_fte_entry->frame_addr = new_frame;
+      new_fte_entry->use = 1;
       // insert into frame table
-      list_push_back(&frame_table, &new_fte_entry->elem);
-      
+      if (clock_head == list_head(&frame_table))
+      {
+        list_push_back(&frame_table, &new_fte_entry->elem);
+        clock_head = list_begin(&frame_table);
+      }
+      else {
+        list_push_back(&frame_table, &new_fte_entry->elem);
+      }
+
       //link to spte
       supplement_page->phys_addr = new_frame;
       supplement_page->fte = (void *)new_fte_entry;
@@ -76,6 +86,7 @@ void* frame_allocate(struct spte *supplement_page)
       break;
     }
   }
+
   sema_up(&frame_table_lock);
   return new_frame;
 }
@@ -107,8 +118,30 @@ void frame_free(struct fte* fte_to_free)
 ************************************************************************/
 void frame_evict(struct spte *supplement_page)
 {
-  struct list_elem *e = list_pop_front (&frame_table);
-  struct fte *frame_entry = list_entry(e, struct fte, elem);
+  //choose victim
+  struct list_elem *iter;
+  bool success;
+
+  for (iter = clock_head ; iter != list_end(&frame_table) ; iter = list_next())
+  {
+    if(iter->use == 1)
+      iter->use =0;
+    else
+      break;
+
+  }
+
+  if (iter == list_end(&frame_table))
+  {
+    for (iter = list_begin(&frame_table);; iter != list_end(&frame_table) ; iter = list_next())
+    {
+      if(iter->use == 1)
+        iter->use =0;
+      else
+        break;
+    }
+  }
+  struct fte *frame_entry = list_entry(iter, struct fte, elem);
   supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
   supplement_page->present = false;
   frame_free(frame_entry);
