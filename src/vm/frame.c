@@ -120,8 +120,7 @@ void frame_evict(struct spte *supplement_page)
 {
   //choose victim
   struct list_elem *iter;
-  bool success;
-  struct fte *frame_entry= list_entry(iter, struct fte, elem);
+  struct fte *frame_entry;
 
   //start from the clock_head
   for (iter = clock_head ; iter != list_end(&frame_table) ; iter = list_next(iter))
@@ -141,7 +140,7 @@ void frame_evict(struct spte *supplement_page)
   //start from the beginning of table.
   if (iter == list_end(&frame_table))
   {
-    for (iter = list_begin(&frame_table);; iter != list_end(&frame_table) ; iter = list_next(iter))
+    for (iter = list_begin(&frame_table); iter != list_end(&frame_table) ; iter = list_next(iter))
     {
       frame_entry= list_entry(iter, struct fte, elem);
       if(frame_entry->use == 1)
