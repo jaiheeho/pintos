@@ -34,6 +34,7 @@ void swap_table_init()
 * Purpose : initialize swap-table										*
 ************************************************************************/
 int swap_alloc(char *addr){
+
 	sema_down(&swap_lock);
 	size_t idx;
 	int i;
