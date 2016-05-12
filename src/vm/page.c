@@ -106,6 +106,7 @@ int load_page(void* faulted_user_addr)
       if(spte_target->status == ON_MEM)
   {
     // page is already on memory. wth?
+    PANIC("...");
   }
       else if(spte_target->status == ON_SWAP)
   {

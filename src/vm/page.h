@@ -25,8 +25,9 @@ struct spte {
 
 struct fte {
   void* frame_addr;
-  struct list_elem elem;
   void* supplement_page;
+  int use;
+  struct list_elem elem;
 };
 
 void sup_page_table_init(struct hash*);
