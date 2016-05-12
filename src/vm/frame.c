@@ -50,6 +50,7 @@ void frame_table_free()
 ************************************************************************/
 void* frame_allocate(struct spte *supplement_page)
 {
+  printf("frame_allocate: \n");
   sema_down(&frame_table_lock);;
   void * new_frame=NULL;
   while(1)
@@ -58,12 +59,18 @@ void* frame_allocate(struct spte *supplement_page)
     if(new_frame == NULL)
     {
       // all frame slots are full; commence eviction & retry
+      printf("frame_allocate: need eviction!!\n");
       frame_evict(supplement_page);
     }
     else
     {
       // frame allocation succeeded; add to frame table
-      struct fte* new_fte_entry = (struct fte*)palloc_get_page(PAL_USER);
+      struct fte* new_fte_entry = (struct fte*)malloc(sizeof(struct fte));
+      if(new_fte_entry == NULL)
+	{
+	  printf("cannot allocate new fte!!\n");
+
+	}
       // configure elements of fte
       new_fte_entry->frame_addr = new_frame;
       // insert into frame table

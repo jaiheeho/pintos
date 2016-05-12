@@ -99,7 +99,12 @@ start_process (void *f_name)
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
 
+
   /***** ADDED CODE *****/
+  
+  //supplemental page table  for proj3 in main thread
+  sup_page_table_init(&(thread_current()->spt));
+
   //addeed filesys_lock
   sema_down(&filesys_global_lock);
   success = load (file_name, &if_.eip, &if_.esp);
@@ -124,9 +129,6 @@ start_process (void *f_name)
   // fd starts from 2 since 0 and 1 is allocated for stdin & stdout.
   curr->fd_given = 2;
   curr->parent_proc->is_loaded = true;
-
-  //supplemental page table  for proj3 in main thread
-  sup_page_table_init(&curr->spt);
 
   //deny write to executable 
   //executable of thread is saved in struct thread
@@ -406,7 +408,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
   char *token_ptr;
 
   token_ptr = strtok_r((char*)file_name, " ", &strtok_r_ptr);
-
+ 
   /*END OF ADDED CODE*/
 
   /* Allocate and activate page directory. */
@@ -580,7 +582,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
   ASSERT ((read_bytes + zero_bytes) % PGSIZE == 0);
   ASSERT (pg_ofs (upage) == 0);
   ASSERT (ofs % PGSIZE == 0);
-
+  printf("ofs=%d upage=%p, read_bytes=%d, zero_bytes=%d\n", ofs, upage, read_bytes, zero_bytes);
   file_seek (file, ofs);
   while (read_bytes > 0 || zero_bytes > 0) 
     {
@@ -590,25 +592,41 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
       size_t page_zero_bytes = PGSIZE - page_read_bytes;
 
+
+      /*********** MODIFIED CODE - PROJ3-2****************/
+      printf("read_bytes=%d zero_bytes=%d\n", read_bytes, zero_bytes);
+      if(!load_page_file(upage, file, ofs, page_read_bytes,
+			 page_zero_bytes, writable))
+	{
+	  return false;
+	}
+      
       /* Get a page of memory. */
-      uint8_t *kpage = palloc_get_page (PAL_USER);
+      /* uint8_t *kpage = palloc_get_page (PAL_USER);
       if (kpage == NULL)
-        return false;
-
+      	return false;
+      */
+      printf("LUL\n");
       /* Load this page. */
-      if (file_read (file, kpage, page_read_bytes) != (int) page_read_bytes)
+      /*    if (file_read (file, kpage, page_read_bytes) != (int) page_read_bytes)
         {
-          palloc_free_page (kpage);
+	  
+          //palloc_free_page (kpage);
           return false; 
         }
+      printf("LUL2\n");
       memset (kpage + page_read_bytes, 0, page_zero_bytes);
-
+*/
       /* Add the page to the process's address space. */
-      if (!install_page (upage, kpage, writable)) 
+      /* if (!install_page (upage, kpage, writable)) 
         {
           palloc_free_page (kpage);
           return false; 
         }
+      */
+      /*************** MODIFIED CODE END *******************/
+
+
 
       /* Advance. */
       read_bytes -= page_read_bytes;

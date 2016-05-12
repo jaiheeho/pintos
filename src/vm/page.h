@@ -2,6 +2,7 @@
 #define VM_PAGE_H
 
 #include <hash.h>
+#include "filesys/file.h"
 
 #define STACK_MAX 2000 * PGSIZE
 #define STACK_STRIDE 32
@@ -20,6 +21,7 @@ struct spte {
   bool present;
   bool dirty;
   int swap_idx;
+  bool writable;
   struct hash_elem elem;
 };
 
@@ -33,6 +35,8 @@ void sup_page_table_init(struct hash*);
 void sup_page_table_free(struct hash*);
 int load_page(void*);
 int stack_growth(void*);
-
+int load_page_swap(struct spte*);
+int load_page_new(void*, bool);
+int load_page_file(void*, struct file*, off_t, uint32_t, uint32_t, bool);
 
 #endif
