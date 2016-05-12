@@ -304,7 +304,7 @@ int read (int fd, void *buffer, unsigned length)
     for(i = 0; i<length; i++)
     {
       if(!put_user (buf_char + i , input_getc()))
-        exit(-1)
+        exit(-1);
     } 
   }
     retval = length;
