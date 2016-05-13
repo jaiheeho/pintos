@@ -1,3 +1,4 @@
+
 #include "userprog/process.h"
 #include <debug.h>
 #include <inttypes.h>
@@ -136,6 +137,8 @@ start_process (void *f_name)
   file_deny_write(curr->executable);
 
   palloc_free_page (file_name);
+
+  printf("READY TO LAUNCH PROG\n");
   /***** END OF ADDED CODE *****/
 
   /* Start the user process by simulating a return from an
@@ -496,14 +499,16 @@ load (const char *file_name, void (**eip) (void), void **esp)
           break;
         }
     }
-
+  //printf("load done.\n");
   /* Set up stack. */
   if (!setup_stack (esp, (char*)file_name, &strtok_r_ptr))
-    goto done;
-
+    {printf("Stack setup aint right\n");
+      goto done;}
+  //printf("stack setup done\n");
   /* Start address. */
   *eip = (void (*) (void)) ehdr.e_entry;
-
+  
+  printf("*eip: %0x, **eip:%0x \n", *eip, *(*eip));
   success = true;
 
  done:
@@ -582,7 +587,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
   ASSERT ((read_bytes + zero_bytes) % PGSIZE == 0);
   ASSERT (pg_ofs (upage) == 0);
   ASSERT (ofs % PGSIZE == 0);
-  printf("ofs=%d upage=%p, read_bytes=%d, zero_bytes=%d\n", ofs, upage, read_bytes, zero_bytes);
+  //printf("ofs=%d upage=%p, read_bytes=%d, zero_bytes=%d\n", ofs, upage, read_bytes, zero_bytes);
   file_seek (file, ofs);
   while (read_bytes > 0 || zero_bytes > 0) 
     {
@@ -594,10 +599,11 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 
 
       /*********** MODIFIED CODE - PROJ3-2****************/
-      printf("read_bytes=%d zero_bytes=%d\n", read_bytes, zero_bytes);
+      //printf("read_bytes=%d zero_bytes=%d\n", read_bytes, zero_bytes);
       if(!load_page_file(upage, file, ofs, page_read_bytes,
 			 page_zero_bytes, writable))
 	{
+	  printf("load_segment: load_page_file failed\n");
 	  return false;
 	}
       
@@ -606,7 +612,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       if (kpage == NULL)
       	return false;
       */
-      printf("LUL\n");
+      // printf("LUL\n");
       /* Load this page. */
       /*    if (file_read (file, kpage, page_read_bytes) != (int) page_read_bytes)
         {
@@ -650,8 +656,9 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
   uint8_t *kpage;
   bool success = false;
 
-
+  /*
   kpage = palloc_get_page (PAL_USER | PAL_ZERO);
+  printf("kpage = %0x\n", kpage);
   if (kpage != NULL) 
     {
       success = install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true);
@@ -660,6 +667,24 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
       else
         palloc_free_page (kpage);
     }
+
+
+  */
+
+  /*ADDED CODE PROJ3-1*/
+  success = load_page_new(((uint8_t *)PHYS_BASE) - PGSIZE, true);
+  if(success)
+    {
+      *esp = PHYS_BASE;
+      
+    }
+  else PANIC("STACK SETUP PANIC\n");
+  
+
+
+  /*ADDED END*/
+
+
 
   /*ADDED CODE*/
   char *token_ptr;
