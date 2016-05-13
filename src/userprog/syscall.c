@@ -299,6 +299,10 @@ int read (int fd, void *buffer, unsigned length)
   uint32_t i;
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
+
+  int page_nums = pg_round_down;
+  
+  for ()
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1); 
 
@@ -328,14 +332,15 @@ int read (int fd, void *buffer, unsigned length)
       return -1;
     }
     thread_current()->filesys_holder=true;
-    // for (i = 0; i< length ; i++)
+    i = 
+    for (i = 0; i< length ; i++)
     // {
     //   if (!put_user (buf_char + i , 1))
     //   {
     //     sema_up(&filesys_global_lock);
     //     exit(-1);
     //   }
-    // }      
+    }      
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
   }
@@ -540,7 +545,7 @@ bool invalid_addr(void* addr){
   //Not within pagedir
 
   struct thread* curr = thread_current();
-  if(!pagedir_get_page (curr->pagedir, addr))
+  if(!pagedir_get_page (curr->pagedir, pg_round_down(addr))
   {
     struct hash_elem* e;
     struct spte spte_temp;
@@ -548,7 +553,7 @@ bool invalid_addr(void* addr){
     e = hash_find(&curr->spt, &spte_temp.elem);
     if (e == NULL)
     {
-      load_page(addr);
+      load_page(pg_round_down(addr));
     }
 
     // if 
