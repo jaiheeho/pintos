@@ -107,7 +107,9 @@ start_process (void *f_name)
   sup_page_table_init(&(thread_current()->spt));
 
   //addeed filesys_lock
+  printf("this1\n");
   sema_down(&filesys_global_lock);
+  printf("this2\n");
   success = load (file_name, &if_.eip, &if_.esp);
   sema_up(&filesys_global_lock);
   /***** END OF ADDED CODE *****/

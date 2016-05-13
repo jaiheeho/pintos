@@ -332,7 +332,7 @@ int read (int fd, void *buffer, unsigned length)
 
       if (!put_user (buf_char + i , 1))
       {
-                printf("here3");
+          printf("here3");
 
         sema_up(&filesys_global_lock);
         exit(-1);
