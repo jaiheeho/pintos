@@ -156,7 +156,6 @@ exit(int status)
   printf("%s: exit(%d)\n", thread_name(), status);
   struct thread *curr = thread_current();
   curr->exit_status=status;
-
   thread_exit();
   NOT_REACHED ();
   // return exit status to kernel
@@ -328,13 +327,9 @@ int read (int fd, void *buffer, unsigned length)
     {
       sema_up(&filesys_global_lock);
       return -1;
-    }
-    thread_current()->filesys_holder=false;
- 
+    } 
     retval = file_read(file, buffer, length);
-
     sema_up(&filesys_global_lock);
-    thread_current()->filesys_holder=false;
   }
   return retval;
 }
@@ -373,7 +368,6 @@ int write(int fd, const void *buffer, unsigned length)
   else
     {
       sema_down(&filesys_global_lock);
-      thread_current()->filesys_holder=false;
       struct file *file = get_struct_file(fd);
       //if fd is bad 
       if (!file)
@@ -383,7 +377,6 @@ int write(int fd, const void *buffer, unsigned length)
       }
       retval = file_write(file, buffer, length);
       sema_up(&filesys_global_lock);
-      thread_current()->filesys_holder=false;
     }
 
   return retval;

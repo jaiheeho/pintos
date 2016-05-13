@@ -112,7 +112,6 @@ struct thread
 
     //For Project 3
     struct hash spt;                    /* hash table for supplemental page table */
-    bool filesys_holder;
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */
