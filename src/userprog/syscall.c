@@ -350,7 +350,7 @@ int write(int fd, const void *buffer, unsigned length)
 {
   int retval;
   uint8_t* buf_char = (uint8_t *) buffer; 
-  int i;
+  uint32_t i;
   uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char) +1; 
   int * base_page = pg_round_down(buf_char);
   for (i = 0 ; i < page_nums ; i++)
@@ -581,7 +581,7 @@ bool invalid_addr(void* addr){
   // {
   //   return true;
   // }
-  // return false;
+  return false;
 }
 static bool 
 put_user (uint8_t *udst, uint8_t byte)
