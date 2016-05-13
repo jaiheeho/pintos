@@ -548,7 +548,7 @@ bool invalid_addr(void* addr){
   //Not within pagedir
 
   struct thread* curr = thread_current();
-  if(!pagedir_get_page (curr->pagedir, pg_round_down(addr)))
+  if(!pagedir_get_page (curr->pagedir, addr))
   {
     printf("here1\n");
     struct hash_elem* e;
@@ -558,7 +558,7 @@ bool invalid_addr(void* addr){
     if (e == NULL)
     {
       printf("here2\n");
-      if (!load_page(pg_round_down(addr)))
+      if (!load_page(addr))
       {
         printf("here3\n");
         exit(-1);
