@@ -135,7 +135,7 @@ start_process (void *f_name)
   //executable of thread is saved in struct thread
   curr->executable = filesys_open(file_name);
   file_deny_write(curr->executable);
-
+  curr->filesys_holder=false;
   palloc_free_page (file_name);
 
   //printf("READY TO LAUNCH PROG\n");
@@ -507,8 +507,6 @@ load (const char *file_name, void (**eip) (void), void **esp)
   //printf("stack setup done\n");
   /* Start address. */
   *eip = (void (*) (void)) ehdr.e_entry;
-  
-  //printf("*eip: %0x, **eip:%0x \n", *eip, *(*eip));
   success = true;
 
  done:
