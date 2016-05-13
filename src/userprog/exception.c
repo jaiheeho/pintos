@@ -217,7 +217,8 @@ page_fault (struct intr_frame *f)
             sema_up(&filesys_global_lock);
           }
           exit(-1);
-       }
+      }
+      printf("faulted_addr3: %0x\n", fault_addr);
     }
       
   }
