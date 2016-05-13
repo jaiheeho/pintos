@@ -299,18 +299,13 @@ int read (int fd, void *buffer, unsigned length)
   uint32_t i;
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
-  printf("here0\n");
   uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char);  
   int * base_page = pg_round_down(buf_char);
-    printf("here1\n");
-
   for (i = 0 ; i < page_nums ; i++)
   {
     if ( invalid_addr_buffer((void *)(base_page + i * 1024)))
       exit(-1);
   }
-    printf("here3\n");
-
   // if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
   //   exit(-1); 
 
@@ -339,8 +334,6 @@ int read (int fd, void *buffer, unsigned length)
       sema_up(&filesys_global_lock);
       return -1;
     }
-      printf("here4\n");
-
     thread_current()->filesys_holder=true;
     // for (i = 0; i< length ; i++)
     // // {
@@ -351,12 +344,9 @@ int read (int fd, void *buffer, unsigned length)
     // //   }
     // }      
     retval = file_read(file, buffer, length);
-            printf("here5\n");
-
     sema_up(&filesys_global_lock);
     thread_current()->filesys_holder=false;
   }
-        printf("here6\n");
 
   return retval;
 }
