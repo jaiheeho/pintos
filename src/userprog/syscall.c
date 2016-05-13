@@ -329,7 +329,7 @@ int read (int fd, void *buffer, unsigned length)
       sema_up(&filesys_global_lock);
       return -1;
     }
-    thread_current()->filesys_holder=true;
+    thread_current()->filesys_holder=false;
  
     retval = file_read(file, buffer, length);
 
@@ -373,7 +373,7 @@ int write(int fd, const void *buffer, unsigned length)
   else
     {
       sema_down(&filesys_global_lock);
-      thread_current()->filesys_holder=true;
+      thread_current()->filesys_holder=false;
       struct file *file = get_struct_file(fd);
       //if fd is bad 
       if (!file)
