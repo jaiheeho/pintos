@@ -300,7 +300,7 @@ int read (int fd, void *buffer, unsigned length)
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
 
-  int page_nums = pg_no(buf_char+length) - pg_no(buf_char);  
+  int page_nums = (int)(pg_no(buf_char+length) - (int)pg_no(buf_char);  
   int * base_page = pg_round_down(buf_char);
   for (i = 0 ; i < page_nums ; i++)
   {
