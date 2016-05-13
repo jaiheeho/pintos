@@ -9,6 +9,7 @@
 #include "threads/synch.h"
 #include "threads/palloc.h"
 #include "threads/thread.h"
+#include "threads/malloc.h"
 
 static struct list frame_table;
 static struct semaphore frame_table_lock;
@@ -33,7 +34,6 @@ void frame_table_init()
 void frame_table_free()
 {
   sema_down(&frame_table_lock);
-  sema_up(&frame_table_lock);
   //empty frame_table list;
   while (!list_empty (&frame_table))
   {
@@ -42,6 +42,9 @@ void frame_table_free()
     palloc_free_page(frame_entry->frame_addr);
     palloc_free_page(frame_entry);
   }
+  sema_up(&frame_table_lock);
+
+
 }
 
 /************************************************************************
@@ -50,7 +53,7 @@ void frame_table_free()
 * Output : allocated frame pointer for supplement_page                  *
 * Purpose : allocating frame and add frame informatino to frame table   *
 ************************************************************************/
-void* frame_allocate(struct spte *supplement_page)
+void* frame_allocate(struct spte* supplement_page)
 {
   printf("frame_allocate: \n");
   sema_down(&frame_table_lock);;
@@ -61,8 +64,8 @@ void* frame_allocate(struct spte *supplement_page)
     if(new_frame == NULL)
     {
       // all frame slots are full; commence eviction & retry
-      printf("frame_allocate: need eviction!!\n");
-      frame_evict(supplement_page);
+      //printf("frame_allocate: need eviction!!\n");
+      frame_evict();
     }
     else
     {
@@ -71,13 +74,14 @@ void* frame_allocate(struct spte *supplement_page)
 
       if(new_fte_entry == NULL)
 	{
-	  printf("cannot allocate new fte!!\n");
+	   printf("cannot allocate new fte!!\n");
 
 	}
 
       // configure elements of fte
       new_fte_entry->frame_addr = new_frame;
       new_fte_entry->use = 1;
+      new_fte_entry->thread = thread_current();
       // insert into frame table
       if (clock_head == list_head(&frame_table))
       {
@@ -96,6 +100,7 @@ void* frame_allocate(struct spte *supplement_page)
     }
   }
 
+  printf("frame_allocate: complete.\n");
   sema_up(&frame_table_lock);
   return new_frame;
 }
@@ -113,9 +118,10 @@ void frame_free(struct fte* fte_to_free)
   //detach fte from frame table list
   list_remove(&fte_to_free->elem);
   //detach frame from spte (this is for ensurance)
+  printf("AAA: %0x\n", ((struct spte *)fte_to_free->supplement_page)->user_addr);
   pagedir_clear_page(thread_current()->pagedir, ((struct spte *)fte_to_free->supplement_page)->user_addr);
   // free malloc'd memory
-  palloc_free_page(fte_to_free);
+  free(fte_to_free);
 }
 
 /************************************************************************
@@ -125,6 +131,64 @@ void frame_free(struct fte* fte_to_free)
 * functions in swap.c, spte for the frame should be fixed and framd table*
 * entry should be freed. we used (FIRST ALLOCATED REMOVE scheme)        *
 ************************************************************************/
+void frame_evict()
+{
+  //choose victim
+  struct list_elem *iter;
+  struct fte *frame_entry;
+  struct spte *supplement_page;
+
+  printf("frame_evict:\n");
+
+
+  
+  //start from the beginning of table.
+
+  for (iter = list_begin(&frame_table);;)
+    {
+      frame_entry= list_entry(iter, struct fte, elem);
+      struct spte *paired_spte = (struct spte*)frame_entry->supplement_page;
+      
+      if(pagedir_is_accessed(frame_entry->thread->pagedir,
+			     paired_spte->user_addr) == true)
+        pagedir_set_accessed(frame_entry->thread->pagedir,
+			     paired_spte->user_addr, false);
+      else
+	{
+	  // not recently used. commence eviction
+	  if (list_next(iter) == list_end(&frame_table))
+	    clock_head = list_begin(&frame_table);
+	  else
+	    clock_head = list_next(clock_head);
+	  break;
+	}
+
+      iter = list_next(iter);
+      if(iter == list_end(&frame_table))
+	{
+	  iter = list_begin(&frame_table);
+	}
+
+
+    }
+  
+  frame_entry= list_entry(iter, struct fte, elem);
+  supplement_page = frame_entry->supplement_page;
+  supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
+  supplement_page->present = false;
+  frame_free(frame_entry);
+
+  printf("frame_evict: complete\n");
+
+}
+
+
+
+
+
+
+/*
+
 void frame_evict(struct spte *supplement_page)
 {
   //choose victim
@@ -169,3 +233,4 @@ void frame_evict(struct spte *supplement_page)
   supplement_page->present = false;
   frame_free(frame_entry);
 }
+*/

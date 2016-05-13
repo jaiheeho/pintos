@@ -3,14 +3,17 @@
 
 #include <hash.h>
 #include "filesys/file.h"
+#include "threads/vaddr.h"
 
 #define STACK_MAX 2000 * PGSIZE
 #define STACK_STRIDE 32
+
 enum spte_status{
   ON_SWAP,
   ON_MEM,
   ON_DISK
 };
+
 struct fte;
 
 struct spte {
@@ -28,6 +31,7 @@ struct spte {
 struct fte {
   void* frame_addr;
   void* supplement_page;
+  struct thread* thread;
   int use;
   struct list_elem elem;
 };

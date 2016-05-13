@@ -62,6 +62,7 @@ int swap_alloc(char *addr){
 * Purpose : reconstruct data in idx to frame with addr					*
 ************************************************************************/
 void swap_remove(char *addr, size_t idx){
+  //printf("swap_remove: %0x\n", addr);
 	sema_down(&swap_lock);
 	int i;
 	int sector_num;
