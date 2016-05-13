@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> // ADDED HEADER
 #include <syscall-nr.h>
+#include <hash.h> // ADDED HEADER
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/init.h" // ADDED HEADER
@@ -13,6 +14,7 @@
 #include "filesys/filesys.h" // ADDED HEADER
 #include "lib/user/syscall.h" // ADDED HEADER
 #include "devices/input.h" // ADDED HEADER
+#include "vm/page.h"// ADDED HEADER
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
 static bool put_user (uint8_t *udst, uint8_t byte);
@@ -154,6 +156,9 @@ exit(int status)
   printf("%s: exit(%d)\n", thread_name(), status);
   struct thread *curr = thread_current();
   curr->exit_status=status;
+  if (curr->filesys_holder == true)
+    sema_up(&filesys_global_lock);
+
   thread_exit();
   NOT_REACHED ();
   // return exit status to kernel
@@ -244,7 +249,7 @@ open(const char *file)
   //open file with name (file)
   filestruct = filesys_open(file);
   //check wheter open was successful
-  if (!filestruct)
+  if (filestruct == NULL)
   {
     sema_up(&filesys_global_lock);
     return -1;
@@ -321,6 +326,7 @@ int read (int fd, void *buffer, unsigned length)
       sema_up(&filesys_global_lock);
       return -1;
     }
+
     
     
     for (i = 0; i< length ; i++)
@@ -331,6 +337,17 @@ int read (int fd, void *buffer, unsigned length)
         exit(-1);
       }
     }      
+
+
+    thread_current()->filesys_holder=true;
+    // for (i = 0; i< length ; i++)
+    // {
+    //   if (!put_user (buf_char + i , 1))
+    //   {
+    //     sema_up(&filesys_global_lock);
+    //     exit(-1);
+    //   }
+    // }      
 
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
@@ -534,9 +551,23 @@ bool invalid_addr(void* addr){
   if (addr == NULL)
     return true;
   //Not within pagedir
-  if(!pagedir_get_page (thread_current()->pagedir, addr))
-    return true;
+  struct thread* curr = thread_current();
+  if(!pagedir_get_page (curr->pagedir, addr))
+  {
 
+    struct hash_elem* e;
+    struct spte spte_temp;
+    spte_temp.user_addr = addr;
+    e = hash_find(&curr->spt, &spte_temp.elem);
+    if (e == NULL)
+      return true;
+    // if 
+    // struct spte* spt_entry = NULL;
+    // spt_entry = hash_entry(e, struct spte, elem);
+
+    // if (spt_entry == NULL)
+    //   return true;
+  }
   return false;
 }
 
