@@ -299,7 +299,7 @@ int read (int fd, void *buffer, unsigned length)
   int retval;
 
   uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char);  
-  int * base_page = pg_round_down(buf_char);
+  int * base_page = pg_round_up(buf_char);
   for (i = 0 ; i < page_nums ; i++)
   {
     if ( invalid_addr ((void *)base_page + i * 1024))
@@ -342,13 +342,10 @@ int read (int fd, void *buffer, unsigned length)
     // //     exit(-1);
     // //   }
     // }      
-    printf("here1\n");
     printf("buff: %0x\n", (uint32_t)buffer);
     retval = file_read(file, buffer, length);
-    printf("here2\n");
     sema_up(&filesys_global_lock);
     thread_current()->filesys_holder=true;
-
   }
   return retval;
 }
