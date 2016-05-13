@@ -101,6 +101,7 @@ int load_page(void* faulted_user_addr)
 
   if(e == NULL)
     {
+      printf("here2\n");
       // no such page. check validity of addr and load new page?
       // create new spte
       struct spte* new_spte = (struct spte*)malloc(sizeof(struct spte));
@@ -124,7 +125,7 @@ int load_page(void* faulted_user_addr)
 
       new_spte->frame_locked = false;
 
-          }
+    }
   else  // page is in spte.(in swap space)
     {
       printf("here\n");
@@ -136,9 +137,9 @@ int load_page(void* faulted_user_addr)
       //printf("load_page: spte_target: user_addr=%0x, present=%d, swap_idx=%d\n", 
       // spte_target->user_addr, spte_target->present, spte_target->swap_idx);
       if(!load_page_swap(spte_target))
-	{
-	  return 0;
-	}
+      {
+        return 0;
+      }
       
       /*
       if(spte_target->status == ON_MEM)
@@ -154,7 +155,6 @@ int load_page(void* faulted_user_addr)
 	  install_page(spte_target->user_addr, spte_target->phys_addr, writable);
 	}
       */
-      
     }
   return 1;
 }
