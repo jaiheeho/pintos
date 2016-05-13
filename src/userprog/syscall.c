@@ -297,8 +297,8 @@ int read (int fd, void *buffer, unsigned length)
   uint32_t i;
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
-  printf("bufferaddr : %0x\n", buffer);
-  uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char);  
+  uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char); 
+  printf("bufferaddr : %0x, nums : %u\n", buffer, page_nums);
   int * base_page = pg_round_down(buf_char);
   for (i = 0 ; i < page_nums ; i++)
   {
@@ -554,16 +554,17 @@ bool invalid_addr_buffer(void* addr){
     struct spte spte_temp;
     spte_temp.user_addr = addr;
     e = hash_find(&curr->spt, &spte_temp.elem);
+    printf("valid buffer\n");
     if (e == NULL)
     {
-      printf("valid buffer\n");
+      printf("valid buffer2\n");
       if (!load_page(addr))
       {
         return true;
       }
-      printf("valid buffer END\n");
-
+      printf("valid buffer3 END\n");
     }
+      printf("valid buffer4 END\n");
   }
   return false;
 }
