@@ -300,11 +300,15 @@ int read (int fd, void *buffer, unsigned length)
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
 
-  int page_nums = pg_round_down;
-  
-  for ()
-  if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
-    exit(-1); 
+  int page_nums = pg_no(buf_char+length) - pg_no(buf_char);  
+  int * base_page = pg_round_down(buf_char);
+  for (i = 0 ; i < page_nums ; i++)
+  {
+    if ( invalid_addr ((void *)base_page + i * 1024))
+      exit(-1);
+  }
+  // if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
+  //   exit(-1); 
 
   if(fd == 0)
   {
