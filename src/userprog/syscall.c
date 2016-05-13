@@ -536,10 +536,10 @@ bool invalid_addr(void* addr){
   if(!pagedir_get_page (curr->pagedir, addr))
   {
 
-    struct hash_elem e = hash_find(&curr->spt, &spte_temp.elem);
+    struct hash_elem e;
     struct spte spte_temp;
     spte_temp.user_addr = addr;
-    e = hash_find(spt, &spte_temp.elem);
+    e = hash_find(&curr->spt, &spte_temp.elem);
     struct spte* spt_entry = hash_entry(e, struct spte, elem);
 
     if (spt_entry == NULL)
