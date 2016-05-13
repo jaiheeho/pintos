@@ -246,9 +246,9 @@ open(const char *file)
   //open file with name (file)
   filestruct = filesys_open(file);
   //check wheter open was successful
-  if (!filestruct)
+  if (filestruct == NULL)
   {
-    printf("here?");
+    printf("here?\n");
     sema_up(&filesys_global_lock);
     return -1;
   }
