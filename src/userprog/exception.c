@@ -157,7 +157,7 @@ page_fault (struct intr_frame *f)
   if (fault_addr == NULL || fault_addr >= (void*)0xC0000000
       || fault_addr < (void*)0x08048000 || (!not_present))
   {
-    if(!user && write)
+    if(!user)
     {
       sema_up(&filesys_global_lock);
     }
@@ -188,7 +188,7 @@ page_fault (struct intr_frame *f)
 	      if((uint32_t)f->esp > (uint32_t)fault_addr)
 		    {
 
-         if(!user && write)
+         if(!user )
           {
             sema_up(&filesys_global_lock);
           }
