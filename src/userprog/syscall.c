@@ -548,7 +548,7 @@ bool invalid_addr_buffer(void* addr){
   //Not within pagedir
 
   struct thread* curr = thread_current();
-  if(!pagedir_get_page (curr->pagedir, pg_round_down(addr)))
+  if(!pagedir_get_page (curr->pagedir, addr))
   {
     struct hash_elem* e;
     struct spte spte_temp;
@@ -556,7 +556,7 @@ bool invalid_addr_buffer(void* addr){
     e = hash_find(&curr->spt, &spte_temp.elem);
     if (e == NULL)
     {
-      if (!load_page(pg_round_down(addr)))
+      if (!load_page(addr))
       {
         return true;
       }
@@ -577,7 +577,7 @@ bool invalid_addr(void* addr){
   //Not within pagedir
 
   struct thread* curr = thread_current();
-  if(!pagedir_get_page (curr->pagedir, pg_round_down(addr)))
+  if(!pagedir_get_page (curr->pagedir, addr))
   {
     return true;
   }
