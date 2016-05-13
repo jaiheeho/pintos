@@ -252,6 +252,7 @@ process_exit (void)
     sema_try_down(&c->sema_wait);
     sema_up(&c->sema_wait);
   }
+
   //allow write to executable by closing it in write deny part of proj2
   sema_down(&filesys_global_lock);
   if (curr->executable){

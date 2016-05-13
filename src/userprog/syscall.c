@@ -156,8 +156,9 @@ exit(int status)
   printf("%s: exit(%d)\n", thread_name(), status);
   struct thread *curr = thread_current();
   curr->exit_status=status;
-  if(thread_current()->filesys_holder==true)
+  if (curr->filesys_holder == true)
     sema_up(&filesys_global_lock);
+
   thread_exit();
   NOT_REACHED ();
   // return exit status to kernel
@@ -298,12 +299,12 @@ int read (int fd, void *buffer, unsigned length)
   uint32_t i;
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
+
   uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char);  
   int * base_page = pg_round_down(buf_char);
-
   for (i = 0 ; i < page_nums ; i++)
   {
-    if ( invalid_addr_buffer((void *)(base_page + i * 1024)))
+    if ( invalid_addr_buffer ((void *)base_page + i * 1024))
       exit(-1);
   }
   // if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
@@ -345,9 +346,7 @@ int read (int fd, void *buffer, unsigned length)
     // }      
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
-    thread_current()->filesys_holder=false;
   }
-
   return retval;
 }
 
@@ -549,7 +548,7 @@ bool invalid_addr_buffer(void* addr){
   //Not within pagedir
 
   struct thread* curr = thread_current();
-  if(!pagedir_get_page (curr->pagedir, addr))
+  if(!pagedir_get_page (curr->pagedir, pg_round_down(addr)))
   {
     struct hash_elem* e;
     struct spte spte_temp;
@@ -557,9 +556,7 @@ bool invalid_addr_buffer(void* addr){
     e = hash_find(&curr->spt, &spte_temp.elem);
     if (e == NULL)
     {
-      load_page(addr);
-      // if(!load_page(addr))
-      //   return true;
+      load_page(pg_round_down(addr));
     }
   }
   return false;
