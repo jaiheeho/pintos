@@ -507,14 +507,6 @@ load (const char *file_name, void (**eip) (void), void **esp)
   //printf("stack setup done\n");
   /* Start address. */
   *eip = (void (*) (void)) ehdr.e_entry;
-<<<<<<< HEAD
-  printf("eip : %0x", (int)*eip);
-  printf("in eip : %0x", (int)**eip);
-
-=======
-  
-  //printf("*eip: %0x, **eip:%0x \n", *eip, *(*eip));
->>>>>>> cc8a540769b2f2267f356bf40c6fc83c903b17ad
   success = true;
 
  done:
