@@ -556,7 +556,7 @@ bool invalid_addr(void* addr){
     e = hash_find(&curr->spt, &spte_temp.elem);
     if (e == NULL)
     {
-      if (!load_page(pg_round_down(addr))
+      if (!load_page(pg_round_down(addr)))
         exit(-1);
     }
 
