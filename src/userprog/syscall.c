@@ -298,7 +298,7 @@ int read (int fd, void *buffer, unsigned length)
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
   uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char) +1; 
-  printf("bufferaddr : %0x, nums : %u\n", buffer, page_nums);
+  //printf("bufferaddr : %0x, nums : %u\n", buffer, page_nums);
   int * base_page = pg_round_down(buf_char);
   for (i = 0 ; i < page_nums ; i++)
   {
@@ -334,17 +334,8 @@ int read (int fd, void *buffer, unsigned length)
       return -1;
     }
     thread_current()->filesys_holder=true;
-    // for (i = 0; i< length ; i++)
-    // // {
-    // //   if (!put_user (buf_char + i , 1))
-    // //   {
-    // //     sema_up(&filesys_global_lock);
-    // //     exit(-1);
-    // //   }
-    // }      
-    printf("buff1: %0x\n", (uint32_t)buffer);
+ 
     retval = file_read(file, buffer, length);
-    printf("buff2: %0x\n", (uint32_t)buffer);
 
     sema_up(&filesys_global_lock);
     thread_current()->filesys_holder=true;
