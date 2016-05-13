@@ -342,9 +342,12 @@ int read (int fd, void *buffer, unsigned length)
     // //     exit(-1);
     // //   }
     // }      
+    printf("here1\n");
     retval = file_read(file, buffer, length);
+    printf("here2\n");
     sema_up(&filesys_global_lock);
-    
+    thread_current()->filesys_holder=true;
+
   }
   return retval;
 }
