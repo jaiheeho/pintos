@@ -304,7 +304,7 @@ int read (int fd, void *buffer, unsigned length)
   int * base_page = pg_round_down(buf_char);
   for (i = 0 ; i < page_nums ; i++)
   {
-    if ( invalid_addr_buffer((void *)(base_page + i * 1024))
+    if ( invalid_addr_buffer((void *)(base_page + i * 1024)))
       exit(-1);
   }
   // if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
