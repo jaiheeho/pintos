@@ -157,12 +157,13 @@ page_fault (struct intr_frame *f)
   if (fault_addr == NULL || fault_addr >= (void*)0xC0000000
       || fault_addr < (void*)0x08048000 || (!not_present))
   {
-    if(!user && write)
-    {
-      sema_up(&filesys_global_lock);
-    }
+
       //printf("fault_addr is naughty : not_present=%d\n", not_present);
     exit(-1);
+  }
+  if(!user && write)
+  {
+    sema_up(&filesys_global_lock);
   }
 
 
