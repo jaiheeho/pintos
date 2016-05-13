@@ -119,7 +119,7 @@ void frame_free(struct fte* fte_to_free)
   list_remove(&fte_to_free->elem);
   //detach frame from spte (this is for ensurance)
   //printf("AAA: %0x\n", ((struct spte *)fte_to_free->supplement_page)->user_addr);
-  pagedir_clear_page(thread_current()->pagedir, ((struct spte *)fte_to_free->supplement_page)->user_addr);
+  pagedir_clear_page(fte_to_free->thread->pagedir, ((struct spte *)fte_to_free->supplement_page)->user_addr);
   // free malloc'd memory
   free(fte_to_free);
 }
@@ -148,11 +148,16 @@ void frame_evict()
     {
       frame_entry= list_entry(iter, struct fte, elem);
       struct spte *paired_spte = (struct spte*)frame_entry->supplement_page;
+
+      //if(paired_spte->user_addr >= (void*)0xb0000000)
+	//printf("user_addr: %0x\n", paired_spte->user_addr);
       
       if(pagedir_is_accessed(frame_entry->thread->pagedir,
 			     paired_spte->user_addr) == true)
-        pagedir_set_accessed(frame_entry->thread->pagedir,
-			     paired_spte->user_addr, false);
+        {
+	  pagedir_set_accessed(frame_entry->thread->pagedir,
+			       paired_spte->user_addr, false);
+	}
       else
 	{
 	  // not recently used. commence eviction
@@ -175,7 +180,7 @@ void frame_evict()
     }
   
   frame_entry= list_entry(iter, struct fte, elem);
-  supplement_page = frame_entry->supplement_page;
+  supplement_page = (struct spte*)frame_entry->supplement_page;
   supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
   supplement_page->present = false;
   frame_free(frame_entry);
