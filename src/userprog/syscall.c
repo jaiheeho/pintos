@@ -299,10 +299,10 @@ int read (int fd, void *buffer, unsigned length)
   int retval;
 
   uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char);  
-  int * base_page = pg_round_up(buf_char);
+  int * base_page = pg_round_down(buf_char);
   for (i = 0 ; i < page_nums ; i++)
   {
-    if ( invalid_addr ((void *)base_page + i * 1024))
+    if ( invalid_addr_buffer ((void *)base_page + i * 1024))
       exit(-1);
   }
   // if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
