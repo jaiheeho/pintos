@@ -560,9 +560,8 @@ bool invalid_addr(void* addr){
       printf("here2\n");
       if (!load_page(pg_round_down(addr)))
       {
+        printf("here3\n");
         exit(-1);
-              printf("here3\n");
-
       }
     }
 
