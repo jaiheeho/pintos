@@ -156,8 +156,6 @@ exit(int status)
   printf("%s: exit(%d)\n", thread_name(), status);
   struct thread *curr = thread_current();
   curr->exit_status=status;
-  if (curr->filesys_holder == true)
-    sema_up(&filesys_global_lock);
 
   thread_exit();
   NOT_REACHED ();
@@ -301,6 +299,7 @@ int read (int fd, void *buffer, unsigned length)
   int retval;
   uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char);  
   int * base_page = pg_round_down(buf_char);
+
   for (i = 0 ; i < page_nums ; i++)
   {
     if ( invalid_addr_buffer((void *)(base_page + i * 1024)))
