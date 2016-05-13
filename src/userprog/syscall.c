@@ -156,9 +156,6 @@ exit(int status)
   printf("%s: exit(%d)\n", thread_name(), status);
   struct thread *curr = thread_current();
   curr->exit_status=status;
-  if (curr->filesys_holder == true)
-    sema_up(&filesys_global_lock);
-
   thread_exit();
   NOT_REACHED ();
   // return exit status to kernel
@@ -299,16 +296,21 @@ int read (int fd, void *buffer, unsigned length)
   uint32_t i;
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
-  if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
-    exit(-1); 
+  uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char) +1; 
+  int * base_page = pg_round_down(buf_char);
+  for (i = 0 ; i < page_nums ; i++)
+  {
+    if ( invalid_addr_buffer ((void *)(base_page + i * 1024)))
+      exit(-1);
+  }
+
+
   if(fd == 0)
   {
     //std out 
     for(i = 0; i<length; i++)
     {
       *(buf_char + i) = input_getc();
-      // if(!put_user (buf_char + i , input_getc()))
-      //   exit(-1);
     } 
     retval = length;
   }
@@ -325,16 +327,7 @@ int read (int fd, void *buffer, unsigned length)
     {
       sema_up(&filesys_global_lock);
       return -1;
-    }
-    thread_current()->filesys_holder=true;
-    // for (i = 0; i< length ; i++)
-    // {
-    //   if (!put_user (buf_char + i , 1))
-    //   {
-    //     sema_up(&filesys_global_lock);
-    //     exit(-1);
-    //   }
-    // }      
+    } 
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
   }
@@ -352,8 +345,14 @@ int write(int fd, const void *buffer, unsigned length)
 {
   int retval;
   uint8_t* buf_char = (uint8_t *) buffer; 
-  if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
-    exit(-1);
+  uint32_t i;
+  uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char) +1; 
+  int * base_page = pg_round_down(buf_char);
+  for (i = 0 ; i < page_nums ; i++)
+  {
+    if ( invalid_addr_buffer ((void *)(base_page + i * 1024)))
+      exit(-1);
+  }
 
   if(fd <= 0)
     {
@@ -527,6 +526,38 @@ void get_args(void* esp, int *args, int argsnum)
 * Purporse : check wheter given address is valid or not                 *
 ************************************************************************/
  /*added function */
+bool invalid_addr_buffer(void* addr){
+  //check whether it is user addr
+  if (!is_user_vaddr(addr))
+    return true;
+  //under CODE segment
+  if (addr <(void*)0x08048000)
+    return true;
+  if (addr == NULL)
+    return true;
+  //Not within pagedir
+
+  // struct thread* curr = thread_current();
+  // if(!pagedir_get_page (curr->pagedir, addr))
+  // {
+  //   struct hash_elem* e;
+  //   struct spte spte_temp;
+  //   spte_temp.user_addr = addr;
+  //   e = hash_find(&curr->spt, &spte_temp.elem);
+  //   printf("valid buffer\n");
+  //   if (e == NULL)
+  //   {
+  //     printf("valid buffer2\n");
+  //     if (!load_page(addr))
+  //     {
+  //       return true;
+  //     }
+  //     printf("valid buffer3 END\n");
+  //   }
+  //     printf("valid buffer4 END\n");
+  // }
+  return false;
+}
 bool invalid_addr(void* addr){
   //check whether it is user addr
   if (!is_user_vaddr(addr))
@@ -537,26 +568,14 @@ bool invalid_addr(void* addr){
   if (addr == NULL)
     return true;
   //Not within pagedir
+
   struct thread* curr = thread_current();
   if(!pagedir_get_page (curr->pagedir, addr))
   {
-
-    struct hash_elem* e;
-    struct spte spte_temp;
-    spte_temp.user_addr = addr;
-    e = hash_find(&curr->spt, &spte_temp.elem);
-    if (e == NULL)
-      return true;
-    // if 
-    // struct spte* spt_entry = NULL;
-    // spt_entry = hash_entry(e, struct spte, elem);
-
-    // if (spt_entry == NULL)
-    //   return true;
+    return true;
   }
   return false;
 }
-
 static bool 
 put_user (uint8_t *udst, uint8_t byte)
 {

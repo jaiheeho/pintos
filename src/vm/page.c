@@ -6,6 +6,7 @@
 #include "threads/vaddr.h"
 #include "threads/thread.h"
 #include "threads/malloc.h"
+#include "threads/palloc.h"
 #include "userprog/pagedir.h"
 #include "filesys/file.h"
 #include "filesys/filesys.h"
@@ -110,8 +111,7 @@ int load_page(void* faulted_user_addr)
       new_spte->phys_addr = new_frame;
       
       //install the page in user page table
-      install_page(new_spte->user_addr, new_spte->phys_addr, writable);
-      
+      install_page(new_spte->user_addr, new_spte->phys_addr, writable);      
     }
   else  // page is in spte.(in swap space)
     {
@@ -239,10 +239,6 @@ int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
   return 1;
   
 }
-
-
-
-
 
 
 int load_page_swap(struct spte* spte_target)

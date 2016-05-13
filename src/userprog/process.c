@@ -1,4 +1,3 @@
-
 #include "userprog/process.h"
 #include <debug.h>
 #include <inttypes.h>
@@ -135,7 +134,6 @@ start_process (void *f_name)
   //executable of thread is saved in struct thread
   curr->executable = filesys_open(file_name);
   file_deny_write(curr->executable);
-  curr->filesys_holder=false;
   palloc_free_page (file_name);
 
   //printf("READY TO LAUNCH PROG\n");
@@ -252,7 +250,6 @@ process_exit (void)
     sema_try_down(&c->sema_wait);
     sema_up(&c->sema_wait);
   }
-
   //allow write to executable by closing it in write deny part of proj2
   sema_down(&filesys_global_lock);
   if (curr->executable){
