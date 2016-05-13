@@ -537,7 +537,7 @@ bool invalid_addr(void* addr){
   if(!pagedir_get_page (curr->pagedir, addr))
   {
 
-    struct hash_elem e;
+    struct hash_elem* e;
     struct spte spte_temp;
     spte_temp.user_addr = addr;
     e = hash_find(&curr->spt, &spte_temp.elem);
