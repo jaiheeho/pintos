@@ -245,10 +245,6 @@ int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
 }
 
 
-
-
-
-
 int load_page_swap(struct spte* spte_target)
 {
   //printf("load_page_swap: init\n");
