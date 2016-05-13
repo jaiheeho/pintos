@@ -189,7 +189,6 @@ page_fault (struct intr_frame *f)
 	      else 
 		{  
 		  // swap in the swapped out stack page
-		  printf("swapping in the stack page\n");
 		  if(!load_page(fault_addr))
 		    {
 		      PANIC("load page failed.");
