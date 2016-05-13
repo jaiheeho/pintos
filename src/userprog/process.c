@@ -135,7 +135,7 @@ start_process (void *f_name)
   //executable of thread is saved in struct thread
   curr->executable = filesys_open(file_name);
   file_deny_write(curr->executable);
-
+  curr->filesys_holder=false;
   palloc_free_page (file_name);
 
   //printf("READY TO LAUNCH PROG\n");
