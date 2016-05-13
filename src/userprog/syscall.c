@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> // ADDED HEADER
 #include <syscall-nr.h>
+#include <hash.h> // ADDED HEADER
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/init.h" // ADDED HEADER
@@ -329,7 +330,6 @@ int read (int fd, void *buffer, unsigned length)
         exit(-1);
       }
     }      
-
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
   }
@@ -532,9 +532,19 @@ bool invalid_addr(void* addr){
   if (addr == NULL)
     return true;
   //Not within pagedir
-  // if(!pagedir_get_page (thread_current()->pagedir, addr))
-  //   return true;
+  struct thread* curr = thread_current();
+  if(!pagedir_get_page (curr->pagedir, addr))
+  {
 
+    struct hash_elem e = hash_find(&curr->spt, &spte_temp.elem);
+    struct spte spte_temp;
+    spte_temp.user_addr = addr;
+    e = hash_find(spt, &spte_temp.elem);
+    struct spte* spt_entry = hash_entry(e, struct spte, elem);
+
+    if (spt_entry == NULL)
+      return true;
+  }
   return false;
 }
 
