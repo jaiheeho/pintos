@@ -248,6 +248,7 @@ open(const char *file)
   //check wheter open was successful
   if (!filestruct)
   {
+    printf("here?");
     sema_up(&filesys_global_lock);
     return -1;
   }
