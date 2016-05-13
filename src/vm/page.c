@@ -43,12 +43,21 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
   // 0) get the spte
   struct spte *target = hash_entry(e, struct spte, elem);
 
-  // 1) free the underlying frame
-  frame_free(target->fte);
+  if(target->present == true)
+    {
+      // 1) free the underlying frame
+      frame_free(target->fte);
+      
+      // 2) detach from pt(this is also done in frame_free. doublechecking)
+      pagedir_clear_page(thread_current()->pagedir, target->user_addr);
+      
+    }
+  else
+    {
+      // 1) free swap slot
 
-  // 2) detach from pt(this is also done in frame_free. doublechecking)
-  pagedir_clear_page(thread_current()->pagedir, target->user_addr);
 
+    }
   // 3) free spte
   free(target);
 }
@@ -111,8 +120,11 @@ int load_page(void* faulted_user_addr)
       new_spte->phys_addr = new_frame;
       
       //install the page in user page table
-      install_page(new_spte->user_addr, new_spte->phys_addr, writable);      
-    }
+      install_page(new_spte->user_addr, new_spte->phys_addr, writable);
+
+      new_spte->frame_locked = false;
+
+          }
   else  // page is in spte.(in swap space)
     {
       spte_target = hash_entry(e, struct spte, elem);
@@ -177,10 +189,13 @@ int load_page_new(void* user_page_addr, bool writable)
   //install the page in user page table
   if(install_page(new_spte->user_addr, new_spte->phys_addr, writable) == false)
     {
-      palloc_free_page(new_frame);
+      frame_free(new_frame);
       return 0;
 
     }
+
+  new_spte->frame_locked = false;
+
   return 1;
   
 }
@@ -231,11 +246,13 @@ int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
   //install the page in user page table
   if(install_page(new_spte->user_addr, new_spte->phys_addr, writable) == false)
     {
-      palloc_free_page(new_frame);
+      frame_free(new_frame);
       return 0;
 
     }
 
+
+  new_spte->frame_locked = false;
   return 1;
   
 }
@@ -252,7 +269,7 @@ int load_page_swap(struct spte* spte_target)
       void* new_frame = frame_allocate(spte_target);
       if(new_frame == NULL)
 	{
-	  //printf("load_page_swap: frame allocate error\n");
+	  printf("load_page_swap: frame allocate error\n");
 	  return 0;
 	}
       swap_remove(new_frame, spte_target->swap_idx);
@@ -260,11 +277,12 @@ int load_page_swap(struct spte* spte_target)
     }
   else
     {
-      //printf("load_page_swap : present bit is true??\n");
+      printf("load_page_swap : present bit is true??\n");
       return 0;
     }
 
   //printf("load_page_swap: end\n");
+  spte_target->frame_locked = false;
   return 1;
 }
 
