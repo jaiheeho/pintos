@@ -304,7 +304,7 @@ int read (int fd, void *buffer, unsigned length)
   int * base_page = pg_round_down(buf_char);
   for (i = 0 ; i < page_nums ; i++)
   {
-    if ( invalid_addr ((void *)base_page + i * 1024))
+    if ( invalid_addr_buffer ((void *)base_page + i * 1024))
       exit(-1);
   }
   // if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
@@ -536,7 +536,7 @@ void get_args(void* esp, int *args, int argsnum)
 * Purporse : check wheter given address is valid or not                 *
 ************************************************************************/
  /*added function */
-bool invalid_addr(void* addr){
+bool invalid_addr_buffer(void* addr){
   //check whether it is user addr
   if (!is_user_vaddr(addr))
     return true;
@@ -550,31 +550,37 @@ bool invalid_addr(void* addr){
   struct thread* curr = thread_current();
   if(!pagedir_get_page (curr->pagedir, pg_round_down(addr)))
   {
-    printf("here1\n");
     struct hash_elem* e;
     struct spte spte_temp;
     spte_temp.user_addr = addr;
     e = hash_find(&curr->spt, &spte_temp.elem);
     if (e == NULL)
     {
-      printf("here2\n");
       if (!load_page(pg_round_down(addr)))
       {
-        printf("here3\n");
-        exit(-1);
+        return true;
       }
     }
-
-    // if 
-    // struct spte* spt_entry = NULL;
-    // spt_entry = hash_entry(e, struct spte, elem);
-
-    // if (spt_entry == NULL)
-    //   return true;
   }
   return false;
 }
+bool invalid_addr(void* addr){
+  //check whether it is user addr
+  if (!is_user_vaddr(addr))
+    return true;
+  //under CODE segment
+  if (addr <(void*)0x08048000)
+    return true;
+  if (addr == NULL)
+    return true;
+  //Not within pagedir
 
+  if(!pagedir_get_page (curr->pagedir, (addr))
+  {
+    return true;
+  }
+  return false;
+}
 static bool 
 put_user (uint8_t *udst, uint8_t byte)
 {
