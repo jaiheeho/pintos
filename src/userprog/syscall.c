@@ -334,7 +334,7 @@ int read (int fd, void *buffer, unsigned length)
     retval = file_read(file, buffer, length);
 
     sema_up(&filesys_global_lock);
-    thread_current()->filesys_holder=true;
+    thread_current()->filesys_holder=false;
   }
   return retval;
 }
@@ -350,6 +350,7 @@ int write(int fd, const void *buffer, unsigned length)
 {
   int retval;
   uint8_t* buf_char = (uint8_t *) buffer; 
+  int i;
   uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char) +1; 
   int * base_page = pg_round_down(buf_char);
   for (i = 0 ; i < page_nums ; i++)
@@ -357,7 +358,7 @@ int write(int fd, const void *buffer, unsigned length)
     if ( invalid_addr_buffer ((void *)(base_page + i * 1024)))
       exit(-1);
   }
-  
+
   if(fd <= 0)
     {
       //error
@@ -372,6 +373,7 @@ int write(int fd, const void *buffer, unsigned length)
   else
     {
       sema_down(&filesys_global_lock);
+      thread_current()->filesys_holder=true;
       struct file *file = get_struct_file(fd);
       //if fd is bad 
       if (!file)
@@ -381,6 +383,7 @@ int write(int fd, const void *buffer, unsigned length)
       }
       retval = file_write(file, buffer, length);
       sema_up(&filesys_global_lock);
+      thread_current()->filesys_holder=false;
     }
 
   return retval;
