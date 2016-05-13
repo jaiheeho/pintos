@@ -339,7 +339,7 @@ int read (int fd, void *buffer, unsigned length)
       sema_up(&filesys_global_lock);
       return -1;
     }
-      printf("here3\n");
+      printf("here4\n");
 
     thread_current()->filesys_holder=true;
     // for (i = 0; i< length ; i++)
@@ -353,6 +353,8 @@ int read (int fd, void *buffer, unsigned length)
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
   }
+        printf("here5\n");
+
   return retval;
 }
 
