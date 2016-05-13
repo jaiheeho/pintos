@@ -541,10 +541,14 @@ bool invalid_addr(void* addr){
     struct spte spte_temp;
     spte_temp.user_addr = addr;
     e = hash_find(&curr->spt, &spte_temp.elem);
-    struct spte* spt_entry = hash_entry(e, struct spte, elem);
-
-    if (spt_entry == NULL)
+    if (e == NULL)
       return true;
+    // if 
+    // struct spte* spt_entry = NULL;
+    // spt_entry = hash_entry(e, struct spte, elem);
+
+    // if (spt_entry == NULL)
+    //   return true;
   }
   return false;
 }
