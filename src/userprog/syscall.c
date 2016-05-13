@@ -548,13 +548,17 @@ bool invalid_addr(void* addr){
   struct thread* curr = thread_current();
   if(!pagedir_get_page (curr->pagedir, addr))
   {
+    printf("invalidater2\n");
 
     struct hash_elem* e;
     struct spte spte_temp;
     spte_temp.user_addr = addr;
     e = hash_find(&curr->spt, &spte_temp.elem);
     if (e == NULL)
-      return true;
+    {
+      load_page(addr);
+    }
+
     // if 
     // struct spte* spt_entry = NULL;
     // spt_entry = hash_entry(e, struct spte, elem);
