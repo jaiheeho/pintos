@@ -336,15 +336,14 @@ int read (int fd, void *buffer, unsigned length)
       return -1;
     }
     thread_current()->filesys_holder=true;
-    i = 
-    for (i = 0; i< length ; i++)
-    // {
-    //   if (!put_user (buf_char + i , 1))
-    //   {
-    //     sema_up(&filesys_global_lock);
-    //     exit(-1);
-    //   }
-    }      
+    // for (i = 0; i< length ; i++)
+    // // {
+    // //   if (!put_user (buf_char + i , 1))
+    // //   {
+    // //     sema_up(&filesys_global_lock);
+    // //     exit(-1);
+    // //   }
+    // }      
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
   }
