@@ -345,7 +345,7 @@ int read (int fd, void *buffer, unsigned length)
     // }      
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
-    //thread_current()->filesys_holder=false;
+    thread_current()->filesys_holder=false;
   }
 
   return retval;
@@ -557,8 +557,9 @@ bool invalid_addr_buffer(void* addr){
     e = hash_find(&curr->spt, &spte_temp.elem);
     if (e == NULL)
     {
-      if(!load_page(addr))
-        return true;
+      load_page(addr);
+      // if(!load_page(addr))
+      //   return true;
     }
   }
   return false;
