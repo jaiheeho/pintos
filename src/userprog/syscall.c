@@ -156,8 +156,6 @@ exit(int status)
   printf("%s: exit(%d)\n", thread_name(), status);
   struct thread *curr = thread_current();
   curr->exit_status=status;
-  if (curr->filesys_holder == true)
-    sema_up(&filesys_global_lock);
 
   thread_exit();
   NOT_REACHED ();
@@ -346,6 +344,7 @@ int read (int fd, void *buffer, unsigned length)
     // }      
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
+    thread_current()->filesys_holder=false;
   }
   return retval;
 }
