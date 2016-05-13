@@ -326,8 +326,8 @@ int read (int fd, void *buffer, unsigned length)
     if (!file)
     {
       sema_up(&filesys_global_lock);
-      return -1;
-    }     
+      return -1;  
+    }
 
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
