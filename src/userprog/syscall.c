@@ -338,7 +338,7 @@ int read (int fd, void *buffer, unsigned length)
         exit(-1);
       }
     }      
-        printf("here2");
+        printf("here4");
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
   }
