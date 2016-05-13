@@ -342,8 +342,10 @@ int read (int fd, void *buffer, unsigned length)
     // //     exit(-1);
     // //   }
     // }      
-    //printf("buff: %0x\n", (uint32_t)buffer);
+    printf("buff1: %0x\n", (uint32_t)buffer);
     retval = file_read(file, buffer, length);
+    printf("buff2: %0x\n", (uint32_t)buffer);
+
     sema_up(&filesys_global_lock);
     thread_current()->filesys_holder=true;
   }
