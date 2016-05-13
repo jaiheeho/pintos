@@ -168,6 +168,7 @@ page_fault (struct intr_frame *f)
   if (not_present || !write || !user)
   {
     sema_up(&filesys_global_lock);
+    exit(-1);
   }
 
 
