@@ -299,12 +299,8 @@ int read (int fd, void *buffer, unsigned length)
   uint32_t i;
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
-      printf("here1\n");
-
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1); 
-
-  printf("here2\n");
 
   if(fd == 0)
   {
@@ -331,7 +327,6 @@ int read (int fd, void *buffer, unsigned length)
       sema_up(&filesys_global_lock);
       return -1;
     }
-    printf("here4\n");
     thread_current()->filesys_holder=true;
     // for (i = 0; i< length ; i++)
     // {
@@ -544,12 +539,9 @@ bool invalid_addr(void* addr){
     return true;
   //Not within pagedir
 
-      printf("invalidater\n");
   struct thread* curr = thread_current();
   if(!pagedir_get_page (curr->pagedir, addr))
   {
-    printf("invalidater2\n");
-
     struct hash_elem* e;
     struct spte spte_temp;
     spte_temp.user_addr = addr;
