@@ -151,8 +151,8 @@ page_fault (struct intr_frame *f)
   /***** ADDED CODE *****/
   /*Deferencing NULL should be exited instead of killed (test : bad_read)*/
   /*Deferencing addr above 0xC0000000 should be exited instead of killed (test : bad_read)*/
-  //printf("faulted_addr: %0x\n", fault_addr);
-  //printf("Errorcode : %d %d %d\n", not_present, write, user);
+  printf("faulted_addr: %0x\n", fault_addr);
+  printf("Errorcode : %d %d %d\n", not_present, write, user);
 
   if (fault_addr == NULL || fault_addr >= (void*)0xC0000000
       || fault_addr < (void*)0x08048000 || (!not_present))
@@ -213,7 +213,6 @@ page_fault (struct intr_frame *f)
     }
       
   }
-
   //printf("page fault handler: end\n");
   
   if(0)
