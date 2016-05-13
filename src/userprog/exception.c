@@ -174,7 +174,8 @@ page_fault (struct intr_frame *f)
 	  if((((uint32_t)f->esp - (uint32_t)fault_addr) <= (uint32_t)STACK_STRIDE))
 	    {
 	      //printf("STACK_MAX = %d, STACK_STRID = %d\n", STACK_MAX, STACK_STRIDE);
-	      //printf("GROW : esp = %0x || fault_addr = %0x", f->esp, fault_addr);
+	      printf("GROW : esp = %0x || fault_addr = %0x", f->esp, fault_addr);
+
 	      stack_growth(fault_addr);
 	    }
 	  else
@@ -188,7 +189,7 @@ page_fault (struct intr_frame *f)
 	      else 
 		{  
 		  // swap in the swapped out stack page
-		  //printf("swapping in the stack page\n");
+		  printf("swapping in the stack page\n");
 		  if(!load_page(fault_addr))
 		    {
 		      PANIC("load page failed.");
@@ -209,7 +210,7 @@ page_fault (struct intr_frame *f)
       
     }
 
-  //printf("page fault handler: end\n");
+  printf("page fault handler: end\n");
   
   if(0)
     {
