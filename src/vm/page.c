@@ -127,16 +127,14 @@ int load_page(void* faulted_user_addr)
           }
   else  // page is in spte.(in swap space)
     {
+      printf("here\n");
       spte_target = hash_entry(e, struct spte, elem);
       if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
-	{
+      {
 	  //printf("AAAAAAAAAAAAA\n");
-	}
-
-
+      }
       //printf("load_page: spte_target: user_addr=%0x, present=%d, swap_idx=%d\n", 
       // spte_target->user_addr, spte_target->present, spte_target->swap_idx);
-      
       if(!load_page_swap(spte_target))
 	{
 	  return 0;
