@@ -168,7 +168,7 @@ page_fault (struct intr_frame *f)
 
 
   /***** END OF ADDED CODE *****/
-  if((not_present) /*&& (user)*/ &&(is_user_vaddr(fault_addr))
+  if((not_present) && (write) &&(is_user_vaddr(fault_addr))
      && (fault_addr > (void*)0x08048000))
   {
     // valid to load page
@@ -208,19 +208,26 @@ page_fault (struct intr_frame *f)
     }
     else
     {
-      printf("faulted_addr2: %0x\n", fault_addr);
 	    if(!load_page(fault_addr))
       {
-	       //PANIC("load page failed.");
-         if(!user)
-          {
-            sema_up(&filesys_global_lock);
-          }
-          exit(-1);
+	       PANIC("load page failed.");
       }
-      printf("faulted_addr3: %0x\n", fault_addr);
     }
       
+  }
+
+  if((not_present) && (!write) &&(is_user_vaddr(fault_addr)) && (fault_addr > (void*)0x08048000))
+  {
+    if(!load_page_for_read(fault_addr))
+    {
+      if(!user)
+      {
+        sema_up(&filesys_global_lock);
+      }
+      // it is stack. but stride aint right
+      //printf("page fault handler: stack stride problem. esp = %0x, fault_addr = %0x\n", f->esp, fault_addr);
+      exit(-1);
+    }
   }
   printf("page fault handler: end\n");
 

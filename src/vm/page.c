@@ -101,7 +101,6 @@ int load_page(void* faulted_user_addr)
 
   if(e == NULL)
     {
-      printf("here2\n");
       // no such page. check validity of addr and load new page?
       // create new spte
       struct spte* new_spte = (struct spte*)malloc(sizeof(struct spte));
@@ -128,7 +127,6 @@ int load_page(void* faulted_user_addr)
     }
   else  // page is in spte.(in swap space)
     {
-      printf("here\n");
       spte_target = hash_entry(e, struct spte, elem);
       if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
       {
@@ -158,6 +156,38 @@ int load_page(void* faulted_user_addr)
     }
   return 1;
 }
+int load_page_for_read(void* faulted_user_addr)
+{
+  //get the spte for this addr
+  struct hash *spt = &thread_current()->spt;
+  void* faulted_user_page = pg_round_down(faulted_user_addr);
+
+  // find the spte with infos above(traverse spt)
+  struct spte spte_temp;
+  struct hash_elem *e;
+  struct spte* spte_target;
+
+  spte_temp.user_addr = faulted_user_page;
+  e = hash_find(spt, &spte_temp.elem);
+  if(e == NULL)
+    return 0;
+  else  // page is in spte.(in swap space)
+  {
+    spte_target = hash_entry(e, struct spte, elem);
+    if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
+    {
+  //printf("AAAAAAAAAAAAA\n");
+    }
+    //printf("load_page: spte_target: user_addr=%0x, present=%d, swap_idx=%d\n", 
+    // spte_target->user_addr, spte_target->present, spte_target->swap_idx);
+    if(!load_page_swap(spte_target))
+    {
+      return 0;
+    }
+  }
+  return 1;
+}
+
 
 int load_page_new(void* user_page_addr, bool writable)
 {
@@ -197,8 +227,6 @@ int load_page_new(void* user_page_addr, bool writable)
   return 1;
   
 }
-
-
 
 int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
 		   uint32_t page_read_bytes, uint32_t page_zero_bytes,
