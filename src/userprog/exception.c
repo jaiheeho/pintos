@@ -165,6 +165,11 @@ page_fault (struct intr_frame *f)
     exit(-1);
   }
 
+  if (not_present || !write || !user)
+  {
+    sema_up(&filesys_global_lock);
+  }
+
 
 
   /***** END OF ADDED CODE *****/
