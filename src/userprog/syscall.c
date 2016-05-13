@@ -385,7 +385,9 @@ int write(int fd, const void *buffer, unsigned length)
         sema_up(&filesys_global_lock);
         return -1;
       }
+      printf("there\n");
       retval = file_write(file, buffer, length);
+      printf("there2\n");
       sema_up(&filesys_global_lock);
     }
 
