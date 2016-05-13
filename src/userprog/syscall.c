@@ -298,15 +298,13 @@ int read (int fd, void *buffer, unsigned length)
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
   uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char) +1; 
-  //printf("bufferaddr : %0x, nums : %u\n", buffer, page_nums);
   int * base_page = pg_round_down(buf_char);
   for (i = 0 ; i < page_nums ; i++)
   {
     if ( invalid_addr_buffer ((void *)(base_page + i * 1024)))
       exit(-1);
   }
-  // if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
-  //   exit(-1); 
+
 
   if(fd == 0)
   {
@@ -314,8 +312,6 @@ int read (int fd, void *buffer, unsigned length)
     for(i = 0; i<length; i++)
     {
       *(buf_char + i) = input_getc();
-      // if(!put_user (buf_char + i , input_getc()))
-      //   exit(-1);
     } 
     retval = length;
   }
@@ -354,9 +350,14 @@ int write(int fd, const void *buffer, unsigned length)
 {
   int retval;
   uint8_t* buf_char = (uint8_t *) buffer; 
-  if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
-    exit(-1);
-
+  uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char) +1; 
+  int * base_page = pg_round_down(buf_char);
+  for (i = 0 ; i < page_nums ; i++)
+  {
+    if ( invalid_addr_buffer ((void *)(base_page + i * 1024)))
+      exit(-1);
+  }
+  
   if(fd <= 0)
     {
       //error
@@ -572,12 +573,12 @@ bool invalid_addr(void* addr){
     return true;
   //Not within pagedir
 
-  struct thread* curr = thread_current();
-  if(!pagedir_get_page (curr->pagedir, addr))
-  {
-    return true;
-  }
-  return false;
+  // struct thread* curr = thread_current();
+  // if(!pagedir_get_page (curr->pagedir, addr))
+  // {
+  //   return true;
+  // }
+  // return false;
 }
 static bool 
 put_user (uint8_t *udst, uint8_t byte)
