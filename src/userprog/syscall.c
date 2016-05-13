@@ -556,10 +556,13 @@ bool invalid_addr_buffer(void* addr){
     e = hash_find(&curr->spt, &spte_temp.elem);
     if (e == NULL)
     {
+      printf("valid buffer\n");
       if (!load_page(addr))
       {
         return true;
       }
+      printf("valid buffer END\n");
+
     }
   }
   return false;
