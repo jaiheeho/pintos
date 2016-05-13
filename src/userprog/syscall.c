@@ -549,25 +549,25 @@ bool invalid_addr_buffer(void* addr){
     return true;
   //Not within pagedir
 
-  struct thread* curr = thread_current();
-  if(!pagedir_get_page (curr->pagedir, addr))
-  {
-    struct hash_elem* e;
-    struct spte spte_temp;
-    spte_temp.user_addr = addr;
-    e = hash_find(&curr->spt, &spte_temp.elem);
-    printf("valid buffer\n");
-    if (e == NULL)
-    {
-      printf("valid buffer2\n");
-      if (!load_page(addr))
-      {
-        return true;
-      }
-      printf("valid buffer3 END\n");
-    }
-      printf("valid buffer4 END\n");
-  }
+  // struct thread* curr = thread_current();
+  // if(!pagedir_get_page (curr->pagedir, addr))
+  // {
+  //   struct hash_elem* e;
+  //   struct spte spte_temp;
+  //   spte_temp.user_addr = addr;
+  //   e = hash_find(&curr->spt, &spte_temp.elem);
+  //   printf("valid buffer\n");
+  //   if (e == NULL)
+  //   {
+  //     printf("valid buffer2\n");
+  //     if (!load_page(addr))
+  //     {
+  //       return true;
+  //     }
+  //     printf("valid buffer3 END\n");
+  //   }
+  //     printf("valid buffer4 END\n");
+  // }
   return false;
 }
 bool invalid_addr(void* addr){
