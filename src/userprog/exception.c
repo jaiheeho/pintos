@@ -151,36 +151,66 @@ page_fault (struct intr_frame *f)
   /***** ADDED CODE *****/
   /*Deferencing NULL should be exited instead of killed (test : bad_read)*/
   /*Deferencing addr above 0xC0000000 should be exited instead of killed (test : bad_read)*/
-  printf("faulted_addr: %0x\n", fault_addr);
+  //printf("faulted_addr: %0x\n", fault_addr);
+  //printf("Errorcode : %d %d %d\n", not_present, write, user);
 
   if (fault_addr == NULL || fault_addr >= (void*)0xC0000000
       || fault_addr < (void*)0x08048000 || (!not_present))
-    exit(-1);
-  /***** END OF ADDED CODE *****/
+    {
+      //printf("fault_addr is naughty : not_present=%d\n", not_present);
+      exit(-1);
+    }
 
+
+  /***** END OF ADDED CODE *****/
   if((not_present) && (user) &&(is_user_vaddr(fault_addr))
      && (fault_addr > (void*)0x08048000))
     {
       // valid to load page
 
       // stack or heap(or other segment)?
-      if(((PHYS_BASE - fault_addr) < STACK_MAX))
-  {
-    if(((f->esp - fault_addr) <= STACK_STRIDE))
-      {
-	//printf("GROW : esp = %0x || fault_addr = %0x", f->esp, fault_addr);
-	stack_growth(fault_addr);
-      }
-    else exit(-1); // it is stack segment, but stride aint right
-  }
+      if((((uint32_t)PHYS_BASE - (uint32_t)fault_addr) < (uint32_t)STACK_MAX))
+	{
+	  if((((uint32_t)f->esp - (uint32_t)fault_addr) <= (uint32_t)STACK_STRIDE))
+	    {
+	      //printf("STACK_MAX = %d, STACK_STRID = %d\n", STACK_MAX, STACK_STRIDE);
+	      //printf("GROW : esp = %0x || fault_addr = %0x", f->esp, fault_addr);
+	      stack_growth(fault_addr);
+	    }
+	  else
+	    {
+	      if((uint32_t)f->esp > (uint32_t)fault_addr)
+		{
+		  // it is stack. but stride aint right
+		  //printf("page fault handler: stack stride problem. esp = %0x, fault_addr = %0x\n", f->esp, fault_addr);
+		  exit(-1);
+		}
+	      else 
+		{  
+		  // swap in the swapped out stack page
+		  //printf("swapping in the stack page\n");
+		  if(!load_page(fault_addr))
+		    {
+		      PANIC("load page failed.");
+		    } 
+		}
+	      
+	    }
+	}
       else
-  {
-    load_page(fault_addr);
-  }
+	{
+	  //printf("faulted_addr2: %0x\n", fault_addr);
 
+	  if(!load_page(fault_addr))
+	    {
+	      PANIC("load page failed.");
+	    }
+	}
+      
     }
 
-
+  //printf("page fault handler: end\n");
+  
   if(0)
     {
       

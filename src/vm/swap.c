@@ -35,6 +35,7 @@ void swap_table_init()
 * Purpose : initialize swap-table										*
 ************************************************************************/
 int swap_alloc(char *addr){
+
 	sema_down(&swap_lock);
 	size_t idx;
 	int i;
@@ -50,7 +51,7 @@ int swap_alloc(char *addr){
 	for (i = 0; i < SECTORSINPAGE; i++)
 	{
 		sector_num = idx * SECTORSINPAGE + i;
-		disk_write (swap_disk, sector_num, addr + DISK_SECTOR_SIZE);
+		disk_write (swap_disk, sector_num, addr + i * DISK_SECTOR_SIZE);
 	}
 	sema_up(&swap_lock);
 	return idx;
@@ -62,6 +63,7 @@ int swap_alloc(char *addr){
 * Purpose : reconstruct data in idx to frame with addr					*
 ************************************************************************/
 void swap_remove(char *addr, size_t idx){
+  //printf("swap_remove: %0x\n", addr);
 	sema_down(&swap_lock);
 	int i;
 	int sector_num;
@@ -76,7 +78,7 @@ void swap_remove(char *addr, size_t idx){
 	for (i = 0; i < SECTORSINPAGE; i++)
 	{
 		sector_num = idx * SECTORSINPAGE + i;
-		disk_read (swap_disk, sector_num, addr + DISK_SECTOR_SIZE);
+		disk_read (swap_disk, sector_num, addr + i * DISK_SECTOR_SIZE);
 	}
 	sema_up(&swap_lock);
 }
