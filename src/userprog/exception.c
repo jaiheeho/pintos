@@ -161,9 +161,14 @@ page_fault (struct intr_frame *f)
     exit(-1);
   }
 
+  if ( not_present && !user  && is_user_vaddr(fault_addr) && (fault_addr > (void*)0x08048000))
+  {
+
+  }
+
 
   /***** END OF ADDED CODE *****/
-  if((not_present) && (user) &&(is_user_vaddr(fault_addr))
+  if((not_present) /*&& (user)*/ &&(is_user_vaddr(fault_addr))
      && (fault_addr > (void*)0x08048000))
   {
     // valid to load page
