@@ -270,6 +270,28 @@ process_exit (void)
     free(f);  
   }
   sema_up(&filesys_global_lock);
+
+
+  /***** ADDED CODE *****/
+  //Finally, wake up parent who waiting for this thread*/
+  if (curr->is_wait_called){
+    sema_up(&curr->sema_wait);
+  }
+  else {
+    //If, parent didn't call wait() for this process yet, wait for parent until parent calls exit() itself or calls wait()
+    if (curr->parent_proc != NULL){
+      sema_down(&curr->sema_wait);
+      sema_down(&curr->sema_wait);
+    }
+  }
+  //Disconncect with its parent (i.e remove itself from children list of parent)
+  if (curr->parent_proc != NULL)
+    list_remove (&curr->child_elem);
+
+
+  sup_page_table_free(&curr->spt);
+
+
   /***** END OF ADDED CODE *****/
 
   /* Destroy the current process's page directory and switch back
@@ -289,22 +311,6 @@ process_exit (void)
       pagedir_destroy (pd);
     }
 
-  /***** ADDED CODE *****/
-  //Finally, wake up parent who waiting for this thread*/
-  if (curr->is_wait_called){
-    sema_up(&curr->sema_wait);
-  }
-  else {
-    //If, parent didn't call wait() for this process yet, wait for parent until parent calls exit() itself or calls wait()
-    if (curr->parent_proc != NULL){
-      sema_down(&curr->sema_wait);
-      sema_down(&curr->sema_wait);
-    }
-  }
-  //Disconncect with its parent (i.e remove itself from children list of parent)
-  if (curr->parent_proc != NULL)
-    list_remove (&curr->child_elem);
-  /***** END OF ADDED CODE *****/
 }
 
 /* Sets up the CPU for running user code in the current
@@ -411,7 +417,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
   char *token_ptr;
 
   token_ptr = strtok_r((char*)file_name, " ", &strtok_r_ptr);
- 
+  //printf("load: init\n");
   /*END OF ADDED CODE*/
 
   /* Allocate and activate page directory. */
@@ -601,7 +607,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       if(!load_page_file(upage, file, ofs, page_read_bytes,
 			 page_zero_bytes, writable))
 	{
-	  //printf("load_segment: load_page_file failed\n");
+	  printf("load_segment: load_page_file failed\n");
 	  return false;
 	}
       

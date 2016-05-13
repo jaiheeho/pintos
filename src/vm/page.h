@@ -4,6 +4,7 @@
 #include <hash.h>
 #include "filesys/file.h"
 #include "threads/vaddr.h"
+#include "threads/thread.h"
 
 #define STACK_MAX 2000 * PGSIZE
 #define STACK_STRIDE 32
