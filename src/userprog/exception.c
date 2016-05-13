@@ -211,7 +211,12 @@ page_fault (struct intr_frame *f)
       printf("faulted_addr2: %0x\n", fault_addr);
 	    if(!load_page(fault_addr))
       {
-	       PANIC("load page failed.");
+	       //PANIC("load page failed.");
+         if(!user)
+          {
+            sema_up(&filesys_global_lock);
+          }
+          exit(-1);
        }
     }
       
