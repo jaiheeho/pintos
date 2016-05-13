@@ -556,7 +556,8 @@ bool invalid_addr_buffer(void* addr){
     e = hash_find(&curr->spt, &spte_temp.elem);
     if (e == NULL)
     {
-      load_page(addr);
+      if(!load_page(addr))
+        return true;
     }
   }
   return false;
