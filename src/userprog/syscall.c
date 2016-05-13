@@ -326,7 +326,7 @@ int read (int fd, void *buffer, unsigned length)
       sema_up(&filesys_global_lock);
       return -1;
     }
-    curr->filesys_holder=true;
+    thread_current()->filesys_holder=true;
     // for (i = 0; i< length ; i++)
     // {
     //   if (!put_user (buf_char + i , 1))
