@@ -51,7 +51,7 @@ int swap_alloc(char *addr){
 	for (i = 0; i < SECTORSINPAGE; i++)
 	{
 		sector_num = idx * SECTORSINPAGE + i;
-		disk_write (swap_disk, sector_num, addr + DISK_SECTOR_SIZE);
+		disk_write (swap_disk, sector_num, addr + i * DISK_SECTOR_SIZE);
 	}
 	sema_up(&swap_lock);
 	return idx;
@@ -78,7 +78,7 @@ void swap_remove(char *addr, size_t idx){
 	for (i = 0; i < SECTORSINPAGE; i++)
 	{
 		sector_num = idx * SECTORSINPAGE + i;
-		disk_read (swap_disk, sector_num, addr + DISK_SECTOR_SIZE);
+		disk_read (swap_disk, sector_num, addr + i * DISK_SECTOR_SIZE);
 	}
 	sema_up(&swap_lock);
 }

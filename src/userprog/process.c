@@ -138,7 +138,7 @@ start_process (void *f_name)
 
   palloc_free_page (file_name);
 
-  printf("READY TO LAUNCH PROG\n");
+  //printf("READY TO LAUNCH PROG\n");
   /***** END OF ADDED CODE *****/
 
   /* Start the user process by simulating a return from an
@@ -508,7 +508,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
   /* Start address. */
   *eip = (void (*) (void)) ehdr.e_entry;
   
-  printf("*eip: %0x, **eip:%0x \n", *eip, *(*eip));
+  //printf("*eip: %0x, **eip:%0x \n", *eip, *(*eip));
   success = true;
 
  done:
@@ -603,7 +603,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       if(!load_page_file(upage, file, ofs, page_read_bytes,
 			 page_zero_bytes, writable))
 	{
-	  printf("load_segment: load_page_file failed\n");
+	  //printf("load_segment: load_page_file failed\n");
 	  return false;
 	}
       

@@ -55,7 +55,7 @@ void frame_table_free()
 ************************************************************************/
 void* frame_allocate(struct spte* supplement_page)
 {
-  printf("frame_allocate: \n");
+  //printf("frame_allocate: \n");
   sema_down(&frame_table_lock);;
   void * new_frame=NULL;
   while(1)
@@ -100,7 +100,7 @@ void* frame_allocate(struct spte* supplement_page)
     }
   }
 
-  printf("frame_allocate: complete.\n");
+  //printf("frame_allocate: complete.\n");
   sema_up(&frame_table_lock);
   return new_frame;
 }
@@ -118,7 +118,7 @@ void frame_free(struct fte* fte_to_free)
   //detach fte from frame table list
   list_remove(&fte_to_free->elem);
   //detach frame from spte (this is for ensurance)
-  printf("AAA: %0x\n", ((struct spte *)fte_to_free->supplement_page)->user_addr);
+  //printf("AAA: %0x\n", ((struct spte *)fte_to_free->supplement_page)->user_addr);
   pagedir_clear_page(thread_current()->pagedir, ((struct spte *)fte_to_free->supplement_page)->user_addr);
   // free malloc'd memory
   free(fte_to_free);
@@ -138,7 +138,7 @@ void frame_evict()
   struct fte *frame_entry;
   struct spte *supplement_page;
 
-  printf("frame_evict:\n");
+  //printf("frame_evict:\n");
 
 
   
@@ -156,10 +156,12 @@ void frame_evict()
       else
 	{
 	  // not recently used. commence eviction
+	  /*
 	  if (list_next(iter) == list_end(&frame_table))
 	    clock_head = list_begin(&frame_table);
 	  else
 	    clock_head = list_next(clock_head);
+	  */
 	  break;
 	}
 
@@ -178,7 +180,7 @@ void frame_evict()
   supplement_page->present = false;
   frame_free(frame_entry);
 
-  printf("frame_evict: complete\n");
+  //printf("frame_evict: complete\n");
 
 }
 
