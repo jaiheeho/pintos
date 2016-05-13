@@ -344,7 +344,7 @@ int read (int fd, void *buffer, unsigned length)
     // }      
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
-    thread_current()->filesys_holder=false;
+    
   }
   return retval;
 }
