@@ -248,7 +248,6 @@ open(const char *file)
   //check wheter open was successful
   if (filestruct == NULL)
   {
-    printf("here?\n");
     sema_up(&filesys_global_lock);
     return -1;
   }
@@ -299,8 +298,6 @@ int read (int fd, void *buffer, unsigned length)
   int retval;
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1); 
-
-  printf("here1");
   if(fd == 0)
   {
     //std out 
@@ -326,19 +323,15 @@ int read (int fd, void *buffer, unsigned length)
       sema_up(&filesys_global_lock);
       return -1;
     }
-    for (i = 0; i< length ; i++)
-    {
-        printf("here2");
-
-      if (!put_user (buf_char + i , 1))
-      {
-          printf("here3");
-
-        sema_up(&filesys_global_lock);
-        exit(-1);
-      }
-    }      
-        printf("here4");
+    // for (i = 0; i< length ; i++)
+    // {
+    //   if (!put_user (buf_char + i , 1))
+    //   {
+    //     sema_up(&filesys_global_lock);
+    //     exit(-1);
+    //   }
+    // }      
+    printf("here4");
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
   }
