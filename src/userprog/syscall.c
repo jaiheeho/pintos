@@ -550,14 +550,20 @@ bool invalid_addr(void* addr){
   struct thread* curr = thread_current();
   if(!pagedir_get_page (curr->pagedir, pg_round_down(addr)))
   {
+    printf("here1\n");
     struct hash_elem* e;
     struct spte spte_temp;
     spte_temp.user_addr = addr;
     e = hash_find(&curr->spt, &spte_temp.elem);
     if (e == NULL)
     {
+      printf("here2\n");
       if (!load_page(pg_round_down(addr)))
+      {
         exit(-1);
+              printf("here3\n");
+
+      }
     }
 
     // if 
