@@ -299,6 +299,8 @@ int read (int fd, void *buffer, unsigned length)
   int retval;
   if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
     exit(-1); 
+
+  printf("here1");
   if(fd == 0)
   {
     //std out 
@@ -326,12 +328,17 @@ int read (int fd, void *buffer, unsigned length)
     }
     for (i = 0; i< length ; i++)
     {
+        printf("here2");
+
       if (!put_user (buf_char + i , 1))
       {
+                printf("here3");
+
         sema_up(&filesys_global_lock);
         exit(-1);
       }
     }      
+        printf("here2");
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
   }
