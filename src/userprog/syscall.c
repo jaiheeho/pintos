@@ -576,11 +576,11 @@ bool invalid_addr(void* addr){
     return true;
   //Not within pagedir
 
-  // struct thread* curr = thread_current();
-  // if(!pagedir_get_page (curr->pagedir, addr))
-  // {
-  //   return true;
-  // }
+  struct thread* curr = thread_current();
+  if(!pagedir_get_page (curr->pagedir, addr))
+  {
+    return true;
+  }
   return false;
 }
 static bool 
