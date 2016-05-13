@@ -111,10 +111,13 @@ int load_page(void* faulted_user_addr)
       
       //install the page in user page table
       install_page(new_spte->user_addr, new_spte->phys_addr, writable);
+      printf("A\n");
       
     }
   else  // page is in spte.(in swap space)
     {
+            printf("B\n");
+
       spte_target = hash_entry(e, struct spte, elem);
       if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
 	{
