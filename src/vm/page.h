@@ -26,6 +26,7 @@ struct spte {
   bool dirty;
   int swap_idx;
   bool writable;
+  bool frame_locked;
   struct hash_elem elem;
 };
 
@@ -34,6 +35,7 @@ struct fte {
   void* supplement_page;
   struct thread* thread;
   int use;
+  bool frame_locked;
   struct list_elem elem;
 };
 
