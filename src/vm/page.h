@@ -17,19 +17,21 @@ enum spte_status{
 
 struct fte;
 
+/* Supplementary page table entry */
 struct spte {
-  enum spte_status status;
+  enum spte_status status;  //deprecated
   void* user_addr;
   void* phys_addr;
   void* fte;
   bool present;
   bool dirty;
-  int swap_idx;
+  int swap_idx; // swap slot number
   bool writable;
   bool frame_locked;
   struct hash_elem elem;
 };
 
+/* frame table entry */
 struct fte {
   void* frame_addr;
   void* supplement_page;

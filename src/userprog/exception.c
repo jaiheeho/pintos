@@ -147,101 +147,101 @@ page_fault (struct intr_frame *f)
   not_present = (f->error_code & PF_P) == 0;
   write = (f->error_code & PF_W) != 0;
   user = (f->error_code & PF_U) != 0;
-
+  
   /***** ADDED CODE *****/
   /*Deferencing NULL should be exited instead of killed (test : bad_read)*/
   /*Deferencing addr above 0xC0000000 should be exited instead of killed (test : bad_read)*/
   //printf("faulted_addr: %0x\n", fault_addr);
   //printf("Errorcode : %d %d %d\n", not_present, write, user);
   // printf("tid: %d\n", thread_current()->tid);
-
+  
   if (fault_addr == NULL || fault_addr >= (void*)0xC0000000
       || fault_addr < (void*)0x08048000 || (!not_present))
-  {
-    if(!user)
     {
-      sema_up(&filesys_global_lock);
-    }
+      if(!user)
+	{
+	  sema_up(&filesys_global_lock);
+	}
       //printf("fault_addr is naughty : not_present=%d\n", not_present);
-    exit(-1);
-  }
-
-
+      exit(-1);
+    }
+  
+  
   /***** END OF ADDED CODE *****/
   if((not_present) && (write) &&(is_user_vaddr(fault_addr))
      && (fault_addr > (void*)0x08048000))
-  {
-    // valid to load page
-    // stack or heap(or other segment)?
-    if((((uint32_t)PHYS_BASE - (uint32_t)fault_addr) < (uint32_t)STACK_MAX))
     {
-      if((((uint32_t)f->esp - (uint32_t)fault_addr) <= (uint32_t)STACK_STRIDE))
+      // valid to load page
+      // stack or heap(or other segment)?
+      if((((uint32_t)PHYS_BASE - (uint32_t)fault_addr) < (uint32_t)STACK_MAX))
+	{
+	  if((((uint32_t)f->esp - (uint32_t)fault_addr) <= (uint32_t)STACK_STRIDE))
 	    {
 	      //printf("STACK_MAX = %d, STACK_STRID = %d\n", STACK_MAX, STACK_STRIDE);
 	      //printf("GROW : esp = %0x || fault_addr = %0x", f->esp, fault_addr);
-
+	      
 	      stack_growth(fault_addr);
 	    }
-      else
+	  else
 	    {
 	      if((uint32_t)f->esp > (uint32_t)fault_addr)
+		{
+		  
+		  if(!user)
 		    {
-
-         if(!user)
-          {
-            sema_up(&filesys_global_lock);
-          }
+		      sema_up(&filesys_global_lock);
+		    }
     		  // it is stack. but stride aint right
     		  //printf("page fault handler: stack stride problem. esp = %0x, fault_addr = %0x\n", f->esp, fault_addr);
-		      exit(-1);
-		    }
-        else 
-		    {  
-          //printf("load page in page_fault");
-		      // swap in the swapped out stack page
-          if(!load_page(fault_addr))
-		      {
-		        PANIC("load page failed.");
-		      } 
-		    }
-      }
-    }
-    else
-    {
-	    if(!load_page(fault_addr))
-      {
-	       PANIC("load page failed.");
-      }
-    }
+		  exit(-1);
+		}
+	      else 
+		{  
+		  //printf("load page in page_fault");
+		  // swap in the swapped out stack page
+		  if(!load_page(fault_addr))
+		    {
+		      PANIC("load page failed.");
+		    } 
+		}
+	    }
+	}
+      else
+	{
+	  if(!load_page(fault_addr))
+	    {
+	      PANIC("load page failed.");
+	    }
+	}
       
-  }
-
-  if((not_present) && (!write) &&(is_user_vaddr(fault_addr)) && (fault_addr > (void*)0x08048000))
-  {
-    if(!load_page_for_read(fault_addr))
-    {
-      if(!user)
-      {
-        sema_up(&filesys_global_lock);
-      }
-      // it is stack. but stride aint right
-      //printf("page fault handler: stack stride problem. esp = %0x, fault_addr = %0x\n", f->esp, fault_addr);
-      exit(-1);
     }
-  }
+  
+  if((not_present) && (!write) &&(is_user_vaddr(fault_addr)) && (fault_addr > (void*)0x08048000))
+    {
+      if(!load_page_for_read(fault_addr))
+	{
+	  if(!user)
+	    {
+	      sema_up(&filesys_global_lock);
+	    }
+	  // it is stack. but stride aint right
+	  //printf("page fault handler: stack stride problem. esp = %0x, fault_addr = %0x\n", f->esp, fault_addr);
+	  exit(-1);
+	}
+    }
   //printf("page fault handler: end\n");
   
   if(0)
     {
       
       /* To implement virtual memory, delete the rest of the function
-   body, and replace it with code that brings in the page to
-   which fault_addr refers. */
+	 body, and replace it with code that brings in the page to
+	 which fault_addr refers. */
       printf ("Page fault at %p: %s error %s page in %s context.\n",
-        fault_addr,
-        not_present ? "not present" : "rights violation",
-        write ? "writing" : "reading",
-        user ? "user" : "kernel");
+	      fault_addr,
+	      not_present ? "not present" : "rights violation",
+	      write ? "writing" : "reading",
+	      user ? "user" : "kernel");
       kill (f);
     }
 }
