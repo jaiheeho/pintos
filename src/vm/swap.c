@@ -83,9 +83,42 @@ void swap_remove(char *addr, size_t idx){
 	sema_up(&swap_lock);
 }
 
+
+
+/************************************************************************
+* FUNCTION : swap_free_slot                                           	*
+* Input : swap index                                                    *
+* Purpose : free swap slot idx          				*
+************************************************************************/
+void swap_free_slot(size_t idx){
+
+	sema_down(&swap_lock);
+	int i;
+	int sector_num;
+
+	//check whether swap index is correct
+	if (bitmap_test(swap_bitmap, idx) == false)
+		PANIC ("EMPTY SWAP SPACE");
+	//fip the swop talbe from True to False so that make swap-table slot empty
+	bitmap_flip(swap_bitmap, idx);
+
+	sema_up(&swap_lock);
+}
+
+
+
+
+
+
+
+
+
+
+
+
 /************************************************************************
 * FUNCTION : swap_table_free                                        	*
-* Purpose : free entire bitmap of swap table							*
+* Purpose : free entire bitmap of swap table		      		*
 ************************************************************************/
 void swap_table_free(){
 	//destroty swap_table (bitmap destroy)
