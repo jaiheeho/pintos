@@ -168,8 +168,7 @@ page_fault (struct intr_frame *f)
   
   
   /***** END OF ADDED CODE *****/
-  if((not_present) && (write) &&(is_user_vaddr(fault_addr))
-     && (fault_addr > (void*)0x08048000))
+  if((not_present) && (write))
     {
       // valid to load page
       // stack or heap(or other segment)?
@@ -216,7 +215,7 @@ page_fault (struct intr_frame *f)
       
     }
   
-  if((not_present) && (!write) &&(is_user_vaddr(fault_addr)) && (fault_addr > (void*)0x08048000))
+  if((not_present) && (!write))
     {
       if(!load_page_for_read(fault_addr))
 	{
