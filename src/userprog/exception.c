@@ -193,17 +193,13 @@ page_fault (struct intr_frame *f)
     if(!load_page_for_read(fault_addr))
       exit(-1);
   }
-  /* not_present | write | user = 110*/
-  // if ( not_present && write && !user)
-  // {
 
-  
-  // }
   /* not_present | write | user = 111*/
   if ( not_present && !write /*&& user*/)
   {
     if (!load_page(fault_addr))
     {
+      printf("here\n");
       if ((uint32_t)f->esp - (uint32_t)fault_addr <= (uint32_t)STACK_STRIDE)
       {
         stack_growth(fault_addr);
