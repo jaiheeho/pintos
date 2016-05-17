@@ -151,8 +151,8 @@ page_fault (struct intr_frame *f)
   /***** ADDED CODE *****/
   /*Deferencing NULL should be exited instead of killed (test : bad_read)*/
   /*Deferencing addr above 0xC0000000 should be exited instead of killed (test : bad_read)*/
-  //printf("faulted_addr: %0x\n", fault_addr);
-  //printf("Errorcode : %d %d %d\n", not_present, write, user);
+  printf("faulted_addr: %0x\n", fault_addr);
+  printf("Errorcode : %d %d %d\n", not_present, write, user);
   // printf("tid: %d\n", thread_current()->tid);
   
   /* this case is for invalid fauled_addr exit process and release the lock if thread has lock
@@ -197,6 +197,7 @@ page_fault (struct intr_frame *f)
   /* not_present | write | user = 111*/
   if ( not_present && !write /*&& user*/)
   {
+    printf("here\n");
     if (!load_page(fault_addr))
     {
       printf("here\n");
