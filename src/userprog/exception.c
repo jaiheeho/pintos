@@ -173,6 +173,8 @@ page_fault (struct intr_frame *f)
   }
 
   /* check whether invalid by exceeding STACK_MAX*/
+  /* if read , try to load page and if it fails exit
+  /* if write, load_page so that we can write to it*/
   if( (uint32_t)PHYS_BASE - (uint32_t)fault_addr >= (uint32_t)STACK_MAX )
   {
     if (write)
