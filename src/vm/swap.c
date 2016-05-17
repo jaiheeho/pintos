@@ -21,6 +21,8 @@ void swap_table_init()
 	sema_init(&swap_lock,1);
 	/* get swap disk */
 	swap_disk = disk_get(1,1);
+	if(!swap_disk)
+		return;
 	/* get bitmap for swap slots*/
 	swap_size = disk_size(swap_disk)*DISK_SECTOR_SIZE;
 	swap_bitmap = bitmap_create(swap_size);

@@ -57,7 +57,6 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
       // 1) free swap slot
       //swap_free_slot(target->swap_idx);
 
-
     }
   // 3) free spte
   free(target);
@@ -131,7 +130,7 @@ int load_page(void* faulted_user_addr)
       spte_target = hash_entry(e, struct spte, elem);
       if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
       {
-	  //printf("AAAAAAAAAAAAA\n");
+	       //printf("AAAAAAAAAAAAA\n");
       }
       //printf("load_page: spte_target: user_addr=%0x, present=%d, swap_idx=%d\n", 
       // spte_target->user_addr, spte_target->present, spte_target->swap_idx);
@@ -304,7 +303,7 @@ int load_page_swap(struct spte* spte_target)
     }
   else
     {
-      printf("load_page_swap : present bit is true??\n");
+      //printf("load_page_swap : present bit is true??\n");
       return 0;
     }
 
