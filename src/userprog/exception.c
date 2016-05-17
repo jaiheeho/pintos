@@ -175,9 +175,12 @@ page_fault (struct intr_frame *f)
   /* check whether invalid by exceeding STACK_MAX*/
   if( (uint32_t)PHYS_BASE - (uint32_t)fault_addr >= (uint32_t)STACK_MAX )
   {
+    printf("here")
     if(!load_page(fault_addr))
-     PANIC("Exceeded STACK_MAX");
+      PANIC("Exceeded STACK_MAX");
+    return;
   }
+
 
   /* not_present | read | kernel = 110*/
   if ( not_present && !write && !user)
