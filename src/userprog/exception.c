@@ -202,7 +202,7 @@ page_fault (struct intr_frame *f)
     if (!load_page(fault_addr))
     {
       if ((uint32_t)f->esp - (uint32_t)fault_addr <= (uint32_t)STACK_STRIDE
-        && (uint32_t)f->esp <= (uint32_t)fault_addr)
+        && (uint32_t)f->esp < (uint32_t)fault_addr)
       {
         stack_growth(fault_addr);
       }
