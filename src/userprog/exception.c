@@ -199,15 +199,22 @@ page_fault (struct intr_frame *f)
   /* not_present | write | user = 111*/
   if ( not_present && write /*&& user*/)
   {
+      printf("0\n");
     if (!load_page(fault_addr))
     {
+      printf("1\n");
       if ((uint32_t)f->esp - (uint32_t)fault_addr <= (uint32_t)STACK_STRIDE
         && (uint32_t)f->esp < (uint32_t)fault_addr)
       {
+      printf("2\n");
+
         stack_growth(fault_addr);
       }
       else
       {
+                
+      printf("3\n");
+
         if(!user)
         {
             sema_up(&filesys_global_lock);
@@ -217,6 +224,8 @@ page_fault (struct intr_frame *f)
         exit(-1);
       }
     }
+          printf("4\n");
+
   }
 
 //   /***** END OF ADDED CODE *****/
