@@ -175,11 +175,18 @@ page_fault (struct intr_frame *f)
   /* check whether invalid by exceeding STACK_MAX*/
   if( (uint32_t)PHYS_BASE - (uint32_t)fault_addr >= (uint32_t)STACK_MAX )
   {
-    if (!load_page(fault_addr))
-      PANIC("Exceeded STACK_MAX");
+    if (write)
+      if (!load_page(fault_addr))
+        PANIC("Exceeded STACK_MAX");
+    else
+      if(!load_page_for_read(fault_addr))
+      {
+        if (!user)
+          sema_up(&filesys_global_lock);
+        exit(-1);
+      }
     return;
   }
-
 
   /* not_present | read | kernel = 110*/
   if ( not_present && !write && !user)
@@ -223,65 +230,6 @@ page_fault (struct intr_frame *f)
     }
   }
 
-//   /***** END OF ADDED CODE *****/
-// if((not_present) && (write))
-// {
-//     // valid to load page
-//     // stack or heap(or other segment)?
-//     if((((uint32_t)PHYS_BASE - (uint32_t)fault_addr) < (uint32_t)STACK_MAX))
-//     {
-//         if((((uint32_t)f->esp - (uint32_t)fault_addr) <= (uint32_t)STACK_STRIDE))
-//         {
-//             //printf("STACK_MAX = %d, STACK_STRID = %d\n", STACK_MAX, STACK_STRIDE);
-//             //printf("GROW : esp = %0x || fault_addr = %0x", f->esp, fault_addr);
-//             stack_growth(fault_addr);
-//         }
-//         else{
-//             if((uint32_t)f->esp > (uint32_t)fault_addr)
-//             {
-//                 if(!user)
-//                 {
-//                     sema_up(&filesys_global_lock);
-//                 }
-//                 // it is stack. but stride aint right
-//                 //printf("page fault handler: stack stride problem. esp = %0x, fault_addr = %0x\n", f->esp, fault_addr);
-//                 exit(-1);
-//             }
-//             else
-//             {
-//                 //printf("load page in page_fault");
-//                 // swap in the swapped out stack page
-//                 if(!load_page(fault_addr))
-//                 {
-//                     PANIC("load page failed.");
-//                 }
-//             }
-//         }
-//     }
-//     else
-//     {
-//         if(!load_page(fault_addr))
-//         {
-//             PANIC("load page failed.");
-//         }
-//     }
-// }
-
-// if((not_present) && (!write))
-// {
-//     if(!load_page_for_read(fault_addr))
-//     {
-//         if(!user)
-//         {
-//             sema_up(&filesys_global_lock);
-//         }
-//         // it is stack. but stride aint right
-//         //printf("page fault handler: stack stride problem. esp = %0x, fault_addr = %0x\n", f->esp, fault_addr);
-//         exit(-1);
-//     }
-// }
-  //printf("page fault handler: end\n");
-  
   if(0)
     {
       
