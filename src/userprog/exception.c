@@ -178,8 +178,8 @@ page_fault (struct intr_frame *f)
      PANIC("Exceeded STACK_MAX");
   }
 
-  /* not_present | write | user = 100*/
-  if ( not_present && write && !user)
+  /* not_present | read | kernel = 110*/
+  if ( not_present && !write && !user)
   {
     if(!load_page_for_read(fault_addr))
     {
@@ -187,15 +187,15 @@ page_fault (struct intr_frame *f)
       exit(-1);
     }
   }  
-  /* not_present | write | user = 101*/
-  if ( not_present && write && user)
+  /* not_present | read | user = 101*/
+  if ( not_present && !write && user)
   {
     if(!load_page_for_read(fault_addr))
       exit(-1);
   }
 
-  /* not_present | write | user = 111*/
-  if ( not_present && !write /*&& user*/)
+  /* not_present | write | user = 101*/
+  if ( not_present && write /*&& user*/)
   {
     printf("here\n");
     if (!load_page(fault_addr))
