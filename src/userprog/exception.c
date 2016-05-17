@@ -179,7 +179,7 @@ page_fault (struct intr_frame *f)
   }
 
   /* not_present | write | user = 100*/
-  if ( not_present && !write && !user)
+  if ( not_present && write && !user)
   {
     if(!load_page_for_read(fault_addr))
     {
@@ -188,7 +188,7 @@ page_fault (struct intr_frame *f)
     }
   }  
   /* not_present | write | user = 101*/
-  if ( not_present && !write && user)
+  if ( not_present && write && user)
   {
     if(!load_page_for_read(fault_addr))
       exit(-1);
@@ -200,7 +200,7 @@ page_fault (struct intr_frame *f)
   
   // }
   /* not_present | write | user = 111*/
-  if ( not_present && write /*&& user*/)
+  if ( not_present && !write /*&& user*/)
   {
     if (!load_page(fault_addr))
     {
