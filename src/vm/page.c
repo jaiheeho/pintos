@@ -303,7 +303,7 @@ int load_page_swap(struct spte* spte_target)
     }
   else
     {
-      printf("load_page_swap : present bit is true??\n");
+      //printf("load_page_swap : present bit is true??\n");
       return 0;
     }
 
