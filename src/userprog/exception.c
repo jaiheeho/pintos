@@ -195,15 +195,17 @@ page_fault (struct intr_frame *f)
       exit(-1);
   }
 
-  /* not_present | write | user = 101*/
+  /* not_present | write | user = 111*/
   if ( not_present && write /*&& user*/)
   {
     printf("her\n");
     if (!load_page(fault_addr))
     {
+      printf("her2-2\n");
+
       if ((uint32_t)f->esp - (uint32_t)fault_addr <= (uint32_t)STACK_STRIDE)
       {
-              printf("her2-1\n");
+        printf("her2-1\n");
 
         stack_growth(fault_addr);
       }
