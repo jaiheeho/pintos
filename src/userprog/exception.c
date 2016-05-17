@@ -196,36 +196,29 @@ page_fault (struct intr_frame *f)
       exit(-1);
   }
 
-  /* not_present | write | user = 111*/
+  /* not_present | write | user or kenerl= 111 || 110*/
   if ( not_present && write /*&& user*/)
   {
-      printf("0\n");
-    if (!load_page(fault_addr))
+    if((uint32_t)f->esp > (uint32_t)fault_addr)
     {
-      printf("1\n");
-      if ((uint32_t)f->esp - (uint32_t)fault_addr <= (uint32_t)STACK_STRIDE
-        && (uint32_t)f->esp < (uint32_t)fault_addr)
+      if( (uint32_t)f->esp - (uint32_t)fault_addr <= (uint32_t)STACK_STRIDE)
       {
-      printf("2\n");
-
-        stack_growth(fault_addr);
+          stack_growth(fault_addr);
       }
       else
       {
-                
-      printf("3\n");
-
         if(!user)
         {
             sema_up(&filesys_global_lock);
         }
-        // it is stack. but stride aint right
-        //printf("page fault handler: stack stride problem. esp = %0x, fault_addr = %0x\n", f->esp, fault_addr);
         exit(-1);
       }
     }
-          printf("4\n");
-
+    else
+    {
+      if(!load_page(fault_addr))
+        PANIC("load page failed.");
+    }
   }
 
 //   /***** END OF ADDED CODE *****/
