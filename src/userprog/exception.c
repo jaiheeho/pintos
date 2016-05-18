@@ -195,7 +195,7 @@ page_fault (struct intr_frame *f)
   /* if the page-fault was for reading memery access try load_get_for_read */
   /* if it fail, exit process withour allocating frame */
   /* not_present | read | user or kernel = 110 & 111*/
-  if ( not_present && !write && !user)
+  if ( not_present && !write)
   {
     if(!load_page_for_read(fault_addr))
     {
