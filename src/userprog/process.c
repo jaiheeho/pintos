@@ -276,7 +276,7 @@ process_exit (void)
   //empty mmap_table  for the process which was malloced when mmaped.
   struct list *mmap_table = &curr->mmap_table;
   struct list_elem *iter_md;
-  struct mmap_descriptor *f;  
+  struct mmap_descriptor *m;  
   while (!list_empty (mmap_table) /*&& curr->parent_proc->is_loaded == true*/)
   {
     iter_md = list_pop_front (mmap_table);
