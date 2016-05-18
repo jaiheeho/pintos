@@ -20,6 +20,7 @@
 #include <list.h> // ADDED HEADER
 #include "threads/malloc.h" // ADDED HEADER
 #include "lib/user/syscall.h" // ADDED HEADER
+#include "userprog/syscall.h"
 
 //for proj3 
 #include "vm/frame.h"
