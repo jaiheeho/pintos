@@ -23,7 +23,6 @@ void close (int fd);
 struct file* get_struct_file(int fd);
 struct file_descriptor* get_struct_fd_struct(int fd);
 bool invalid_addr(void *);
-bool invalid_addr_buffer(void *);
 void * get_kernel_addr(void*);
 
 #endif /* userprog/syscall.h */

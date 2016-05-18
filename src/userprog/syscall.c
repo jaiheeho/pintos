@@ -294,15 +294,6 @@ int read (int fd, void *buffer, unsigned length)
   uint32_t i;
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
-  uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char) +1; 
-  int * base_page = pg_round_down(buf_char);
-  for (i = 0 ; i < page_nums ; i++)
-  {
-    if ( invalid_addr_buffer ((void *)(base_page + i * 1024)))
-      exit(-1);
-  }
-
-
   if(fd == 0)
   {
     //std out 
@@ -345,14 +336,6 @@ int write(int fd, const void *buffer, unsigned length)
   int retval;
   uint8_t* buf_char = (uint8_t *) buffer; 
   uint32_t i;
-  uint32_t page_nums = (uint32_t)pg_no(buf_char+length) - (uint32_t)pg_no(buf_char) +1; 
-  int * base_page = pg_round_down(buf_char);
-  for (i = 0 ; i < page_nums ; i++)
-  {
-    if ( invalid_addr_buffer ((void *)(base_page + i * 1024)))
-      exit(-1);
-  }
-
   if(fd <= 0)
     {
       //error
@@ -518,62 +501,16 @@ void get_args(void* esp, int *args, int argsnum)
     }
 }
 
-/************************************************************************
-* FUNCTION : invalid_addr                                               *
-* Input : addr                                                          *
-* Output : true of false                                                *
-* Purporse : check wheter given address is valid or not                 *
-************************************************************************/
- /*added function */
-bool invalid_addr_buffer(void* addr){
-  //check whether it is user addr
-  // if (!is_user_vaddr(addr))
-  //   return true;
-  // //under CODE segment
-  // if (addr <(void*)0x08048000)
-  //   return true;
-  // if (addr == NULL)
-  //   return true;
-  return false; 
-  //Not within pagedir
 
-  // struct thread* curr = thread_current();
-  // if(!pagedir_get_page (curr->pagedir, addr))
-  // {
-  //   struct hash_elem* e;
-  //   struct spte spte_temp;
-  //   spte_temp.user_addr = addr;
-  //   e = hash_find(&curr->spt, &spte_temp.elem);
-  //   printf("valid buffer\n");
-  //   if (e == NULL)
-  //   {
-  //     printf("valid buffer2\n");
-  //     if (!load_page(addr))
-  //     {
-  //       return true;
-  //     }
-  //     printf("valid buffer3 END\n");
-  //   }
-  //     printf("valid buffer4 END\n");
-  // }
-  return false;
-}
 bool invalid_addr(void* addr){
-  //check whether it is user addr
-  // if (!is_user_vaddr(addr))
-  //   return true;
-  // //under CODE segment
-  // if (addr <(void*)0x08048000)
-  //   return true;
+  check whether it is user addr
+  if (!is_user_vaddr(addr))
+    return true;
+  //under CODE segment
+  if (addr <(void*)0x08048000)
+    return true;
   if (addr == NULL)
     return true;
-  // //Not within pagedir
-
-  // struct thread* curr = thread_current();
-  // if(!pagedir_get_page (curr->pagedir, addr))
-  // {
-  //   return true;
-  // }
-  // return false;
+  //Not within pagedir
   return false;
 }
