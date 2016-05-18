@@ -534,7 +534,7 @@ bool invalid_addr_buffer(void* addr){
   //   return true;
   // if (addr == NULL)
   //   return true;
-  return false;
+  return false; 
   //Not within pagedir
 
   // struct thread* curr = thread_current();
@@ -565,8 +565,8 @@ bool invalid_addr(void* addr){
   // //under CODE segment
   // if (addr <(void*)0x08048000)
   //   return true;
-  // if (addr == NULL)
-  //   return true;
+  if (addr == NULL)
+    return true;
   // //Not within pagedir
 
   // struct thread* curr = thread_current();
