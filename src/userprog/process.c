@@ -204,7 +204,7 @@ process_wait (tid_t child_tid)
   if(sema_try_down(&c->sema_wait))
   {
     c->is_wait_called = true;
-    //this is waiting call sema-down agaain
+    //this is waiting call sema-down again
     sema_down(&c->sema_wait);
     //when c is exited and return value
     retval = c->exit_status;
@@ -250,6 +250,7 @@ process_exit (void)
     sema_try_down(&c->sema_wait);
     sema_up(&c->sema_wait);
   }
+
   //allow write to executable by closing it in write deny part of proj2
   sema_down(&filesys_global_lock);
   if (curr->executable){
@@ -285,7 +286,7 @@ process_exit (void)
   if (curr->parent_proc != NULL)
     list_remove (&curr->child_elem);
 
-
+  //finally free supplement page table for this process.
   sup_page_table_free(&curr->spt);
 
 

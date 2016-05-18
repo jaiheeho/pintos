@@ -243,7 +243,7 @@ open(const char *file)
   sema_down(&filesys_global_lock);
   //open file with name (file)
   filestruct = filesys_open(file);
-  //check wheter open was successful
+  //check whether open was successful
   if (filestruct == NULL)
   {
     sema_up(&filesys_global_lock);

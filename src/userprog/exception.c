@@ -192,25 +192,25 @@ page_fault (struct intr_frame *f)
     return;
   }
 
-  /* not_present | read | kernel = 110*/
+  /* if the page-fault was for reading memery access try load_get_for_read 
+  /* if it fail, exit process withour allocating frame */
+  /* not_present | read | user or kernel = 110 & 111*/
   if ( not_present && !write && !user)
   {
     if(!load_page_for_read(fault_addr))
     {
-      sema_up(&filesys_global_lock);
+      if (!user)
+        sema_up(&filesys_global_lock);
       exit(-1);
     }
   }
-
-  /* not_present | read | user = 101*/
-  if ( not_present && !write && user)
-  {
-    if(!load_page_for_read(fault_addr))
-      exit(-1);
-  }
-
+  /* if the page-fault was for writing memery access
+  /* (1) f->esp > fault_addr 
+  /* then, call stack_growth. if stack_growth fails ,exit process.
+  /* (2) f->esp <= falult_addr
+  /* then, load_page_for_write, load_page and swop fram if necessary.
   /* not_present | write | user or kenerl= 111 || 110*/
-  if ( not_present && write /*&& user*/)
+  if ( not_present && write )
   {
     if((uint32_t)f->esp > (uint32_t)fault_addr)
     {
