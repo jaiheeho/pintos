@@ -335,7 +335,6 @@ int write(int fd, const void *buffer, unsigned length)
 {
   int retval;
   uint8_t* buf_char = (uint8_t *) buffer; 
-  uint32_t i;
   if(fd <= 0)
     {
       //error
@@ -501,9 +500,7 @@ void get_args(void* esp, int *args, int argsnum)
     }
 }
 
-
 bool invalid_addr(void* addr){
-  check whether it is user addr
   if (!is_user_vaddr(addr))
     return true;
   //under CODE segment
