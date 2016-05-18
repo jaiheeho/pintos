@@ -102,7 +102,7 @@ start_process (void *f_name)
 
   /***** ADDED CODE *****/
   
-  //supplemental page table  for proj3 in main thread
+  //supplemental page table  for proj3 
   sup_page_table_init(&(thread_current()->spt));
 
   //addeed filesys_lock

@@ -174,7 +174,7 @@ page_fault (struct intr_frame *f)
 
   /* check whether invalid by exceeding STACK_MAX*/
   /* if read , try to load page and if it fails exit
-  /* if write, load_page so that we can write to it*/
+  /* if write, load_page or allocate frame so that we can write to it*/
   if( (uint32_t)PHYS_BASE - (uint32_t)fault_addr >= (uint32_t)STACK_MAX )
   {
     if (write)
@@ -233,18 +233,4 @@ page_fault (struct intr_frame *f)
         PANIC("load page failed.");
     }
   }
-
-  if(0)
-    {
-      
-      /* To implement virtual memory, delete the rest of the function
-	 body, and replace it with code that brings in the page to
-	 which fault_addr refers. */
-      printf ("Page fault at %p: %s error %s page in %s context.\n",
-	      fault_addr,
-	      not_present ? "not present" : "rights violation",
-	      write ? "writing" : "reading",
-	      user ? "user" : "kernel");
-      kill (f);
-    }
 }

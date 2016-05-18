@@ -17,8 +17,6 @@
 #include "vm/page.h"// ADDED HEADER
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
-static bool put_user (uint8_t *udst, uint8_t byte);
-
 /************************************************************************
 * FUNCTION : syscall_init                                               *
 * Input : NONE                                                          *
@@ -529,13 +527,14 @@ void get_args(void* esp, int *args, int argsnum)
  /*added function */
 bool invalid_addr_buffer(void* addr){
   //check whether it is user addr
-  if (!is_user_vaddr(addr))
-    return true;
-  //under CODE segment
-  if (addr <(void*)0x08048000)
-    return true;
-  if (addr == NULL)
-    return true;
+  // if (!is_user_vaddr(addr))
+  //   return true;
+  // //under CODE segment
+  // if (addr <(void*)0x08048000)
+  //   return true;
+  // if (addr == NULL)
+  //   return true;
+  return false;
   //Not within pagedir
 
   // struct thread* curr = thread_current();
@@ -561,27 +560,20 @@ bool invalid_addr_buffer(void* addr){
 }
 bool invalid_addr(void* addr){
   //check whether it is user addr
-  if (!is_user_vaddr(addr))
-    return true;
-  //under CODE segment
-  if (addr <(void*)0x08048000)
-    return true;
-  if (addr == NULL)
-    return true;
-  //Not within pagedir
+  // if (!is_user_vaddr(addr))
+  //   return true;
+  // //under CODE segment
+  // if (addr <(void*)0x08048000)
+  //   return true;
+  // if (addr == NULL)
+  //   return true;
+  // //Not within pagedir
 
-  struct thread* curr = thread_current();
-  if(!pagedir_get_page (curr->pagedir, addr))
-  {
-    return true;
-  }
+  // struct thread* curr = thread_current();
+  // if(!pagedir_get_page (curr->pagedir, addr))
+  // {
+  //   return true;
+  // }
+  // return false;
   return false;
-}
-static bool 
-put_user (uint8_t *udst, uint8_t byte)
-{
-  int error_code;
-  asm("movl $1f, %0; movb %b2, %1; 1:"
-      : "=&a" (error_code), "=m" (*udst) : "r" (byte));
-  return error_code != -1;
 }
