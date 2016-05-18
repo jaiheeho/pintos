@@ -65,6 +65,7 @@ process_execute (const char *file_name)
   /***** END OF ADDED CODE *****/
 
   /* Create a new thread to execute FILE_NAME. */
+  sema_down(&thread_current()->loading_safer);
   tid = thread_create (file_name_temp, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy); 
@@ -123,6 +124,7 @@ start_process (void *f_name)
     curr->parent_proc->is_loaded = false;
     //if loading was unsuccessful remove thread from parent's child list and exit();
     list_remove(&curr->child_elem);
+    sema_up(curr->parent_proc->loading_safer);
     thread_exit ();
   }
 
@@ -142,6 +144,7 @@ start_process (void *f_name)
   curr->executable = filesys_open(file_name);
   file_deny_write(curr->executable);
   palloc_free_page (file_name);
+  sema_up(curr->parent_proc->loading_safer);
 
   //printf("READY TO LAUNCH PROG\n");
   /***** END OF ADDED CODE *****/
