@@ -19,6 +19,8 @@
 #include "threads/vaddr.h"
 #include <list.h> // ADDED HEADER
 #include "threads/malloc.h" // ADDED HEADER
+#include "lib/user/syscall.h" // ADDED HEADER
+
 //for proj3 
 #include "vm/frame.h"
 #include "vm/swap.h"
