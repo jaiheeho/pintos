@@ -438,7 +438,7 @@ mmap (int fd, void *addr)
   struct file_descriptor *fdt;
   fdt = get_struct_fd_struct(fd);
   struct file *file_to_mmap = fdt->file;
-  if (!file)
+  if (!file_to_mmap)
   {
     sema_up(&filesys_global_lock);
     return MAP_FAILED;  
@@ -459,6 +459,7 @@ mmap (int fd, void *addr)
     return MAP_FAILED;
   }
   //initialize new_mmap
+  struct thread * curr = thread_current();
   new_mmap->start_addr = addr;
   new_mmap->mmap_id =  curr->mmap_id_given ++;
   list_push_back(&curr->mmap_table, &new_mmap->elem);

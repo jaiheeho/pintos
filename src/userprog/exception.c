@@ -173,7 +173,7 @@ page_fault (struct intr_frame *f)
   }
 
   /* check whether invalid by exceeding STACK_MAX*/
-  /* if read , try to load page and if it fails exit
+  /* if read , try to load page and if it fails exit*/
   /* if write, load_page or allocate frame so that we can write to it*/
   if( (uint32_t)PHYS_BASE - (uint32_t)fault_addr >= (uint32_t)STACK_MAX )
   {
@@ -192,7 +192,7 @@ page_fault (struct intr_frame *f)
     return;
   }
 
-  /* if the page-fault was for reading memery access try load_get_for_read 
+  /* if the page-fault was for reading memery access try load_get_for_read */
   /* if it fail, exit process withour allocating frame */
   /* not_present | read | user or kernel = 110 & 111*/
   if ( not_present && !write && !user)
@@ -204,11 +204,11 @@ page_fault (struct intr_frame *f)
       exit(-1);
     }
   }
-  /* if the page-fault was for writing memery access
-  /* (1) f->esp > fault_addr 
-  /* then, call stack_growth. if stack_growth fails ,exit process.
-  /* (2) f->esp <= falult_addr
-  /* then, load_page_for_write, load_page and swop fram if necessary.
+  /* if the page-fault was for writing memery access*/
+  /* (1) f->esp > fault_addr */
+  /* then, call stack_growth. if stack_growth fails ,exit process.*/
+  /* (2) f->esp <= falult_addr*/
+  /* then, load_page_for_write, load_page and swop fram if necessary.*/
   /* not_present | write | user or kenerl= 111 || 110*/
   if ( not_present && write )
   {
