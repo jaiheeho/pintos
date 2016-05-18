@@ -459,7 +459,7 @@ mmap (int fd, void *addr)
     return MAP_FAILED;
   }
   //initialize new_mmap
-  struct thread * curr = thread_current();
+  struct thread * curr = thread_current();  
   new_mmap->start_addr = addr;
   new_mmap->mmap_id =  curr->mmap_id_given ++;
   list_push_back(&curr->mmap_table, &new_mmap->elem);
@@ -476,7 +476,7 @@ munmap (mapid_t mmap_id)
     return;
 
   list_remove(&m->elem);
-  //clear_page
+  //need to implement clear_page 
   free(m);
   /*clear_page*/
 

@@ -264,13 +264,24 @@ process_exit (void)
   struct list_elem *iter_fd;
   struct file_descriptor *f;
   //empty file_descriptor table for the process which was malloced when files were opened.
-  while (!list_empty (fdt) && curr->parent_proc->is_loaded == true)
+  while (!list_empty (fdt) /*&& curr->parent_proc->is_loaded == true*/)
   {
     iter_fd = list_pop_front (fdt);
     f = list_entry(iter_fd, struct file_descriptor, elem);
     file_close(f->file);
     free(f);  
   }
+  //empty mmap_table  for the process which was malloced when mmaped.
+  struct list *mmap_table = &curr->mmap_table;
+  struct list_elem *iter_md;
+  struct mmap_descriptor *f;  
+  while (!list_empty (mmap_table) /*&& curr->parent_proc->is_loaded == true*/)
+  {
+    iter_md = list_pop_front (mmap_table);
+    m = list_entry(iter_md, struct mmap_descriptor, elem);
+    free(m);  
+  }
+
   sema_up(&filesys_global_lock);
 
 
