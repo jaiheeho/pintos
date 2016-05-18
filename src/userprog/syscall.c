@@ -15,6 +15,9 @@
 #include "lib/user/syscall.h" // ADDED HEADER
 #include "devices/input.h" // ADDED HEADER
 #include "vm/page.h"// ADDED HEADER
+
+
+
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
 /************************************************************************
@@ -118,6 +121,15 @@ syscall_handler (struct intr_frame *f UNUSED)
       get_args(f->esp, args, 1);
       close(args[0]);
       break;    
+    case SYS_MMAP:
+      get_args(f->esp, args, 2);
+      retval=mmap(args[0],(void *)args[1]);
+      returnZ=true;
+      break;
+    case SYS_MUNMAP:
+      get_args(f->esp, args, 1);
+      munmap(args[0]);
+      break;
     }
   // if return value is needed, plug in the return value
   if(returnZ)
@@ -417,6 +429,75 @@ void close (int fd)
   file_close(fdt->file);
   free(fdt);
   sema_up(&filesys_global_lock);
+}
+
+mapid_t 
+mmap (int fd, void *addr)
+{
+  sema_down(&filesys_global_lock);
+  struct file_descriptor *fdt;
+  fdt = get_struct_fd_struct(fd);
+  struct file *file_to_mmap = fdt->file;
+  if (!file)
+  {
+    sema_up(&filesys_global_lock);
+    return MAP_FAILED;  
+  }
+  int size = file_length(file_to_mmap);
+
+  if (size == 0)
+  {
+    sema_up(&filesys_global_lock);
+    return MAP_FAILED;  
+  }
+  //allocate memory
+  struct mmap_descriptor *new_mmap;
+  new_mmap = (struct mmap_descriptor *)malloc (sizeof (struct mmap_descriptor));
+  if (!new_mmap)
+  {
+    sema_up(&filesys_global_lock);
+    return MAP_FAILED;
+  }
+  //initialize new_mmap
+  new_mmap->start_addr = addr;
+  new_mmap->mmap_id =  curr->mmap_id_given ++;
+  list_push_back(&curr->mmap_table, &new_mmap->elem);
+  file_read(file_to_mmap, addr, size);
+  sema_up(&filesys_global_lock);
+  return new_mmap->mmap_id;
+}
+void 
+munmap (mapid_t mmap_id)
+{
+  struct mmap_descriptor *m;
+  m = get_mmap_descriptor(mmap_id);
+  if (!m)
+    return;
+
+  list_remove(&m->elem);
+  //clear_page
+  free(m);
+  /*clear_page*/
+
+}
+
+struct mmap_descriptor* get_mmap_descriptor(int mmap_id)
+{
+  struct thread* curr = thread_current();
+  struct list *mmap_table = &curr->mmap_table;
+  struct list_elem *iter_md;
+  struct mmap_descriptor *m;
+
+  for(iter_md = list_begin(mmap_table); iter_md != list_tail(mmap_table);
+      iter_md = list_next(iter_md))
+  {
+    m = list_entry(iter_md, struct mmap_descriptor, elem);
+    if(mmap_id == m->mmap_id)
+    {
+      return m;
+    }
+  }
+  return NULL;
 }
 
 /************************************************************************

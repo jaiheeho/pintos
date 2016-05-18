@@ -112,6 +112,8 @@ struct thread
 
     //For Project 3
     struct hash spt;                    /* hash table for supplemental page table */
+    int mmap_id_given;                  /* mmap id*/
+    struct list mmap_table;             /* mmap id list*/
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */

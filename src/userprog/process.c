@@ -130,6 +130,10 @@ start_process (void *f_name)
   curr->fd_given = 2;
   curr->parent_proc->is_loaded = true;
 
+  /* mmap_id recording*/
+  curr->mmap_id_given = 1;
+  list_init(&curr->mmap_table);
+
   //deny write to executable 
   //executable of thread is saved in struct thread
   curr->executable = filesys_open(file_name);
