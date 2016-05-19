@@ -94,7 +94,7 @@ process_execute (const char *file_name)
 
   if (c->is_loaded == 2)
   {
-    sema_try_down(&c->loading_safer))
+    sema_try_down(&c->loading_safer);
     sema_down(&c->loading_safer);
   }
 
