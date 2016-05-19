@@ -883,7 +883,7 @@ init_thread (struct thread *t, const char *name, int priority)
   t->is_wait_called = false;
   t->is_process = false;
   t->exit_status = 0;
-  t->is_loaded = false;
+  t->is_loaded = true;
   //To check executable
   t->executable = NULL;
   sema_init(&t->loading_safer,1);
