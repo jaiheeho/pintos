@@ -173,8 +173,8 @@ page_fault (struct intr_frame *f)
   }
 
   /* check whether invalid by exceeding STACK_MAX*/
-  /* if read , try to load page and if it fails exit*/
-  /* if write, load_page or allocate frame so that we can write to it*/
+  /* (1)if read , try to load page and if it fails exit*/
+  /* (2)if write, load_page or allocate frame so that we can write to it*/
   if( (uint32_t)PHYS_BASE - (uint32_t)fault_addr >= (uint32_t)STACK_MAX )
   {
     if (write)
@@ -212,12 +212,15 @@ page_fault (struct intr_frame *f)
   /* not_present | write | user or kenerl= 111 || 110*/
   if ( not_present && write )
   {
+    //(1)
     if((uint32_t)f->esp > (uint32_t)fault_addr)
     {
+      //(1)-1
       if( (uint32_t)f->esp - (uint32_t)fault_addr <= (uint32_t)STACK_STRIDE)
       {
           stack_growth(fault_addr);
       }
+      //(1)-2
       else
       {
         if(!user)
@@ -227,10 +230,12 @@ page_fault (struct intr_frame *f)
         exit(-1);
       }
     }
+    //(2)
     else
     {
       if(!load_page(fault_addr))
         PANIC("load page failed.");
     }
   }
+
 }

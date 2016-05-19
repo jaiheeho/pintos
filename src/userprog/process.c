@@ -78,7 +78,8 @@ process_execute (const char *file_name)
   struct list *child_list = &curr->child_procs;
   struct thread *child=NULL;
   struct thread *c=NULL;
-  //Check whether child of the calling process, -> not child process return -1
+
+  //Find a newly made child process from me(parent of child)
   for(iter_child = list_begin(child_list);
     iter_child != list_tail(child_list); iter_child = list_next(iter_child))
   {
@@ -89,15 +90,17 @@ process_execute (const char *file_name)
       break;
     }  
   }
+  /* should not happend in pintos but for safety*/
   if (!c)
     return TID_ERROR;
 
+  /* if loading of child with tid did no end yet, wait for it*/
   if (c->is_loaded == 2)
   {
     sema_try_down(&c->loading_safer);
     sema_down(&c->loading_safer);
   }
-
+  /* if loading of child failed, return TIE_ERROR*/
   if (c->is_loaded == 0)
   {
     return TID_ERROR;
@@ -129,9 +132,7 @@ start_process (void *f_name)
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
 
-
   /***** ADDED CODE *****/
-  
   //supplemental page table  for proj3 
   sup_page_table_init(&(thread_current()->spt));
 
@@ -150,6 +151,7 @@ start_process (void *f_name)
     curr->is_loaded = 0;
     //if loading was unsuccessful remove thread from parent's child list and exit();
     list_remove(&curr->child_elem);
+    /*for the loading safer (incase of parent waiting for child loading end*/
     sema_try_down(&curr->loading_safer);
     sema_up(&curr->loading_safer);
     thread_exit ();
@@ -171,6 +173,7 @@ start_process (void *f_name)
   curr->executable = filesys_open(file_name);
   file_deny_write(curr->executable);
   palloc_free_page (file_name);
+  /*for the loading safer (incase of parent waiting for child loading end*/
   sema_try_down(&curr->loading_safer);
   sema_up(&curr->loading_safer);
   //printf("READY TO LAUNCH PROG\n");
@@ -729,9 +732,6 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
       
     }
   else PANIC("STACK SETUP PANIC\n");
-  
-
-
   /*ADDED END*/
 
 
