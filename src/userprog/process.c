@@ -72,8 +72,34 @@ process_execute (const char *file_name)
   /***** ADDED CODE *****/
   //Loading elf was not successful return tid -1
   //To make chile it should be check by parent process
-  
-  if (thread_current()->is_loaded == false){
+  /*not yet called load from chile*/
+  struct thread *curr = thread_current ();
+  struct list_elem *iter_child;
+  struct list *child_list = &curr->child_procs;
+  struct thread *child=NULL;
+  struct thread *c=NULL;
+  //Check whether child of the calling process, -> not child process return -1
+  for(iter_child = list_begin(child_list);
+    iter_child != list_tail(child_list); iter_child = list_next(iter_child))
+  {
+    child = list_entry(iter_child, struct thread, child_elem);
+    if (child->tid == tid)
+    {
+      c = child;
+      break;
+    }  
+  }
+  if (!c)
+    return TID_ERROR;
+
+  if (c->is_loaded == 2)
+  {
+    sema_try_down(&c->loading_safer))
+    sema_down(&c->loading_safer);
+  }
+
+  if (c->is_loaded == 0)
+  {
     return TID_ERROR;
   }
   /***** END OF ADDED CODE *****/
@@ -121,10 +147,11 @@ start_process (void *f_name)
   struct thread * curr = thread_current();
   if (!success) {
     palloc_free_page (file_name);
-    curr->parent_proc->is_loaded = false;
+    curr->is_loaded = 0;
     //if loading was unsuccessful remove thread from parent's child list and exit();
     list_remove(&curr->child_elem);
-    sema_up(&curr->parent_proc->loading_safer);
+    sema_try_down(&curr->loading_safer);
+    sema_up(&curr->loading_safer);
     thread_exit ();
   }
 
@@ -133,7 +160,7 @@ start_process (void *f_name)
   curr->is_process = true;
   // fd starts from 2 since 0 and 1 is allocated for stdin & stdout.
   curr->fd_given = 2;
-  curr->parent_proc->is_loaded = true;
+  curr->is_loaded = 1;
 
   /* mmap_id recording*/
   curr->mmap_id_given = 1;
@@ -144,8 +171,8 @@ start_process (void *f_name)
   curr->executable = filesys_open(file_name);
   file_deny_write(curr->executable);
   palloc_free_page (file_name);
-  sema_up(&curr->parent_proc->loading_safer);
-
+  sema_try_down(&curr->loading_safer);
+  sema_up(&curr->loading_safer);
   //printf("READY TO LAUNCH PROG\n");
   /***** END OF ADDED CODE *****/
 
@@ -270,7 +297,7 @@ process_exit (void)
   struct list_elem *iter_fd;
   struct file_descriptor *f;
   //empty file_descriptor table for the process which was malloced when files were opened.
-  while (!list_empty (fdt) /*&& curr->parent_proc->is_loaded == true*/)
+  while (!list_empty (fdt) && curr->is_loaded == 1)
   {
     iter_fd = list_pop_front (fdt);
     f = list_entry(iter_fd, struct file_descriptor, elem);
@@ -281,7 +308,7 @@ process_exit (void)
   struct list *mmap_table = &curr->mmap_table;
   struct list_elem *iter_md;
   struct mmap_descriptor *m;  
-  while (!list_empty (mmap_table) /*&& curr->parent_proc->is_loaded == true*/)
+  while (!list_empty (mmap_table) && curr->is_loaded == 1)
   {
     iter_md = list_pop_front (mmap_table);
     m = list_entry(iter_md, struct mmap_descriptor, elem);

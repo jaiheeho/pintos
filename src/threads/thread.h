@@ -106,7 +106,8 @@ struct thread
     struct semaphore sema_wait;         /* semaphore that blocks parent proceess who wait for this thread*/
     int exit_status;                    /* store exit_status when it is called */
     bool is_process;                    /* check whether thread is proces of kernel thread*/
-    bool is_loaded;                     /* check whether thread's child process is loaded successfully */
+    int is_loaded;                      /* check whether thread's child process is loaded successfully 0
+                                            0 load-fail, 1 load-success, 2 load- notyet*/
     int fd_given;                       /* check last fd number give for the opened file */
     struct file * executable;           /* to deny and allow executable */
 
