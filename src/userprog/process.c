@@ -65,7 +65,6 @@ process_execute (const char *file_name)
   /***** END OF ADDED CODE *****/
 
   /* Create a new thread to execute FILE_NAME. */
-  sema_down(&thread_current()->loading_safer);
   tid = thread_create (file_name_temp, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy); 
@@ -73,6 +72,7 @@ process_execute (const char *file_name)
   /***** ADDED CODE *****/
   //Loading elf was not successful return tid -1
   //To make chile it should be check by parent process
+  
   if (thread_current()->is_loaded == false){
     return TID_ERROR;
   }
