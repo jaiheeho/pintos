@@ -57,17 +57,11 @@ void* frame_allocate(struct spte* supplement_page)
   //printf("frame_allocate: \n");
   sema_down(&frame_table_lock);
   void * new_frame=NULL;
-  // printf("here2-0-1\n");
-
   while(1)
   {
-    // printf("here2-0-2\n");
-
     new_frame = palloc_get_page(PAL_USER | PAL_ZERO);
     if(new_frame == NULL)
     {
-        // printf("here2-0-3\n");
-
       // all frame slots are full; commence eviction & retry
       //printf("frame_allocate: need eviction!!\n");
       frame_evict();
@@ -92,7 +86,7 @@ void* frame_allocate(struct spte* supplement_page)
       //link to spte
       supplement_page->phys_addr = new_frame;
       supplement_page->fte = (void *)new_fte_entry;
-      new_fte_entry->supplement_page = (struct spte *)supplement_page;
+      new_fte_entry->supplement_page = (void *)supplement_page;
       
       // insert into frame table
       if (list_empty(&frame_table))
@@ -104,16 +98,9 @@ void* frame_allocate(struct spte* supplement_page)
       {
         list_push_back(&frame_table, &new_fte_entry->elem);
       }
-
-      // printf("here2-0-5\n");
-
       break;
     }              
-    // printf("here2-0-6\n");
   }
-  // printf("here2-0-7\n");
-
-  //printf("frame_allocate: complete.\n");
   sema_up(&frame_table_lock);
   return new_frame;
 }
@@ -227,7 +214,7 @@ void frame_evict()
   }
 
   //detach frame from spte (this is for ensurance)
-  pagedir_clear_page(frame_entry->thread->pagedir, ((struct spte *)frame_entry->supplement_page)->user_addr);
+  pagedir_clear_page(frame_entry->thread->pagedir, supplement_page->user_addr);
 
   supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
     // printf("here2-0-3-4\n");
