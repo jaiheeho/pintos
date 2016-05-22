@@ -137,11 +137,6 @@ start_process (void *f_name)
   struct thread * curr = thread_current();
   sup_page_table_init(&curr->spt);
 
-  //deny write to executable 
-  //executable of thread is saved in struct thread
-  curr->executable = filesys_open(file_name);
-  file_deny_write(curr->executable);
-
   //addeed filesys_lock
   sema_down(&filesys_global_lock);
   success = load (file_name, &if_.eip, &if_.esp);
@@ -172,6 +167,12 @@ start_process (void *f_name)
   /* mmap_id recording*/
   curr->mmap_id_given = 1;
   list_init(&curr->mmap_table);
+
+
+  // //deny write to executable 
+  // //executable of thread is saved in struct thread
+  // curr->executable = filesys_open(file_name);
+  // file_deny_write(curr->executable);
 
   palloc_free_page (file_name);
   /*for the loading safer (incase of parent waiting for child loading end*/
@@ -483,7 +484,11 @@ load (const char *file_name, void (**eip) (void), void **esp)
       printf ("load: %s: open failed\n", file_name);
       goto done; 
     }
-
+  //deny write to executable 
+  //executable of thread is saved in struct thread
+  curr->executable = filesys_open(file_name);
+  file_deny_write(curr->executable);
+  
   /* Read and verify executable header. */
   if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
       || memcmp (ehdr.e_ident, "\177ELF\1\1\1", 7)
