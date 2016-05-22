@@ -183,7 +183,7 @@ int load_page(void* faulted_user_addr)
 	  install_page(spte_target->user_addr, spte_target->phys_addr, writable);
 	}
       */
-    }}
+    }
   return 1;
 }
 int load_page_for_read(void* faulted_user_addr)
@@ -371,8 +371,6 @@ int load_page_file_lazy(void* user_page_addr, struct file *file, off_t ofs,
   new_spte->loading_info.page_read_bytes = page_read_bytes;
   new_spte->loading_info.page_zero_bytes = page_zero_bytes;
   new_spte->loading_info.ofs = ofs;
-  new_spte->loading_info.writable = writable;
-
 
   //printf("CP1\n");
   //get the spte for this addr
