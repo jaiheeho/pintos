@@ -104,9 +104,11 @@ void* frame_allocate(struct spte* supplement_page)
               printf("here2-0-5\n");
 
       break;
-    }
+    }              
+    printf("here2-0-6\n");
   }
-  
+  printf("here2-0-7\n");
+
   //printf("frame_allocate: complete.\n");
   sema_up(&frame_table_lock);
   return new_frame;
@@ -175,6 +177,8 @@ void frame_evict()
   void* new;
 
   //printf("frame_evict:\n");
+    printf("here2-0-3-0\n");
+
 
   //start from the beginning of table.
 
@@ -185,6 +189,7 @@ void frame_evict()
 
       //if(paired_spte->user_addr >= (void*)0xb0000000)
 	//printf("user_addr: %0x\n", paired_spte->user_addr);
+    printf("here2-0-3-1\n");
 
       if(paired_spte->frame_locked == false)
 	{
@@ -202,7 +207,8 @@ void frame_evict()
 	    }
 	
 	}
-      
+          printf("here2-0-3-2\n");
+
       iter = list_next(iter);
       if(iter == list_end(&frame_table))
 	{
@@ -214,6 +220,7 @@ void frame_evict()
   frame_entry= list_entry(iter, struct fte, elem);
   supplement_page = (struct spte*)frame_entry->supplement_page;
 
+          printf("here2-0-3-3\n");
 
   supplement_page->present = false;  
   //detach fte from frame table list
@@ -222,9 +229,11 @@ void frame_evict()
   pagedir_clear_page(frame_entry->thread->pagedir, ((struct spte *)frame_entry->supplement_page)->user_addr);
 
   supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
+          printf("here2-0-3-4\n");
 
   // free palloc'd page
   palloc_free_page(frame_entry->frame_addr);
+          printf("here2-0-3-5\n");
 
   // free malloc'd memory
   free(frame_entry);
