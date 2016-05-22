@@ -115,7 +115,7 @@ int load_page_for_write(void* faulted_user_addr)
     // }
     // new_spte->frame_locked = false;
     // return true;
-    return load_page_new(faulted_user_addr, true);
+    return load_page_new(faulted_user_page, true);
   }
   // page is in SPTE
   struct spte* spte_target = hash_entry(e, struct spte, elem);
