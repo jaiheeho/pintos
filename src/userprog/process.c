@@ -134,7 +134,8 @@ start_process (void *f_name)
 
   /***** ADDED CODE *****/
   //supplemental page table  for proj3 
-  sup_page_table_init(&(thread_current()->spt));
+  struct thread * curr = thread_current();
+  sup_page_table_init(&curr->spt);
 
   //deny write to executable 
   //executable of thread is saved in struct thread
@@ -150,7 +151,6 @@ start_process (void *f_name)
   /* If load failed, quit. */
   /***** ADDED CODE *****/
   //Palloc_free_page has to be done to free memory for proc name.
-  struct thread * curr = thread_current();
   if (!success) {
     palloc_free_page (file_name);
     curr->is_loaded = 0;
