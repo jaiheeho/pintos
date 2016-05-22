@@ -63,7 +63,7 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
       //swap_free_slot(target->swap_idx);
     }
   // 3) free spte
-  free(target);
+  spte_free(target);
 }
 /* *************************************************************
  * handlers to manage supplement hash table (which is hash)END *
@@ -229,7 +229,6 @@ int load_page_file_lazy(void* user_page_addr, struct file *file, off_t ofs,
   new_spte->frame_locked = false;
   return true;
 }
-
 
 int load_page_swap(struct spte* spte_target)
 {
