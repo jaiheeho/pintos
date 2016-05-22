@@ -172,34 +172,34 @@ int load_page_for_read(void* faulted_user_addr)
   {
     //first find spte_target from the spte of thread
     spte_target = hash_entry(e, struct spte, elem);
-    if (spte_target->wait_for_loading)
-    {
-      //seek executable file.
-      struct file *executable = thread_current()->executable;
-      file_seek (executable, spte_target->loading_info.ofs);
-      void* new_frame = frame_allocate(spte_target);
-      spte_target->phys_addr = new_frame;      
-      uint32_t page_read_bytes = spte_target->loading_info.page_read_bytes;
-      uint32_t page_zero_bytes = spte_target->loading_info.page_zero_bytes;
-      bool writable = spte_target->loading_info.writable;
-      //load from file
-      if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
-        {
-          printf("FILE READ FAIL\n");
-          return false;
+    // if (spte_target->wait_for_loading)
+    // {
+    //   //seek executable file.
+    //   struct file *executable = thread_current()->executable;
+    //   file_seek (executable, spte_target->loading_info.ofs);
+    //   void* new_frame = frame_allocate(spte_target);
+    //   spte_target->phys_addr = new_frame;      
+    //   uint32_t page_read_bytes = spte_target->loading_info.page_read_bytes;
+    //   uint32_t page_zero_bytes = spte_target->loading_info.page_zero_bytes;
+    //   bool writable = spte_target->loading_info.writable;
+    //   //load from file
+    //   if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
+    //     {
+    //       printf("FILE READ FAIL\n");
+    //       return false;
 
-        }
-      //set rest of bits to zero 
-      memset(new_frame+ page_read_bytes, 0, page_zero_bytes);
-      //install the page in user page table
-      if(install_page(spte_target->user_addr, new_frame, writable) == false)
-        {
-          frame_free(new_frame);
-          return 0;
-        }
-    }
-    else
-    {
+    //     }
+    //   //set rest of bits to zero 
+    //   memset(new_frame+ page_read_bytes, 0, page_zero_bytes);
+    //   //install the page in user page table
+    //   if(install_page(spte_target->user_addr, new_frame, writable) == false)
+    //     {
+    //       frame_free(new_frame);
+    //       return 0;
+    //     }
+    // }
+    // else
+    // {
       if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
       {
     //printf("AAAAAAAAAAAAA\n");
@@ -210,7 +210,7 @@ int load_page_for_read(void* faulted_user_addr)
       {
         return 0;
       }
-    }
+    // }
   }
   return 1;
 }
@@ -229,7 +229,7 @@ int load_page_new(void* user_page_addr, bool writable)
   new_spte->dirty = false;
   new_spte->writable = writable;
   new_spte->swap_idx = -1;
-  new_spte->wait_for_loading = false;
+  // new_spte->wait_for_loading = false;
   //printf("CP1\n");
   //get the spte for this addr
   struct hash *spt = &thread_current()->spt;

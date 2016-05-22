@@ -80,8 +80,8 @@ process_execute (const char *file_name)
   struct thread *c=NULL;
 
   //Find a newly made child process from me(parent of child)
-  for(iter_child = list_begin(child_list);
-    iter_child != list_tail(child_list); iter_child = list_next(iter_child))
+  for(iter_child = list_begin(child_list); iter_child != list_tail(child_list); 
+    iter_child = list_next(iter_child))
   {
     child = list_entry(iter_child, struct thread, child_elem);
     if (child->tid == tid)
