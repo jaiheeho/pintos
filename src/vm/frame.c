@@ -136,8 +136,6 @@ void frame_free(struct fte* fte_to_free)
   sema_up(&frame_table_lock);
 }
 
-
-
 /************************************************************************
 * FUNCTION : frame_free_nolock                                          *
 * Input : fte pointer to freee                                          *

@@ -107,8 +107,10 @@ int load_page_for_write(void* faulted_user_addr)
     new_spte->phys_addr = new_frame;
     if(install_page( faulted_user_page, new_frame, true) == false)
     {
+      hash_delete(thread_current()->spt, &new_spte->hash_elem);
+      free(new_spte);
       frame_free(new_frame);
-      return 0;
+      return false;
     }
     new_spte->frame_locked = false;
     return true;
@@ -132,6 +134,7 @@ int load_page_for_write(void* faulted_user_addr)
     file_seek (executable, spte_target->loading_info.ofs);
     if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
     {
+      frame_free(new_frame);
       printf("FILE READ FAIL\n");
       return false;
     }
@@ -173,7 +176,7 @@ int load_page_for_read(void* faulted_user_addr)
 
   //For reading memery we don't have to allocate new frame.
   if(e == NULL)
-    return 0;
+    return false;
   // page is in SPTE
   struct spte* spte_target = hash_entry(e, struct spte, elem);
   //(1) wait_for_loading flag is true -> lazy loading from the code
@@ -197,16 +200,17 @@ int load_page_for_read(void* faulted_user_addr)
     file_seek (executable, spte_target->loading_info.ofs);
     if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
     {
-        printf("FILE READ FAIL\n");
-        return false;
+      frame_free(new_frame);
+      printf("FILE READ FAIL\n");
+      return false;
     }
     //set rest of bits to zero 
     memset(new_frame+ page_read_bytes, 0, page_zero_bytes);
     //install the page in user page table
     if(install_page( faulted_user_page, new_frame, writable) == false)
     {
-        frame_free(new_frame);
-        return 0;
+      frame_free(new_frame);
+      return false;
     }
   }
   //(2)not waiting for loading, Swap in 
@@ -218,25 +222,27 @@ int load_page_for_read(void* faulted_user_addr)
     }
     if(!load_page_swap(spte_target))
     {
-      return 0;
+      return false;
     }
   }
-  return 1;
+  return true;
 }
 
 int load_page_new(void* user_page_addr, bool writable)
 {
-  // create new spte
+  //Create new spte
   struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
   if(new_spte == NULL) return false;
 
-  //additional initialization (incuding allocating framd and install page) 
+  //Additional initialization (incuding allocating framd and install page) 
   new_spte->writable = writable;
   void* new_frame = frame_allocate(new_spte);
   new_spte->phys_addr = new_frame;
   if(install_page(user_page_addr, new_frame, writable) == false)
   {
     frame_free(new_frame);
+    hash_delete(thread_current()->spt, &new_spte->hash_elem);
+    free(new_spte);
     return false;
   }
   new_spte->frame_locked = false;
@@ -247,27 +253,32 @@ int load_page_new(void* user_page_addr, bool writable)
 int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
 		   uint32_t page_read_bytes, uint32_t page_zero_bytes, bool writable)
 {
-  // create new spte
+  //Create new spte
   struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
   if(new_spte == NULL) return false;
 
-  //additional initialization (incuding allocating framd and install page) 
+  //Additional initialization (incuding allocating framd and install page) 
   new_spte->writable = writable;
   void* new_frame = frame_allocate(new_spte);
   new_spte->phys_addr = new_frame;
 
-  //load from file
+  //Load from file
   if(file_read(file, new_frame, page_read_bytes) != (int) page_read_bytes)
   {
-      printf("FILE READ FAIL\n");
-      return false;
+    printf("FILE READ FAIL\n");
+    frame_free(new_frame);
+    hash_delete(thread_current()->spt, &new_spte->hash_elem);
+    free(new_spte);      
+    return false;
   }
   memset(new_frame + page_read_bytes, 0, page_zero_bytes);
   if(install_page(user_page_addr, new_frame, writable) == false)
-    {
-      frame_free(new_frame);
-      return false;
-    }
+  {
+    frame_free(new_frame);
+    hash_delete(thread_current()->spt, &new_spte->hash_elem);
+    free(new_spte);
+    return false;
+  }
   new_spte->frame_locked = false;
   return 1;
 }
