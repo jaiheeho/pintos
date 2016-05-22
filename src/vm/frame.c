@@ -158,16 +158,6 @@ void frame_free_nolock(struct fte* fte_to_free)
   free(fte_to_free);
 }
 
-
-
-
-
-
-
-
-
-
-
 /************************************************************************
 * FUNCTION : frame_evict                                                *
 * Input : supplement_page pointer                                       *
@@ -185,8 +175,6 @@ void frame_evict()
 
   //printf("frame_evict:\n");
 
-
-  
   //start from the beginning of table.
 
   for (iter = list_begin(&frame_table);;)
@@ -218,9 +206,7 @@ void frame_evict()
       if(iter == list_end(&frame_table))
 	{
 	  iter = list_begin(&frame_table);
-	}
-      
-      
+	}  
       
     }
   
@@ -236,18 +222,11 @@ void frame_evict()
 
   supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
 
-
-
-
   // free palloc'd page
   palloc_free_page(frame_entry->frame_addr);
 
   // free malloc'd memory
   free(frame_entry);
-
-
-
-
 
   //frame_free_nolock(frame_entry);
 
