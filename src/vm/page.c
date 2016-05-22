@@ -217,7 +217,7 @@ int load_page_for_read(void* faulted_user_addr)
       if (executable == NULL)
         printf("EXEC NULL in load_page_read\n");
 
-      printf("off_t in load_page_read :%d",spte_target->loading_info.ofs);      
+      printf("off_t in load_page_read :%d\n",spte_target->loading_info.ofs);      
       file_seek (executable, spte_target->loading_info.ofs);
       if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
         {
