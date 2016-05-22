@@ -181,6 +181,8 @@ page_fault (struct intr_frame *f)
       printf("faulted \n");
       if (!load_page_for_write(fault_addr))
         PANIC("Exceeded STACK_MAX");
+      printf("here5\n");
+
     }
     else
     {

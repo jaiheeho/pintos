@@ -320,14 +320,17 @@ loading_from_executable(struct spte* spte_target)
 {
   //given address if waiting for loading. find elf  and allocate frame, read data from the disk to memory.
   struct file *executable = thread_current()->executable;
+          printf("here2-0\n");
+
   void* new_frame = frame_allocate(spte_target);
+        printf("here2-1\n");
 
   //changing wait_for_loading flag and initialize values;
   spte_target->phys_addr = new_frame;      
   uint32_t page_read_bytes = spte_target->loading_info.page_read_bytes;
   uint32_t page_zero_bytes = spte_target->loading_info.page_zero_bytes;
   bool writable = spte_target->writable;
-        printf("here2\n");
+        printf("here2-2\n");
 
   //reading
   file_seek (executable, spte_target->loading_info.ofs);
@@ -351,6 +354,7 @@ loading_from_executable(struct spte* spte_target)
 
   spte_target->wait_for_loading = false;
   spte_target->present = true;
+
   return true;
 }
 
