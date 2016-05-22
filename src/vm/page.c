@@ -373,7 +373,7 @@ spte_free(struct spte* spte_to_free)
 {
   struct hash *spt = &thread_current()->spt;
   // find the spte with infos above(traverse spt)
-  struct hash_elem *e = hash_find(spt, &spte_to_free.elem);
+  struct hash_elem *e = hash_find(spt, &spte_to_free->elem);
   hash_delete(spt, e);
 }
 
