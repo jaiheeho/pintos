@@ -172,7 +172,7 @@ int load_page_new(void* user_page_addr, bool writable)
 
   //Additional initialization (incuding allocating framd and install page) 
   new_spte->writable = writable;
-  void* new_frame = framec_allocate(new_spte);
+  void* new_frame = frame_allocate(new_spte);
   new_spte->phys_addr = new_frame;
   if(install_page(user_page_addr, new_frame, writable) == false)
   {
