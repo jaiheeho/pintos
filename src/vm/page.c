@@ -104,8 +104,6 @@ int load_page_for_write(void* faulted_user_addr)
   //(2) SWAPED in, bring it into memory again
   if (spte_target->wait_for_loading)
   {
-        printf("here1\n");
-
     return loading_from_executable(spte_target);
   }
   else
@@ -226,7 +224,7 @@ int load_page_file_lazy(void* user_page_addr, struct file *file, off_t ofs,
   new_spte->wait_for_loading = true;
   new_spte->writable = writable;
 
-  //for loading information
+  //for loading
   new_spte->loading_info.page_read_bytes = page_read_bytes;
   new_spte->loading_info.page_zero_bytes = page_zero_bytes;
   new_spte->loading_info.ofs = ofs;
@@ -320,17 +318,13 @@ loading_from_executable(struct spte* spte_target)
 {
   //given address if waiting for loading. find elf  and allocate frame, read data from the disk to memory.
   struct file *executable = thread_current()->executable;
-          printf("here2-0\n");
-
   void* new_frame = frame_allocate(spte_target);
-        printf("here2-1\n");
 
   //changing wait_for_loading flag and initialize values;
   spte_target->phys_addr = new_frame;      
   uint32_t page_read_bytes = spte_target->loading_info.page_read_bytes;
   uint32_t page_zero_bytes = spte_target->loading_info.page_zero_bytes;
   bool writable = spte_target->writable;
-        printf("here2-2\n");
 
   //reading
   file_seek (executable, spte_target->loading_info.ofs);
@@ -340,8 +334,6 @@ loading_from_executable(struct spte* spte_target)
     printf("FILE READ FAIL\n");
     return false;
   }
-          printf("here3\n");
-
   //set rest of bits to zero 
   memset(new_frame+ page_read_bytes, 0, page_zero_bytes);
   //install the page in user page table
@@ -350,11 +342,8 @@ loading_from_executable(struct spte* spte_target)
     frame_free(new_frame);
     return false;
   }
-            printf("here4\n");
-
   spte_target->wait_for_loading = false;
   spte_target->present = true;
-
   return true;
 }
 

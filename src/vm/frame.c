@@ -95,11 +95,17 @@ void* frame_allocate(struct spte* supplement_page)
       new_fte_entry->supplement_page = (struct spte *)supplement_page;
       
       // insert into frame table
-      list_push_back(&frame_table, &new_fte_entry->elem);
       if (list_empty(&frame_table))
+      {
         clock_head = list_head(&frame_table);
+      }
+      else
+      {
+        list_push_back(&frame_table, &new_fte_entry->elem);
+      }
 
-              printf("here2-0-5\n");
+
+      printf("here2-0-5\n");
 
       break;
     }              
@@ -211,7 +217,7 @@ void frame_evict()
   frame_entry= list_entry(iter, struct fte, elem);
   supplement_page = (struct spte*)frame_entry->supplement_page;
 
-          printf("here2-0-3-3\n");
+    printf("here2-0-3-3\n");
 
   supplement_page->present = false;  
   //detach fte from frame table list
