@@ -15,6 +15,7 @@
 struct spte* create_new_spte_insert_to_spt(void *user_addr);
 struct hash_elem* found_hash_elem_from_spt(void *faulted_user_page);
 bool install_page (void *upage, void *kpage, bool writable);
+void spte_free(struct spte* spte_to_free);
 
 /* *************************************************************
  * handlers to manage supplement hash table (which is hash)    *
@@ -107,8 +108,7 @@ int load_page_for_write(void* faulted_user_addr)
     new_spte->phys_addr = new_frame;
     if(install_page( faulted_user_page, new_frame, true) == false)
     {
-      hash_delete(thread_current()->spt, &new_spte->elem);
-      free(new_spte);
+      spte_free(new_spte);
       frame_free(new_frame);
       return false;
     }
@@ -135,7 +135,6 @@ int load_page_for_write(void* faulted_user_addr)
     if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
     {
       frame_free(new_frame);
-      printf("FILE READ FAIL\n");
       return false;
     }
     //set rest of bits to zero 
@@ -241,8 +240,7 @@ int load_page_new(void* user_page_addr, bool writable)
   if(install_page(user_page_addr, new_frame, writable) == false)
   {
     frame_free(new_frame);
-    hash_delete(thread_current()->spt, &new_spte->elem);
-    free(new_spte);
+    spte_free(new_spte);
     return false;
   }
   new_spte->frame_locked = false;
@@ -267,16 +265,14 @@ int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
   {
     printf("FILE READ FAIL\n");
     frame_free(new_frame);
-    hash_delete(thread_current()->spt, &new_spte->elem);
-    free(new_spte);      
+    spte_free(new_spte);
     return false;
   }
   memset(new_frame + page_read_bytes, 0, page_zero_bytes);
   if(install_page(user_page_addr, new_frame, writable) == false)
   {
     frame_free(new_frame);
-    hash_delete(thread_current()->spt, &new_spte->elem);
-    free(new_spte);
+    spte_free(new_spte);
     return false;
   }
   new_spte->frame_locked = false;
@@ -370,6 +366,15 @@ stack_growth(void *user_addr)
 {
   void* new_stack_page = pg_round_down(user_addr);
   load_page_for_write(new_stack_page);
+}
+
+void 
+spte_free(struct spte* spte_to_free)
+{
+  struct hash *spt = &thread_current()->spt;
+  // find the spte with infos above(traverse spt)
+  struct hash_elem *e = hash_find(spt, &spte_to_free.elem);
+  hash_delete(spt, e);
 }
 
 bool
