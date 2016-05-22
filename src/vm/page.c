@@ -107,7 +107,7 @@ int load_page_for_write(void* faulted_user_addr)
     new_spte->phys_addr = new_frame;
     if(install_page( faulted_user_page, new_frame, true) == false)
     {
-      hash_delete(thread_current()->spt, &new_spte->hash_elem);
+      hash_delete(thread_current()->spt, &new_spte->elem);
       free(new_spte);
       frame_free(new_frame);
       return false;
@@ -241,7 +241,7 @@ int load_page_new(void* user_page_addr, bool writable)
   if(install_page(user_page_addr, new_frame, writable) == false)
   {
     frame_free(new_frame);
-    hash_delete(thread_current()->spt, &new_spte->hash_elem);
+    hash_delete(thread_current()->spt, &new_spte->elem);
     free(new_spte);
     return false;
   }
@@ -267,7 +267,7 @@ int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
   {
     printf("FILE READ FAIL\n");
     frame_free(new_frame);
-    hash_delete(thread_current()->spt, &new_spte->hash_elem);
+    hash_delete(thread_current()->spt, &new_spte->elem);
     free(new_spte);      
     return false;
   }
@@ -275,7 +275,7 @@ int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
   if(install_page(user_page_addr, new_frame, writable) == false)
   {
     frame_free(new_frame);
-    hash_delete(thread_current()->spt, &new_spte->hash_elem);
+    hash_delete(thread_current()->spt, &new_spte->elem);
     free(new_spte);
     return false;
   }
