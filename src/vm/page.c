@@ -111,6 +111,10 @@ int load_page(void* faulted_user_addr)
       // load n. if this fails, kernel will panic.
       // thus, we dont have to cleanup new_spte
       void* new_frame = frame_allocate(new_spte);
+      if (new_fream == NULL)
+      {
+        hash_delete(spt, &new_spte->elem);
+      }
       new_spte->phys_addr = new_frame;
       
       //install the page in user page table
@@ -121,8 +125,6 @@ int load_page(void* faulted_user_addr)
     }
   else  // page is in spte.(in swap space)
     {
-
-
       spte_target = hash_entry(e, struct spte, elem);
       if (spte_target->wait_for_loading)
       {
@@ -168,21 +170,7 @@ int load_page(void* faulted_user_addr)
           return 0;
         }
       }
-      
-      /*
-      if(spte_target->status == ON_MEM)
-	{
-	  // page is already on memory. wth?
-	  PANIC("...");
-	}
-      else if(spte_target->status == ON_SWAP)
-	{
-	  // the page is in swap space. bring it in
-	  void* new_frame = frame_allocate(spte_target);
-	  swap_remove(new_frame, spte_target->swap_idx);
-	  install_page(spte_target->user_addr, spte_target->phys_addr, writable);
-	}
-      */
+
     }
   return 1;
 }
@@ -377,30 +365,7 @@ int load_page_file_lazy(void* user_page_addr, struct file *file, off_t ofs,
   struct hash *spt = &thread_current()->spt;
   //insert
   hash_insert(spt, &(new_spte->elem));
-  //printf("CP2\n");
-  // load n. if this fails, kernel will panic.
-  // thus, we dont have to cleanup new_spte
-  // void* new_frame = frame_allocate(new_spte);
-  // //printf("CP2.5\n");
-  // new_spte->phys_addr = new_frame;
-  //printf("CP3\n");
 
-
-  //load from file
-  // if(file_read(file, new_frame, page_read_bytes) != (int) page_read_bytes)
-  //   {
-  //     printf("FILE READ FAIL\n");
-  //     return false;
-
-  //   }
-  // memset(new_frame + page_read_bytes, 0, page_zero_bytes);
-
-  //install the page in user page table
-  // if(install_page(new_spte->user_addr, new_spte->phys_addr, writable) == false)
-  //   {
-  //     frame_free(new_frameexecutable);
-  //     return 0;
-  //   }
   new_spte->frame_locked = false;
   return 1;
 }
