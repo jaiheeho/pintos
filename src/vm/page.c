@@ -63,7 +63,7 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
       //swap_free_slot(target->swap_idx);
     }
   // 3) free spte
-  spte_free(target);
+  free(target);
 }
 /* *************************************************************
  * handlers to manage supplement hash table (which is hash)END *
