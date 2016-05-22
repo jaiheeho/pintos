@@ -239,14 +239,13 @@ int load_page_new(void* user_page_addr, bool writable)
     frame_free(new_frame);
     return false;
   }
-
   new_spte->frame_locked = false;
   return true;
 }
 
+
 int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
-		   uint32_t page_read_bytes, uint32_t page_zero_bytes,
-		   bool writable)
+		   uint32_t page_read_bytes, uint32_t page_zero_bytes, bool writable)
 {
   // create new spte
   struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
@@ -274,8 +273,7 @@ int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
 }
 
 int load_page_file_lazy(void* user_page_addr, struct file *file, off_t ofs,
-       uint32_t page_read_bytes, uint32_t page_zero_bytes,
-       bool writable)
+       uint32_t page_read_bytes, uint32_t page_zero_bytes, bool writable)
 {
   // create new spte
   struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
@@ -301,11 +299,7 @@ int load_page_swap(struct spte* spte_target)
   {
     // the page is in swap space. bring it in
     void* new_frame = frame_allocate(spte_target);
-    if(new_frame == NULL)
-  	{
-  	  printf("load_page_swap: frame allocate error\n");
-  	  return 0;
-  	}
+
     swap_remove(new_frame, spte_target->swap_idx);
     install_page(spte_target->user_addr, spte_target->phys_addr, writable);
   }
