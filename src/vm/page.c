@@ -99,22 +99,6 @@ int load_page_for_write(void* faulted_user_addr)
   // if faulted_user_addr is not in SPT
   if(e == NULL)
   {
-    // no such page. check validity of addr and load new page?
-    // create new spte
-    // struct spte * new_spte = create_new_spte_insert_to_spt(faulted_user_page);
-    // if(new_spte == NULL) return false;
-    // //additional initialization (incuding allocating framd and install page) 
-    // new_spte->writable = true;
-    // void* new_frame = frame_allocate(new_spte);
-    // new_spte->phys_addr = new_frame;
-    // if(install_page( faulted_user_page, new_frame, true) == false)
-    // {
-    //   spte_free(new_spte);
-    //   frame_free(new_frame);
-    //   return false;
-    // }
-    // new_spte->frame_locked = false;
-    // return true;
     return load_page_new(faulted_user_page, true);
   }
   // page is in SPTE
