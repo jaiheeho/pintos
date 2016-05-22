@@ -27,7 +27,7 @@ struct spte {
   enum spte_status status;  //deprecated
   void* user_addr;
   void* phys_addr;
-  void* fte;
+  struct fte* fte;
   bool present;
   bool dirty;
   int swap_idx; // swap slot number
@@ -41,7 +41,7 @@ struct spte {
 /* frame table entry */
 struct fte {
   void* frame_addr;
-  void* supplement_page;
+  struct spte* supplement_page;
   struct thread* thread;
   int use;
   bool frame_locked;

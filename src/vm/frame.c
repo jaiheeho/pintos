@@ -81,13 +81,13 @@ void* frame_allocate(struct spte* supplement_page)
       // configure elements of fte
       new_fte_entry->frame_addr = new_frame;
       new_fte_entry->use = 1;
-      new_fte_entry->thread = (void*)thread_current();
+      new_fte_entry->thread = thread_current();
       supplement_page->frame_locked = true;
 
       //link to spte
       supplement_page->phys_addr = new_frame;
-      supplement_page->fte = (void *)new_fte_entry;
-      new_fte_entry->supplement_page = (void *)supplement_page;
+      supplement_page->fte = new_fte_entry;
+      new_fte_entry->supplement_page = supplement_page;
       
       // insert into frame table 
       //if table is empty, adjust clck_head;
@@ -172,11 +172,11 @@ void frame_evict()
     return;
   if (clock_head == NULL)
     clock_head = list_begin(&frame_table);
-  
+
   for (iter = clock_head ;;)
   {
     frame_entry= list_entry(iter, struct fte, elem);
-    struct spte *paired_spte = (struct spte*)frame_entry->supplement_page;  
+    struct spte *paired_spte = frame_entry->supplement_page;  
     //if(paired_spte->user_addr >= (void*)0xb0000000
     //printf("user_addr: %0x\n", paired_spte->user_addr);
 	  if(pagedir_is_accessed(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
@@ -196,8 +196,8 @@ void frame_evict()
   }
   
   frame_entry= list_entry(iter, struct fte, elem);
-  supplement_page = (struct spte*)frame_entry->supplement_page;
-  t = (struct thread *)frame_entry->thread;
+  supplement_page = frame_entry->supplement_page;
+  t = frame_entry->thread;
   supplement_page->present = false; 
 
   //detach fte from frame table list
