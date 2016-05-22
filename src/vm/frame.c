@@ -211,7 +211,7 @@ void frame_evict()
   if(list_next(iter) == list_end(&frame_table))
   {
     list_remove(&frame_entry->elem);
-    if (list_empty(f&rame_table))
+    if (list_empty(&frame_table))
       clock_head == NULL;
     else
       clock_head = list_begin(&frame_table);
