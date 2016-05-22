@@ -99,7 +99,7 @@ int load_page_for_write(void* faulted_user_addr)
   // if faulted_user_addr is not in SPT
   if(e == NULL)
   {
-    no such page. check validity of addr and load new page?
+    //no such page. check validity of addr and load new page?
     create new spte
     struct spte * new_spte = create_new_spte_insert_to_spt(faulted_user_page);
     if(new_spte == NULL) return false;
