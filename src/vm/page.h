@@ -52,7 +52,7 @@ void sup_page_table_init(struct hash*);
 void sup_page_table_free(struct hash*);
 int load_page_for_write(void*);
 int load_page_for_read(void*);
-int stack_growth(void*);
+void stack_growth(void*);
 int load_page_swap(struct spte*);
 int load_page_new(void*, bool);
 int load_page_file(void*, struct file*, off_t, uint32_t, uint32_t, bool);

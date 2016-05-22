@@ -329,7 +329,7 @@ create_new_spte_insert_to_spt(void *user_addr)
   return new_spte;
 }
 
-struct hase_elem* 
+struct hash_elem* 
 found_hash_elem_from_spt(void *faulted_user_page)
 {
   //get the spte for this addr
@@ -342,7 +342,7 @@ found_hash_elem_from_spt(void *faulted_user_page)
   return e;
 }
 
-int 
+void 
 stack_growth(void *user_addr)
 {
   void* new_stack_page = pg_round_down(user_addr);
