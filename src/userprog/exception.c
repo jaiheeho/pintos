@@ -179,7 +179,7 @@ page_fault (struct intr_frame *f)
   {
     if (write)
     {
-      if (!load_page_for_read(fault_addr))
+      if (!load_page(fault_addr))
         PANIC("Exceeded STACK_MAX");
     }
     else
