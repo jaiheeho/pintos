@@ -13,7 +13,7 @@
 #include <string.h>
 
 struct spte* create_new_spte_insert_to_spt(void *user_addr);
-struct hase_elem* found_hash_elem_from_spt(void *faulted_user_page);
+struct hash_elem* found_hash_elem_from_spt(void *faulted_user_page);
 bool install_page (void *upage, void *kpage, bool writable);
 
 /* *************************************************************
