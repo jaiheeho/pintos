@@ -486,9 +486,9 @@ load (const char *file_name, void (**eip) (void), void **esp)
     }
   //deny write to executable 
   //executable of thread is saved in struct thread
-  curr->executable = filesys_open(file_name);
-  file_deny_write(curr->executable);
-  
+  thread_current()->executable = filesys_open(file_name);
+  file_deny_write(thread_current()->executable);
+
   /* Read and verify executable header. */
   if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
       || memcmp (ehdr.e_ident, "\177ELF\1\1\1", 7)
