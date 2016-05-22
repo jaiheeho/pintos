@@ -486,8 +486,8 @@ load (const char *file_name, void (**eip) (void), void **esp)
     }
   //deny write to executable 
   //executable of thread is saved in struct thread
-  thread_current()->executable = filesys_open(file_name);
-  file_deny_write(thread_current()->executable);
+  thread_current()->executable = file;
+  file_deny_write(file);
 
   /* Read and verify executable header. */
   if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
@@ -572,7 +572,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
 
  done:
   /* We arrive here whether the load is successful or not. */
-  file_close (file);
+  //file_close (file);
   return success;
 }
 
@@ -658,7 +658,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 
       /*********** MODIFIED CODE - PROJ3-2****************/
       //printf("read_bytes=%d zero_bytes=%d\n", read_bytes, zero_bytes);
-      if(!load_page_file_lazy(upage, file, ofs, page_read_bytes,
+      if(!load_page_file(upage, file, ofs, page_read_bytes,
 			 page_zero_bytes, writable))
     	{
     	  printf("load_segment: load_page_file failed\n");
