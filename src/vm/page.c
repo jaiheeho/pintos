@@ -96,7 +96,6 @@ int load_page_for_write(void* faulted_user_addr)
   // if faulted_user_addr is not in SPT
   if(e == NULL)
   {
-    printf("here\n");
     return load_page_new(faulted_user_page, true);
   }
   // page is in SPTE
@@ -105,10 +104,14 @@ int load_page_for_write(void* faulted_user_addr)
   //(2) SWAPED in, bring it into memory again
   if (spte_target->wait_for_loading)
   {
+        printf("here1\n");
+
     return loading_from_executable(spte_target);
   }
   else
   {
+        printf("here2\n");
+
     //given address is not waiting for loading => just swap in
     if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
     {
@@ -162,7 +165,6 @@ int load_page_for_read(void* faulted_user_addr)
 
 int load_page_new(void* user_page_addr, bool writable)
 {
-  printf("here2\n");
   //Create new spte
   struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
   if(new_spte == NULL) return false;
