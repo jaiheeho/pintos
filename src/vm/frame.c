@@ -170,7 +170,6 @@ void frame_evict()
   void* new;
 
   //printf("frame_evict:\n");
-  // printf("here2-0-3-0\n");
 
   //start from the beginning of table.
   if (iter == NULL)
@@ -178,11 +177,9 @@ void frame_evict()
   for (iter = clock_head ;;)
   {
     frame_entry= list_entry(iter, struct fte, elem);
-    struct spte *paired_spte = (struct spte*)frame_entry->supplement_page;
-
+    struct spte *paired_spte = (struct spte*)frame_entry->supplement_page;  
     //if(paired_spte->user_addr >= (void*)0xb0000000
     //printf("user_addr: %0x\n", paired_spte->user_addr);
-    // printf("here2-0-3-1\n");
 	  if(pagedir_is_accessed(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
     {
       pagedir_set_accessed(frame_entry->thread->pagedir, paired_spte->user_addr, false);
@@ -215,7 +212,7 @@ void frame_evict()
   }
 
   //detach frame from spte (this is for ensurance)
-  pagedir_clear_page(frame_entry->thread->pagedir, supplement_page->user_addr);
+  pagedir_clear_page(t->pagedir, supplement_page->user_addr);
 
   supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
   // free palloc'd page
