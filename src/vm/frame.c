@@ -80,7 +80,7 @@ void* frame_allocate(struct spte* supplement_page)
       // configure elements of fte
       new_fte_entry->frame_addr = new_frame;
       new_fte_entry->use = 1;
-      new_fte_entry->thread = thread_current();
+      new_fte_entry->thread = (void*)thread_current();
       supplement_page->frame_locked = true;
 
       //link to spte
@@ -88,7 +88,8 @@ void* frame_allocate(struct spte* supplement_page)
       supplement_page->fte = (void *)new_fte_entry;
       new_fte_entry->supplement_page = (void *)supplement_page;
       
-      // insert into frame table
+      // insert into frame table 
+      //if table is empty, adjust clck_head;
       if (list_empty(&frame_table))
       {
         list_push_back(&frame_table, &new_fte_entry->elem);
@@ -165,12 +166,15 @@ void frame_evict()
   struct list_elem *iter;
   struct fte *frame_entry;
   struct spte *supplement_page;
+  struct thread *t;
   void* new;
 
   //printf("frame_evict:\n");
   // printf("here2-0-3-0\n");
 
   //start from the beginning of table.
+  if (iter == NULL)
+    PANIC("clock head null errot\n")
   for (iter = clock_head ;;)
   {
     frame_entry= list_entry(iter, struct fte, elem);
@@ -197,6 +201,7 @@ void frame_evict()
   
   frame_entry= list_entry(iter, struct fte, elem);
   supplement_page = (struct spte*)frame_entry->supplement_page;
+  t = (struct thread *)frame_entry->thread;
   supplement_page->present = false; 
 
   //detach fte from frame table list
