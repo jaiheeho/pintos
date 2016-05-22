@@ -149,8 +149,7 @@ page_fault (struct intr_frame *f)
   user = (f->error_code & PF_U) != 0;
   
   /***** ADDED CODE *****/
-  /*Deferencing NULL should be exited instead of killed (test : bad_read)*/
-  /*Deferencing addr above 0xC0000000 should be exited instead of killed (test : bad_read)*/
+  printf("----------------------------------------------\n")
   printf("faulted_addr: %0x\n", fault_addr);
   printf("f->esp : %0x\n", f->esp);
   printf("Errorcode : %d %d %d\n", not_present, write, user);
@@ -179,6 +178,7 @@ page_fault (struct intr_frame *f)
   {
     if (write)
     {
+      printf("faulted \n");
       if (!load_page_for_write(fault_addr))
         PANIC("Exceeded STACK_MAX");
     }
