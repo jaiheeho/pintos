@@ -111,7 +111,7 @@ int load_page(void* faulted_user_addr)
       // load n. if this fails, kernel will panic.
       // thus, we dont have to cleanup new_spte
       void* new_frame = frame_allocate(new_spte);
-      if (new_fream == NULL)
+      if (new_frame == NULL)
       {
         hash_delete(spt, &new_spte->elem);
       }
