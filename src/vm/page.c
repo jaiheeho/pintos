@@ -99,24 +99,7 @@ int load_page_for_write(void* faulted_user_addr)
   // if faulted_user_addr is not in SPT
   if(e == NULL)
   {
-    //no such page. check validity of addr and load new page?
-    // create new spte
-    struct spte * new_spte = create_new_spte_insert_to_spt(faulted_user_page);
-    if(new_spte == NULL) return false;
-    //additional initialization (incuding allocating framd and install page) 
-    new_spte->writable = true;
-    void* new_frame = frame_allocate(new_spte);
-    new_spte->phys_addr = new_frame;
-    if(install_page( faulted_user_page, new_frame, true) == false)
-    {
-      spte_free(new_spte);
-      frame_free(new_frame);
-      return false;
-    }
-    new_spte->frame_locked = false;
-    return true;
-    //why not below line?? ->eeor ???
-    //return load_page_new(faulted_user_page, true);
+    return load_page_new(faulted_user_page, true);
   }
   // page is in SPTE
   struct spte* spte_target = hash_entry(e, struct spte, elem);
@@ -195,8 +178,8 @@ int load_page_new(void* user_page_addr, bool writable)
   new_spte->phys_addr = new_frame;
   if(install_page(user_page_addr, new_frame, writable) == false)
   {
-    spte_free(new_spte);
     frame_free(new_frame);
+    spte_free(new_spte);
     return false;
   }
   new_spte->frame_locked = false;
@@ -220,15 +203,15 @@ int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
   if(file_read(file, new_frame, page_read_bytes) != (int) page_read_bytes)
   {
     printf("FILE READ FAIL\n");
-    frame_free(new_frame);
     spte_free(new_spte);
+    frame_free(new_frame);
     return false;
   }
   memset(new_frame + page_read_bytes, 0, page_zero_bytes);
   if(install_page(user_page_addr, new_frame, writable) == false)
   {
-    frame_free(new_frame);
     spte_free(new_spte);
+    frame_free(new_frame);
     return false;
   }
   new_spte->frame_locked = false;
