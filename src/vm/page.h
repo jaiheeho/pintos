@@ -52,7 +52,7 @@ struct fte {
 
 void sup_page_table_init(struct hash*);
 void sup_page_table_free(struct hash*);
-int load_page(void*);
+int load_page_for_write(void*);
 int load_page_for_read(void*);
 int stack_growth(void*);
 int load_page_swap(struct spte*);

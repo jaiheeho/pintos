@@ -37,7 +37,6 @@ static bool spte_less_func(const struct hash_elem *a,
   else return false;
 
 }
-
 static void spte_destroyer_func(struct hash_elem *e, void *aux)
 {
   // 0) get the spte
@@ -73,7 +72,7 @@ void sup_page_table_free(struct hash* sup_page_table)
 }
 
 
-int load_page(void* faulted_user_addr)
+int load_page_for_write(void* faulted_user_addr)
 {
   //printf("load_page: faultaddr=%0x\n", faulted_user_addr);
   //printf("roundeddown: %0x\n", pg_round_down(faulted_user_addr));
@@ -409,11 +408,8 @@ int load_page_swap(struct spte* spte_target)
 
 int stack_growth(void *user_addr)
 {
-
   void* new_stack_page = pg_round_down(user_addr);
-  //printf("STACK_GROWTH: user_addr = %0x, newstackpage  = %0x\n", user_addr, new_stack_page);
-  load_page(new_stack_page);
-
+  load_page_for_write(new_stack_page);
 }
 bool
 install_page (void *upage, void *kpage, bool writable)
