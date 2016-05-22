@@ -97,6 +97,7 @@ void* frame_allocate(struct spte* supplement_page)
       // insert into frame table
       if (list_empty(&frame_table))
       {
+        list_push_back(&frame_table, &new_fte_entry->elem);
         clock_head = list_begin(&frame_table);
       }
       else
