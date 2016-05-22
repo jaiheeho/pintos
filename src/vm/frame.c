@@ -188,8 +188,6 @@ void frame_evict()
       // not recently used. commence eviction
       break;
     }
-    // printf("here2-0-3-2\n");
-
     iter = list_next(iter);
     if(iter == list_end(&frame_table))
   	{
@@ -199,10 +197,8 @@ void frame_evict()
   
   frame_entry= list_entry(iter, struct fte, elem);
   supplement_page = (struct spte*)frame_entry->supplement_page;
+  supplement_page->present = false; 
 
-    // printf("here2-0-3-3\n");
-
-  supplement_page->present = false;  
   //detach fte from frame table list
   list_remove(&frame_entry->elem);
   if (!list_empty(&frame_table))
@@ -217,12 +213,8 @@ void frame_evict()
   pagedir_clear_page(frame_entry->thread->pagedir, supplement_page->user_addr);
 
   supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
-    // printf("here2-0-3-4\n");
-
   // free palloc'd page
   palloc_free_page(frame_entry->frame_addr);
-    // printf("here2-0-3-5\n");
-
   // free malloc'd memory
   free(frame_entry);
 
