@@ -713,7 +713,6 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
   /*ADDED END*/
 
 
-
   /*ADDED CODE*/
   char *token_ptr;
   int argc = 0;

@@ -16,6 +16,7 @@ struct spte* create_new_spte_insert_to_spt(void *user_addr);
 struct hash_elem* found_hash_elem_from_spt(void *faulted_user_page);
 bool install_page (void *upage, void *kpage, bool writable);
 void spte_free(struct spte* spte_to_free);
+int loading_from_executable(struct spte* spte_target);
 
 /* *************************************************************
  * handlers to manage supplement hash table (which is hash)    *
@@ -121,30 +122,7 @@ int load_page_for_write(void* faulted_user_addr)
   //(2) SWAPED in, bring it into memory again
   if (spte_target->wait_for_loading)
   {
-    //given address is waiting for loading. find elf  and allocate frame, read data from the disk to memory.
-    struct file *executable = thread_current()->executable;
-    void* new_frame = frame_allocate(spte_target);
-    spte_target->phys_addr = new_frame;      
-    //changing wait_for_loading flag and initialize values;
-    spte_target->wait_for_loading = false;
-    uint32_t page_read_bytes = spte_target->loading_info.page_read_bytes;
-    uint32_t page_zero_bytes = spte_target->loading_info.page_zero_bytes;
-    bool writable = spte_target->writable;
-    //reading
-    file_seek (executable, spte_target->loading_info.ofs);
-    if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
-    {
-      frame_free(new_frame);
-      return false;
-    }
-    //set rest of bits to zero 
-    memset(new_frame+ page_read_bytes, 0, page_zero_bytes);
-    //install the page in user page table
-    if(install_page(faulted_user_page, new_frame, writable) == false)
-    {
-      frame_free(new_frame);
-      return false;
-    }
+    return loading_from_executable(spte_target);
   }
   else
   {
@@ -184,33 +162,7 @@ int load_page_for_read(void* faulted_user_addr)
   //(1) waiting for loading
   if (spte_target->wait_for_loading)
   { 
-    //given address if waiting for loading. find elf  and allocate frame, read data from the disk to memory.
-    struct file *executable = thread_current()->executable;
-    void* new_frame = frame_allocate(spte_target);
-
-    //changing wait_for_loading flag and initialize values;
-    spte_target->wait_for_loading = false;
-    spte_target->phys_addr = new_frame;      
-    uint32_t page_read_bytes = spte_target->loading_info.page_read_bytes;
-    uint32_t page_zero_bytes = spte_target->loading_info.page_zero_bytes;
-    bool writable = spte_target->writable;
-
-    //reading
-    file_seek (executable, spte_target->loading_info.ofs);
-    if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
-    {
-      frame_free(new_frame);
-      printf("FILE READ FAIL\n");
-      return false;
-    }
-    //set rest of bits to zero 
-    memset(new_frame+ page_read_bytes, 0, page_zero_bytes);
-    //install the page in user page table
-    if(install_page( faulted_user_page, new_frame, writable) == false)
-    {
-      frame_free(new_frame);
-      return false;
-    }
+    return loading_from_executable(spte_target);
   }
   //(2)not waiting for loading, Swap in 
   else
@@ -306,7 +258,6 @@ int load_page_swap(struct spte* spte_target)
   {
     // the page is in swap space. bring it in
     void* new_frame = frame_allocate(spte_target);
-
     swap_remove(new_frame, spte_target->swap_idx);
     install_page(spte_target->user_addr, spte_target->phys_addr, writable);
   }
@@ -375,6 +326,40 @@ spte_free(struct spte* spte_to_free)
   // find the spte with infos above(traverse spt)
   struct hash_elem *e = hash_find(spt, &spte_to_free->elem);
   hash_delete(spt, e);
+}
+
+int 
+loading_from_executable(struct spte* spte_target)
+{
+
+  //given address if waiting for loading. find elf  and allocate frame, read data from the disk to memory.
+  struct file *executable = thread_current()->executable;
+  void* new_frame = frame_allocate(spte_target);
+
+  //changing wait_for_loading flag and initialize values;
+  spte_target->phys_addr = new_frame;      
+  uint32_t page_read_bytes = spte_target->loading_info.page_read_bytes;
+  uint32_t page_zero_bytes = spte_target->loading_info.page_zero_bytes;
+  bool writable = spte_target->writable;
+
+  //reading
+  file_seek (executable, spte_target->loading_info.ofs);
+  if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
+  {
+    frame_free(new_frame);
+    printf("FILE READ FAIL\n");
+    return false;
+  }
+  //set rest of bits to zero 
+  memset(new_frame+ page_read_bytes, 0, page_zero_bytes);
+  //install the page in user page table
+  if(install_page( spte_target->user_addr, new_frame, writable) == false)
+  {
+    frame_free(new_frame);
+    return false;
+  }
+  spte_target->wait_for_loading = false;
+  return true;
 }
 
 bool
