@@ -242,7 +242,6 @@ int load_page_swap(struct spte* spte_target)
   {
     // the page is in swap space. bring it in
     void* new_frame = frame_allocate(spte_target);
-
     swap_remove(new_frame, spte_target->swap_idx);
     install_page(spte_target->user_addr, spte_target->phys_addr, writable);
   }
@@ -273,6 +272,7 @@ create_new_spte_insert_to_spt(void *user_addr)
   new_spte->dirty = false;
   new_spte->swap_idx = -1;
   new_spte->wait_for_loading = false;
+  new_spte->frame_locked = false;
   //insert
   hash_insert(spt, &(new_spte->elem));
   return new_spte;

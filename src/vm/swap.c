@@ -90,7 +90,7 @@ void swap_remove(char *addr, size_t idx){
 /************************************************************************
 * FUNCTION : swap_free_slot                                           	*
 * Input : swap index                                                    *
-* Purpose : free swap slot idx          				*
+* Purpose : free swap slot idx          								*
 ************************************************************************/
 void swap_free_slot(size_t idx){
 
@@ -108,19 +108,9 @@ void swap_free_slot(size_t idx){
 }
 
 
-
-
-
-
-
-
-
-
-
-
 /************************************************************************
 * FUNCTION : swap_table_free                                        	*
-* Purpose : free entire bitmap of swap table		      		*
+* Purpose : free entire bitmap of swap table		      				*
 ************************************************************************/
 void swap_table_free(){
 	//destroty swap_table (bitmap destroy)

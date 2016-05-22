@@ -105,7 +105,6 @@ void* frame_allocate(struct spte* supplement_page)
         list_push_back(&frame_table, &new_fte_entry->elem);
       }
 
-
       printf("here2-0-5\n");
 
       break;
@@ -185,7 +184,7 @@ void frame_evict()
   printf("here2-0-3-0\n");
 
   //start from the beginning of table.
-  for (iter = clock_head /*list_begin(&frame_table)*/;;)
+  for (iter = clock_head ;;)
   {
     frame_entry= list_entry(iter, struct fte, elem);
     struct spte *paired_spte = (struct spte*)frame_entry->supplement_page;
@@ -193,19 +192,15 @@ void frame_evict()
     //if(paired_spte->user_addr >= (void*)0xb0000000
     //printf("user_addr: %0x\n", paired_spte->user_addr);
     printf("here2-0-3-1\n");
-
-    if(paired_spte->frame_locked == false)
-  	{
-  	  if(pagedir_is_accessed(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
-	    {
-	      pagedir_set_accessed(frame_entry->thread->pagedir, paired_spte->user_addr, false);
-	    }
-  	  else
-      {
-        // not recently used. commence eviction
-        break;
-      }
-  	}
+	  if(pagedir_is_accessed(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
+    {
+      pagedir_set_accessed(frame_entry->thread->pagedir, paired_spte->user_addr, false);
+    }
+	  else
+    {
+      // not recently used. commence eviction
+      break;
+    }
     printf("here2-0-3-2\n");
 
     iter = list_next(iter);
@@ -231,17 +226,15 @@ void frame_evict()
       clock_head = list_next(iter);
   }
 
-
-
   //detach frame from spte (this is for ensurance)
   pagedir_clear_page(frame_entry->thread->pagedir, ((struct spte *)frame_entry->supplement_page)->user_addr);
 
   supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
-          printf("here2-0-3-4\n");
+    printf("here2-0-3-4\n");
 
   // free palloc'd page
   palloc_free_page(frame_entry->frame_addr);
-          printf("here2-0-3-5\n");
+    printf("here2-0-3-5\n");
 
   // free malloc'd memory
   free(frame_entry);
