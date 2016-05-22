@@ -140,16 +140,12 @@ int load_page_for_read(void* faulted_user_addr)
   if(e == NULL)
     return false;
   // page is in SPTE
+  //first find spte_target from the spte of thread
   struct spte* spte_target = hash_entry(e, struct spte, elem);
   //(1) wait_for_loading flag is true -> lazy loading from the code
-  //(2) SWAPED out, bring it into memory again
-  //first find spte_target from the spte of thread
-  //(1) waiting for loading
   if (spte_target->wait_for_loading)
   { 
-
     return loading_from_executable(spte_target);
-
   }
   //(2)not waiting for loading, Swap in 
   else
@@ -226,6 +222,7 @@ int load_page_file_lazy(void* user_page_addr, struct file *file, off_t ofs,
   if(new_spte == NULL) return false;
 
   //additional initialization
+  //wait_for_loading flag is important
   new_spte->wait_for_loading = true;
   new_spte->loading_info.page_read_bytes = page_read_bytes;
   new_spte->loading_info.page_zero_bytes = page_zero_bytes;
