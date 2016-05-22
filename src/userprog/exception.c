@@ -149,7 +149,7 @@ page_fault (struct intr_frame *f)
   user = (f->error_code & PF_U) != 0;
   
   /***** ADDED CODE *****/
-  printf("----------------------------------------------\n")
+  printf("----------------------------------------------\n");
   printf("faulted_addr: %0x\n", fault_addr);
   printf("f->esp : %0x\n", f->esp);
   printf("Errorcode : %d %d %d\n", not_present, write, user);
