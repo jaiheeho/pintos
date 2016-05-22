@@ -18,7 +18,6 @@ static struct list_elem *clock_head;
 
 void frame_free_nolock(struct fte* fte_to_free);
 
-
 /************************************************************************
 * FUNCTION : frame_table_init                                           *
 * Purpose : initialize frame-table                                      *

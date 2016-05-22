@@ -12,7 +12,7 @@
 #include "filesys/filesys.h"
 #include <string.h>
 
-struct spte* create_new_spte(void *user_addr);
+struct spte* create_new_spte_insert_to_spt(void *user_addr);
 bool install_page (void *upage, void *kpage, bool writable);
 
 /* *************************************************************
@@ -101,22 +101,14 @@ int load_page_for_write(void* faulted_user_addr)
     {
       // no such page. check validity of addr and load new page?
       // create new spte
-
-
-      struct spte * new_spte = create_new_spte(faulted_user_page);
+      struct spte * new_spte = create_new_spte_insert_to_spt(faulted_user_page);
       if(new_spte == NULL) return false;
-
       //additional initialization     
       new_spte->writable = writable;
-      // insert in spt
-      hash_insert(spt, &(new_spte->elem));
+
       // load n. if this fails, kernel will panic.
       // thus, we dont have to cleanup new_spte
       void* new_frame = frame_allocate(new_spte);
-      if (new_frame == NULL)
-      {
-        hash_delete(spt, &new_spte->elem);
-      }
 
       new_spte->phys_addr = new_frame;
       //install the page in user page table
@@ -132,20 +124,19 @@ int load_page_for_write(void* faulted_user_addr)
       spte_target = hash_entry(e, struct spte, elem);
       if (spte_target->wait_for_loading)
       {
-        //seek executable file.
-        struct file *executable = thread_current()->executable;
-              //allocate new frame
 
+        //given address if waiting for loading. find elf  and allocate frame, read data from the disk to memory.
+        struct file *executable = thread_current()->executable;
         void* new_frame = frame_allocate(spte_target);
-        if (!new_frame)
-          return false;
+        spte_target->phys_addr = new_frame;      
+
         //changing wait_for_loading flag and initialize values;
         spte_target->wait_for_loading = false;
-        spte_target->phys_addr = new_frame;      
         uint32_t page_read_bytes = spte_target->loading_info.page_read_bytes;
         uint32_t page_zero_bytes = spte_target->loading_info.page_zero_bytes;
         bool writable = spte_target->writable;
-        //seek offset from executable and load data from elf
+        
+        //reading
         file_seek (executable, spte_target->loading_info.ofs);
         if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
           {
@@ -155,7 +146,7 @@ int load_page_for_write(void* faulted_user_addr)
         //set rest of bits to zero 
         memset(new_frame+ page_read_bytes, 0, page_zero_bytes);
         //install the page in user page table
-        if(install_page(spte_target->user_addr, new_frame, writable) == false)
+        if(install_page(faulted_user_page, new_frame, writable) == false)
           {
             frame_free(new_frame);
             return 0;
@@ -166,18 +157,18 @@ int load_page_for_write(void* faulted_user_addr)
 
         if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
         {
-  	       //printf("AAAAAAAAAAAAA\n");
+  	       printf("Serious Problem\n");
         }
         //printf("load_page: spte_target: user_addr=%0x, present=%d, swap_idx=%d\n", 
         // spte_target->user_addr, spte_target->present, spte_target->swap_idx);
         if(!load_page_swap(spte_target))
         {
-          return 0;
+          return false;
         }
       }
 
     }
-  return 1;
+  return true;
 }
 int load_page_for_read(void* faulted_user_addr)
 {
@@ -198,7 +189,7 @@ int load_page_for_read(void* faulted_user_addr)
     return 0;
   // page is in SPTE
   //(1) wait_for_loading flag is true -> lazy loading from the code
-  //(2) SWOPED out, bring it into memory again
+  //(2) SWAPED out, bring it into memory again
   else  
   {
     //first find spte_target from the spte of thread
@@ -206,10 +197,9 @@ int load_page_for_read(void* faulted_user_addr)
 
     //(1) waiting for loading
     if (spte_target->wait_for_loading)
-    {
-      //seek executable file.
+    { 
+      //given address if waiting for loading. find elf  and allocate frame, read data from the disk to memory.
       struct file *executable = thread_current()->executable;
-      //allocate new frame
       void* new_frame = frame_allocate(spte_target);
       if (!new_frame)
         return false;
@@ -219,7 +209,8 @@ int load_page_for_read(void* faulted_user_addr)
       uint32_t page_read_bytes = spte_target->loading_info.page_read_bytes;
       uint32_t page_zero_bytes = spte_target->loading_info.page_zero_bytes;
       bool writable = spte_target->writable;
-      //seek offset from executable and load data from elf
+
+      //reading
       file_seek (executable, spte_target->loading_info.ofs);
       if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
         {
@@ -230,20 +221,19 @@ int load_page_for_read(void* faulted_user_addr)
       //set rest of bits to zero 
       memset(new_frame+ page_read_bytes, 0, page_zero_bytes);
       //install the page in user page table
-      if(install_page(spte_target->user_addr, new_frame, writable) == false)
+      if(install_page( faulted_user_page, new_frame, writable) == false)
         {
           frame_free(new_frame);
           return 0;
         }
     }
+    //(2)Swap in 
     else
     {
       if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
       {
-         //printf("AAAAAAAAAAAAA\n");
+        printf("Serious Problem\n");
       }
-      //printf("load_page: spte_target: user_addr=%0x, present=%d, swap_idx=%d\n", 
-      // spte_target->user_addr, spte_target->present, spte_target->swap_idx);
       if(!load_page_swap(spte_target))
       {
         return 0;
@@ -258,20 +248,15 @@ int load_page_new(void* user_page_addr, bool writable)
 {
   //printf("load_page_new: %0x", user_page_addr);
   // create new spte
-  struct spte * new_spte = create_new_spte(user_page_addr);
+  struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
   if(new_spte == NULL) return false;
 
   //additional Initialization
   new_spte->writable = writable;
-  //get the spte for this addr
-  struct hash *spt = &thread_current()->spt;
-  //insert
-  hash_insert(spt, &(new_spte->elem));
-  // load n. if this fails, kernel will panic.
-  // thus, we dont have to cleanup new_spte
+
   void* new_frame = frame_allocate(new_spte);
   new_spte->phys_addr = new_frame;
-  //printf("CP3\n");
+
   //install the page in user page table
   if(install_page(new_spte->user_addr, new_spte->phys_addr, writable) == false)
     {
@@ -299,30 +284,27 @@ int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
   struct hash *spt = &thread_current()->spt;
   //insert
   hash_insert(spt, &(new_spte->elem));
-  //printf("CP2\n");
+
   // load n. if this fails, kernel will panic.
   // thus, we dont have to cleanup new_spte
   void* new_frame = frame_allocate(new_spte);
-  //printf("CP2.5\n");
   new_spte->phys_addr = new_frame;
-  //printf("CP3\n");
 
   //load from file
   if(file_read(file, new_frame, page_read_bytes) != (int) page_read_bytes)
-    {
+  {
       printf("FILE READ FAIL\n");
       return false;
 
-    }
+  }
   memset(new_frame + page_read_bytes, 0, page_zero_bytes);
 
   //install the page in user page table
   if(install_page(new_spte->user_addr, new_spte->phys_addr, writable) == false)
-    {
-      frame_free(new_frame);
-      return 0;
-    }
-
+  {
+    frame_free(new_frame);
+    return 0;
+  }
   new_spte->frame_locked = false;
   return 1;
   
@@ -332,11 +314,7 @@ int load_page_file_lazy(void* user_page_addr, struct file *file, off_t ofs,
        uint32_t page_read_bytes, uint32_t page_zero_bytes,
        bool writable)
 {
-  //printf("load_page_file: %0x\n", user_page_addr);
-  //printf("rounded down: %0x\n", pg_round_down(user_page_addr));
-  // struct spte* new_spte = (struct spte*)malloc(sizeof(struct spte));
   // create new spte
-
   struct spte * new_spte = create_new_spte(user_page_addr);
   if(new_spte == NULL) return false;
 
@@ -385,9 +363,11 @@ int load_page_swap(struct spte* spte_target)
 }
 
 struct spte* 
-create_new_spte(void *user_addr)
+create_new_spte_insert_to_spt(void *user_addr)
 {
   struct spte* new_spte = (struct spte*)malloc(sizeof(struct spte));
+  struct hash *spt = &thread_current()->spt;
+
   //printf("CP0\n");
   if(new_spte == NULL) return NULL;
   new_spte->user_addr = user_addr;
@@ -396,9 +376,13 @@ create_new_spte(void *user_addr)
   new_spte->dirty = false;
   new_spte->swap_idx = -1;
   new_spte->wait_for_loading = false;
+  //insert
+  hash_insert(spt, &(new_spte->elem));
 
   return new_spte;
 }
+
+struct 
 
 
 int stack_growth(void *user_addr)
