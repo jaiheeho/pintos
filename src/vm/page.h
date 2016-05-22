@@ -20,7 +20,7 @@ struct fte;
 struct lazy_loading_info{
   uint32_t page_read_bytes;
   uint32_t page_zero_bytes;
-  uint32_t ofs;
+  int32_t ofs;
 };
 /* Supplementary page table entry */
 struct spte {
