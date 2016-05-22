@@ -115,15 +115,12 @@ void* frame_allocate(struct spte* supplement_page)
 void frame_free(struct fte* fte_to_free)
 {
   // free frame table entry
-
   sema_down(&frame_table_lock);
-
   //detach fte from frame table list
   list_remove(&fte_to_free->elem);
   //detach frame from spte (this is for ensurance)
   //printf("AAA: %0x\n", ((struct spte *)fte_to_free->supplement_page)->user_addr);
   pagedir_clear_page(fte_to_free->thread->pagedir, ((struct spte *)fte_to_free->supplement_page)->user_addr);
-
   // free palloc'd page
   palloc_free_page(fte_to_free->frame_addr);
 
@@ -140,7 +137,6 @@ void frame_free(struct fte* fte_to_free)
 void frame_free_nolock(struct fte* fte_to_free)
 {
   // free frame table entry
-
   //detach fte from frame table list
   list_remove(&fte_to_free->elem);
   //detach frame from spte (this is for ensurance)
@@ -172,8 +168,11 @@ void frame_evict()
 
   //printf("frame_evict:\n");
   //start from the beginning of table.
-  if (!clock_head)
+  if (clock_head == NULL && list_empty(&frame_table))
     return;
+  if (clock_head == NULL)
+    clock_head = list_begin(&frame_table);
+  
   for (iter = clock_head ;;)
   {
     frame_entry= list_entry(iter, struct fte, elem);
@@ -219,11 +218,6 @@ void frame_evict()
   palloc_free_page(frame_entry->frame_addr);
   // free malloc'd memory
   free(frame_entry);
-
-  //frame_free_nolock(frame_entry);
-
-  //printf("frame_evict: complete\n");
-
 }
 
 
