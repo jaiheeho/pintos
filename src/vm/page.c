@@ -110,8 +110,6 @@ int load_page_for_write(void* faulted_user_addr)
   }
   else
   {
-        printf("here2\n");
-
     //given address is not waiting for loading => just swap in
     if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
     {
@@ -329,6 +327,7 @@ loading_from_executable(struct spte* spte_target)
   uint32_t page_read_bytes = spte_target->loading_info.page_read_bytes;
   uint32_t page_zero_bytes = spte_target->loading_info.page_zero_bytes;
   bool writable = spte_target->writable;
+        printf("here2\n");
 
   //reading
   file_seek (executable, spte_target->loading_info.ofs);
@@ -338,6 +337,8 @@ loading_from_executable(struct spte* spte_target)
     printf("FILE READ FAIL\n");
     return false;
   }
+          printf("here3\n");
+
   //set rest of bits to zero 
   memset(new_frame+ page_read_bytes, 0, page_zero_bytes);
   //install the page in user page table
@@ -346,6 +347,8 @@ loading_from_executable(struct spte* spte_target)
     frame_free(new_frame);
     return false;
   }
+            printf("here4\n");
+
   spte_target->wait_for_loading = false;
   spte_target->present = true;
   return true;
