@@ -212,7 +212,7 @@ void frame_evict()
   {
     list_remove(&frame_entry->elem);
     if (list_empty(&frame_table))
-      clock_head == NULL;
+      clock_head = NULL;
     else
       clock_head = list_begin(&frame_table);
   }
