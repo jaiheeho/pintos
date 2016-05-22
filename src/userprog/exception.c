@@ -183,12 +183,14 @@ page_fault (struct intr_frame *f)
         PANIC("Exceeded STACK_MAX");
     }
     else
+    {
       if(!load_page_for_read(fault_addr))
       {
         if (!user)
           sema_up(&filesys_global_lock);
         exit(-1);
       }
+    }
     return;
   }
 

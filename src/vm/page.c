@@ -96,6 +96,7 @@ int load_page_for_write(void* faulted_user_addr)
   // if faulted_user_addr is not in SPT
   if(e == NULL)
   {
+    printf("here\n");
     return load_page_new(faulted_user_page, true);
   }
   // page is in SPTE
@@ -161,6 +162,7 @@ int load_page_for_read(void* faulted_user_addr)
 
 int load_page_new(void* user_page_addr, bool writable)
 {
+  printf("here2\n");
   //Create new spte
   struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
   if(new_spte == NULL) return false;
@@ -222,13 +224,16 @@ int load_page_file_lazy(void* user_page_addr, struct file *file, off_t ofs,
   //wait_for_loading flag is important
   new_spte->present = false;
   new_spte->wait_for_loading = true;
+  new_spte->writable = writable;
+
+  //for loading information
   new_spte->loading_info.page_read_bytes = page_read_bytes;
   new_spte->loading_info.page_zero_bytes = page_zero_bytes;
   new_spte->loading_info.ofs = ofs;
-  new_spte->writable = writable;
   new_spte->frame_locked = false;
   return true;
 }
+
 
 int load_page_swap(struct spte* spte_target)
 {
