@@ -874,9 +874,6 @@ init_thread (struct thread *t, const char *name, int priority)
   {
     list_push_back (&thread_current()->child_procs, &t->child_elem);
     t->parent_proc = thread_current();
-    //For syscall filedecripter
-    // list_init(&thread_current()->file_descriptor_table);
-    // thread_current()->fd_given = 2;  
   }
   else
   {
@@ -886,9 +883,10 @@ init_thread (struct thread *t, const char *name, int priority)
   t->is_wait_called = false;
   t->is_process = false;
   t->exit_status = 0;
-  t->is_loaded = true;
+  t->is_loaded = 2;
   //To check executable
   t->executable = NULL;
+  sema_init(&t->loading_safer,1);
   //initialize only in Main thread.
   if (thread_start_complete == 0)
   {

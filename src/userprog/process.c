@@ -19,6 +19,9 @@
 #include "threads/vaddr.h"
 #include <list.h> // ADDED HEADER
 #include "threads/malloc.h" // ADDED HEADER
+#include "lib/user/syscall.h" // ADDED HEADER
+#include "userprog/syscall.h"
+
 //for proj3 
 #include "vm/frame.h"
 #include "vm/swap.h"
@@ -69,7 +72,37 @@ process_execute (const char *file_name)
   /***** ADDED CODE *****/
   //Loading elf was not successful return tid -1
   //To make chile it should be check by parent process
-  if (thread_current()->is_loaded == false){
+  /*not yet called load from chile*/
+  struct thread *curr = thread_current ();
+  struct list_elem *iter_child;
+  struct list *child_list = &curr->child_procs;
+  struct thread *child=NULL;
+  struct thread *c=NULL;
+
+  //Find a newly made child process from me(parent of child)
+  for(iter_child = list_begin(child_list); iter_child != list_tail(child_list); 
+    iter_child = list_next(iter_child))
+  {
+    child = list_entry(iter_child, struct thread, child_elem);
+    if (child->tid == tid)
+    {
+      c = child;
+      break;
+    }  
+  }
+  /* should not happend in pintos but for safety*/
+  if (!c)
+    return TID_ERROR;
+
+  /* if loading of child with tid did no end yet, wait for it*/
+  if (c->is_loaded == 2)
+  {
+    sema_try_down(&c->loading_safer);
+    sema_down(&c->loading_safer);
+  }
+  /* if loading of child failed, return TIE_ERROR*/
+  if (c->is_loaded == 0)
+  {
     return TID_ERROR;
   }
   /***** END OF ADDED CODE *****/
@@ -99,11 +132,10 @@ start_process (void *f_name)
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
 
-
   /***** ADDED CODE *****/
-  
-  //supplemental page table  for proj3 in main thread
-  sup_page_table_init(&(thread_current()->spt));
+  //supplemental page table  for proj3 
+  struct thread * curr = thread_current();
+  sup_page_table_init(&curr->spt);
 
   //addeed filesys_lock
   sema_down(&filesys_global_lock);
@@ -114,12 +146,14 @@ start_process (void *f_name)
   /* If load failed, quit. */
   /***** ADDED CODE *****/
   //Palloc_free_page has to be done to free memory for proc name.
-  struct thread * curr = thread_current();
   if (!success) {
     palloc_free_page (file_name);
-    curr->parent_proc->is_loaded = false;
+    curr->is_loaded = 0;
     //if loading was unsuccessful remove thread from parent's child list and exit();
     list_remove(&curr->child_elem);
+    /*for the loading safer (incase of parent waiting for child loading end*/
+    sema_try_down(&curr->loading_safer);
+    sema_up(&curr->loading_safer);
     thread_exit ();
   }
 
@@ -128,14 +162,22 @@ start_process (void *f_name)
   curr->is_process = true;
   // fd starts from 2 since 0 and 1 is allocated for stdin & stdout.
   curr->fd_given = 2;
-  curr->parent_proc->is_loaded = true;
+  curr->is_loaded = 1;
 
-  //deny write to executable 
-  //executable of thread is saved in struct thread
-  curr->executable = filesys_open(file_name);
-  file_deny_write(curr->executable);
+  /* mmap_id recording*/
+  curr->mmap_id_given = 1;
+  list_init(&curr->mmap_table);
+
+
+  // //deny write to executable 
+  // //executable of thread is saved in struct thread
+  // curr->executable = filesys_open(file_name);
+  // file_deny_write(curr->executable);
+
   palloc_free_page (file_name);
-
+  /*for the loading safer (incase of parent waiting for child loading end*/
+  sema_try_down(&curr->loading_safer);
+  sema_up(&curr->loading_safer);
   //printf("READY TO LAUNCH PROG\n");
   /***** END OF ADDED CODE *****/
 
@@ -204,7 +246,7 @@ process_wait (tid_t child_tid)
   if(sema_try_down(&c->sema_wait))
   {
     c->is_wait_called = true;
-    //this is waiting call sema-down agaain
+    //this is waiting call sema-down again
     sema_down(&c->sema_wait);
     //when c is exited and return value
     retval = c->exit_status;
@@ -250,6 +292,7 @@ process_exit (void)
     sema_try_down(&c->sema_wait);
     sema_up(&c->sema_wait);
   }
+
   //allow write to executable by closing it in write deny part of proj2
   sema_down(&filesys_global_lock);
   if (curr->executable){
@@ -259,13 +302,24 @@ process_exit (void)
   struct list_elem *iter_fd;
   struct file_descriptor *f;
   //empty file_descriptor table for the process which was malloced when files were opened.
-  while (!list_empty (fdt) && curr->parent_proc->is_loaded == true)
+  while (!list_empty (fdt) && curr->is_loaded == 1)
   {
     iter_fd = list_pop_front (fdt);
     f = list_entry(iter_fd, struct file_descriptor, elem);
     file_close(f->file);
     free(f);  
   }
+  //empty mmap_table  for the process which was malloced when mmaped.
+  struct list *mmap_table = &curr->mmap_table;
+  struct list_elem *iter_md;
+  struct mmap_descriptor *m;  
+  while (!list_empty (mmap_table) && curr->is_loaded == 1)
+  {
+    iter_md = list_pop_front (mmap_table);
+    m = list_entry(iter_md, struct mmap_descriptor, elem);
+    free(m);  
+  }
+
   sema_up(&filesys_global_lock);
 
 
@@ -285,7 +339,7 @@ process_exit (void)
   if (curr->parent_proc != NULL)
     list_remove (&curr->child_elem);
 
-
+  //finally free supplement page table for this process.
   sup_page_table_free(&curr->spt);
 
 
@@ -430,6 +484,10 @@ load (const char *file_name, void (**eip) (void), void **esp)
       printf ("load: %s: open failed\n", file_name);
       goto done; 
     }
+  //deny write to executable 
+  //executable of thread is saved in struct thread
+  thread_current()->executable = file;
+  file_deny_write(file);
 
   /* Read and verify executable header. */
   if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
@@ -514,7 +572,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
 
  done:
   /* We arrive here whether the load is successful or not. */
-  file_close (file);
+  //file_close (file);
   return success;
 }
 
@@ -598,47 +656,19 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
       size_t page_zero_bytes = PGSIZE - page_read_bytes;
 
-
       /*********** MODIFIED CODE - PROJ3-2****************/
       //printf("read_bytes=%d zero_bytes=%d\n", read_bytes, zero_bytes);
-      if(!load_page_file(upage, file, ofs, page_read_bytes,
+      if(!load_page_file_lazy(upage, file, ofs, page_read_bytes,
 			 page_zero_bytes, writable))
-	{
-	  printf("load_segment: load_page_file failed\n");
-	  return false;
-	}
-      
-      /* Get a page of memory. */
-      /* uint8_t *kpage = palloc_get_page (PAL_USER);
-      if (kpage == NULL)
-      	return false;
-      */
-      // printf("LUL\n");
-      /* Load this page. */
-      /*    if (file_read (file, kpage, page_read_bytes) != (int) page_read_bytes)
-        {
-	  
-          //palloc_free_page (kpage);
-          return false; 
-        }
-      printf("LUL2\n");
-      memset (kpage + page_read_bytes, 0, page_zero_bytes);
-*/
-      /* Add the page to the process's address space. */
-      /* if (!install_page (upage, kpage, writable)) 
-        {
-          palloc_free_page (kpage);
-          return false; 
-        }
-      */
-      /*************** MODIFIED CODE END *******************/
-
-
-
+    	{
+    	  printf("load_segment: load_page_file failed\n");
+    	  return false;
+    	}
       /* Advance. */
       read_bytes -= page_read_bytes;
       zero_bytes -= page_zero_bytes;
       upage += PGSIZE;
+      ofs += PGSIZE;
     }
   return true;
 }
@@ -669,7 +699,6 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
         palloc_free_page (kpage);
     }
 
-
   */
 
   /*ADDED CODE PROJ3-1*/
@@ -680,11 +709,7 @@ setup_stack (void **esp, char *file_name, char **strtok_r_ptr)
       
     }
   else PANIC("STACK SETUP PANIC\n");
-  
-
-
   /*ADDED END*/
-
 
 
   /*ADDED CODE*/

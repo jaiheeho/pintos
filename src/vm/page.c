@@ -12,19 +12,27 @@
 #include "filesys/filesys.h"
 #include <string.h>
 
+struct spte* create_new_spte_insert_to_spt(void *user_addr);
+struct hash_elem* found_hash_elem_from_spt(void *faulted_user_page);
+bool install_page (void *upage, void *kpage, bool writable);
+void spte_free(struct spte* spte_to_free);
+int loading_from_executable(struct spte* spte_target);
+
+/* *************************************************************
+ * handlers to manage supplement hash table (which is hash)    *
+ * *************************************************************/
+
 static unsigned spte_hash_func(const struct hash_elem *e, void *aux);
 static bool spte_less_func(const struct hash_elem *a,
         const struct hash_elem *b,
         void *aux);
 static void spte_destroyer_func(struct hash_elem *e, void *aux);
-bool install_page (void *upage, void *kpage, bool writable);
 
 static unsigned spte_hash_func(const struct hash_elem *e, void *aux)
 {
   struct spte* s = hash_entry(e, struct spte, elem);
   return hash_int((int)s->user_addr);
 }
-
 static bool spte_less_func(const struct hash_elem *a,
         const struct hash_elem *b,
         void *aux)
@@ -37,7 +45,6 @@ static bool spte_less_func(const struct hash_elem *a,
   else return false;
 
 }
-
 static void spte_destroyer_func(struct hash_elem *e, void *aux)
 {
   // 0) get the spte
@@ -47,27 +54,20 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
     {
       // 1) free the underlying frame
       frame_free(target->fte);
-      
       // 2) detach from pt(this is also done in frame_free. doublechecking)
       pagedir_clear_page(thread_current()->pagedir, target->user_addr);
-      
     }
   else
     {
       // 1) free swap slot
       //swap_free_slot(target->swap_idx);
-
     }
   // 3) free spte
   free(target);
 }
-/*
-void page_free(struct hash*)
-{
-
-
-}
-*/
+/* *************************************************************
+ * handlers to manage supplement hash table (which is hash)END *
+ * *************************************************************/
 
 void sup_page_table_init(struct hash* sup_page_table)
 {
@@ -79,208 +79,157 @@ void sup_page_table_free(struct hash* sup_page_table)
   hash_destroy(sup_page_table, spte_destroyer_func);
 }
 
-
-int load_page(void* faulted_user_addr)
+/************************************************************************
+* FUNCTION : load_page_for_write                                        *
+* Input : faulted_user_addr                                             *
+* Output : Success or FAIL                                              *
+* Purpose : load page of faulted_user_addr  for writing                 *
+************************************************************************/
+int load_page_for_write(void* faulted_user_addr)
 {
   //printf("load_page: faultaddr=%0x\n", faulted_user_addr);
   //printf("roundeddown: %0x\n", pg_round_down(faulted_user_addr));
 
-  bool writable = true;
-
-  //get the spte for this addr
-  struct hash *spt = &thread_current()->spt;
   void* faulted_user_page = pg_round_down(faulted_user_addr);
+  struct hash_elem *e = found_hash_elem_from_spt(faulted_user_page);
 
-  // find the spte with infos above(traverse spt)
-  struct spte spte_temp;
-  struct hash_elem *e;
-  struct spte* spte_target;
-
-  spte_temp.user_addr = faulted_user_page;
-  e = hash_find(spt, &spte_temp.elem);
-
+  // if faulted_user_addr is not in SPT
   if(e == NULL)
+  {
+    return load_page_new(faulted_user_page, true);
+  }
+  // page is in SPTE
+  struct spte* spte_target = hash_entry(e, struct spte, elem);
+  //(1) wait_for_loading flag is true -> lazy loading from the code
+  //(2) SWAPED in, bring it into memory again
+  if (spte_target->wait_for_loading)
+  {
+    return loading_from_executable(spte_target);
+  }
+  else
+  {
+    //given address is not waiting for loading => just swap in
+    if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
     {
-      // no such page. check validity of addr and load new page?
-      // create new spte
-      struct spte* new_spte = (struct spte*)malloc(sizeof(struct spte));
-      new_spte->user_addr =faulted_user_page;
-      new_spte->status = ON_MEM;
-      new_spte->present = true;
-      new_spte->dirty = false;
-      new_spte->writable = writable;
-      new_spte->swap_idx = -1;
-
-      // insert in spt
-      hash_insert(spt, &(new_spte->elem));
-
-      // load n. if this fails, kernel will panic.
-      // thus, we dont have to cleanup new_spte
-      void* new_frame = frame_allocate(new_spte);
-      new_spte->phys_addr = new_frame;
-      
-      //install the page in user page table
-      install_page(new_spte->user_addr, new_spte->phys_addr, writable);
-
-      new_spte->frame_locked = false;
-
+       printf("Serious Problem\n");
     }
-  else  // page is in spte.(in swap space)
+    if(!load_page_swap(spte_target))
     {
-      spte_target = hash_entry(e, struct spte, elem);
-      if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
-      {
-	       //printf("AAAAAAAAAAAAA\n");
-      }
-      //printf("load_page: spte_target: user_addr=%0x, present=%d, swap_idx=%d\n", 
-      // spte_target->user_addr, spte_target->present, spte_target->swap_idx);
-      if(!load_page_swap(spte_target))
-      {
-        return 0;
-      }
-      
-      /*
-      if(spte_target->status == ON_MEM)
-	{
-	  // page is already on memory. wth?
-	  PANIC("...");
-	}
-      else if(spte_target->status == ON_SWAP)
-	{
-	  // the page is in swap space. bring it in
-	  void* new_frame = frame_allocate(spte_target);
-	  swap_remove(new_frame, spte_target->swap_idx);
-	  install_page(spte_target->user_addr, spte_target->phys_addr, writable);
-	}
-      */
+      return false;
     }
-  return 1;
+  }
+  return true;
 }
+
+/************************************************************************
+* FUNCTION : load_page_for_read                                         *
+* Input : faulted_user_addr                                             *
+* Output : Success or FAIL                                              *
+* Purpose : load page of faulted_user_addr  for reading                 *
+************************************************************************/
 int load_page_for_read(void* faulted_user_addr)
 {
   //get the spte for this addr
-  struct hash *spt = &thread_current()->spt;
   void* faulted_user_page = pg_round_down(faulted_user_addr);
+  struct hash_elem *e = found_hash_elem_from_spt(faulted_user_page);
 
-  // find the spte with infos above(traverse spt)
-  struct spte spte_temp;
-  struct hash_elem *e;
-  struct spte* spte_target;
-
-  spte_temp.user_addr = faulted_user_page;
-  e = hash_find(spt, &spte_temp.elem);
+  //For reading memery we don't have to allocate new frame.
   if(e == NULL)
-    return 0;
-  else  // page is in spte.(in swap space)
+    return false;
+  // page is in SPTE
+  //first find spte_target from the spte of thread
+  struct spte* spte_target = hash_entry(e, struct spte, elem);
+  //(1) wait_for_loading flag is true -> lazy loading from the code
+  if (spte_target->wait_for_loading)
+  { 
+    return loading_from_executable(spte_target);
+  }
+  //(2)not waiting for loading, Swap in 
+  else
   {
-    spte_target = hash_entry(e, struct spte, elem);
     if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
     {
-  //printf("AAAAAAAAAAAAA\n");
+      printf("Serious Problem\n");
     }
-    //printf("load_page: spte_target: user_addr=%0x, present=%d, swap_idx=%d\n", 
-    // spte_target->user_addr, spte_target->present, spte_target->swap_idx);
     if(!load_page_swap(spte_target))
     {
-      return 0;
+      return false;
     }
   }
-  return 1;
+  return true;
 }
-
 
 int load_page_new(void* user_page_addr, bool writable)
 {
-  //printf("load_page_new: %0x", user_page_addr);
-  // create new spte
-  struct spte* new_spte = (struct spte*)malloc(sizeof(struct spte));
-  //printf("CP0\n");
-  if(new_spte == NULL) return 0;
-  new_spte->user_addr = user_page_addr;
-  new_spte->status = ON_MEM;
-  new_spte->present = true;
-  new_spte->dirty = false;
-  new_spte->writable = writable;
-  new_spte->swap_idx = -1;
-  //printf("CP1\n");
-  //get the spte for this addr
-  struct hash *spt = &thread_current()->spt;
+  //Create new spte
+  struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
+  if(new_spte == NULL) return false;
 
-  //insert
-  hash_insert(spt, &(new_spte->elem));
-  //printf("CP2\n");
-  // load n. if this fails, kernel will panic.
-  // thus, we dont have to cleanup new_spte
+  //Additional initialization (incuding allocating framd and install page) 
+  new_spte->writable = writable;
   void* new_frame = frame_allocate(new_spte);
   new_spte->phys_addr = new_frame;
-  //printf("CP3\n");
-  //install the page in user page table
-  if(install_page(new_spte->user_addr, new_spte->phys_addr, writable) == false)
-    {
-      frame_free(new_frame);
-      return 0;
-
-    }
-
+  if(install_page(user_page_addr, new_frame, writable) == false)
+  {
+    frame_free(new_frame);
+    spte_free(new_spte);
+    return false;
+  }
   new_spte->frame_locked = false;
-
-  return 1;
-  
+  return true;
 }
 
+
 int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
-		   uint32_t page_read_bytes, uint32_t page_zero_bytes,
-		   bool writable)
+		   uint32_t page_read_bytes, uint32_t page_zero_bytes, bool writable)
 {
-  //printf("load_page_file: %0x\n", user_page_addr);
-  //printf("rounded down: %0x\n", pg_round_down(user_page_addr));
-  // create new spte
-  struct spte* new_spte = (struct spte*)malloc(sizeof(struct spte));
-  //printf("CP0\n");
-  if(new_spte == NULL) return 0;
-  new_spte->user_addr = user_page_addr;
-  new_spte->status = ON_MEM;
-  new_spte->present = true;
-  new_spte->dirty = false;
+  //Create new spte
+  struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
+  if(new_spte == NULL) return false;
+
+  //Additional initialization (incuding allocating framd and install page) 
   new_spte->writable = writable;
-  new_spte->swap_idx = -1;
-  //printf("CP1\n");
-  //get the spte for this addr
-  struct hash *spt = &thread_current()->spt;
-
-  //insert
-  hash_insert(spt, &(new_spte->elem));
-  //printf("CP2\n");
-  // load n. if this fails, kernel will panic.
-  // thus, we dont have to cleanup new_spte
   void* new_frame = frame_allocate(new_spte);
-  //printf("CP2.5\n");
   new_spte->phys_addr = new_frame;
-  //printf("CP3\n");
 
-
-  //load from file
+  //Load from file
   if(file_read(file, new_frame, page_read_bytes) != (int) page_read_bytes)
-    {
-      printf("FILE READ FAIL\n");
-      return false;
-
-    }
+  {
+    printf("FILE READ FAIL\n");
+    spte_free(new_spte);
+    frame_free(new_frame);
+    return false;
+  }
   memset(new_frame + page_read_bytes, 0, page_zero_bytes);
-
-
-  //install the page in user page table
-  if(install_page(new_spte->user_addr, new_spte->phys_addr, writable) == false)
-    {
-      frame_free(new_frame);
-      return 0;
-
-    }
-
-
+  if(install_page(user_page_addr, new_frame, writable) == false)
+  {
+    spte_free(new_spte);
+    frame_free(new_frame);
+    return false;
+  }
   new_spte->frame_locked = false;
   return 1;
-  
+}
+
+int load_page_file_lazy(void* user_page_addr, struct file *file, off_t ofs,
+       uint32_t page_read_bytes, uint32_t page_zero_bytes, bool writable)
+{
+  // create new spte
+  struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
+  if(new_spte == NULL) return false;
+
+  //additional initialization
+  //wait_for_loading flag is important
+  new_spte->present = false;
+  new_spte->wait_for_loading = true;
+  new_spte->writable = writable;
+
+  //for loading
+  new_spte->loading_info.page_read_bytes = page_read_bytes;
+  new_spte->loading_info.page_zero_bytes = page_zero_bytes;
+  new_spte->loading_info.ofs = ofs;
+  new_spte->frame_locked = false;
+  return true;
 }
 
 
@@ -290,37 +239,115 @@ int load_page_swap(struct spte* spte_target)
   bool writable = spte_target->writable;
  
   if(spte_target->present == false)
-    {
-      // the page is in swap space. bring it in
-      void* new_frame = frame_allocate(spte_target);
-      if(new_frame == NULL)
-	{
-	  printf("load_page_swap: frame allocate error\n");
-	  return 0;
-	}
-      swap_remove(new_frame, spte_target->swap_idx);
-      install_page(spte_target->user_addr, spte_target->phys_addr, writable);
-    }
+  {
+    // the page is in swap space. bring it in
+    void* new_frame = frame_allocate(spte_target);
+    swap_remove(new_frame, spte_target->swap_idx);
+    install_page(spte_target->user_addr, spte_target->phys_addr, writable);
+    spte_target->present = true;
+  }
   else
-    {
-      //printf("load_page_swap : present bit is true??\n");
-      return 0;
-    }
-
-  //printf("load_page_swap: end\n");
+  {
+    //printf("load_page_swap : present bit is true??\n");
+    return 0;
+  }
   spte_target->frame_locked = false;
   return 1;
 }
 
-
-int stack_growth(void *user_addr)
+/************************************************************************
+* FUNCTION : create_new_spte_insert_to_spt                              *
+* Input : user_addr                                                     *
+* Purpose : allocate new spt entry , initialize basic elements and      *
+* insert to supplement hash supplement hash table                       *
+************************************************************************/
+struct spte* 
+create_new_spte_insert_to_spt(void *user_addr)
 {
-
-  void* new_stack_page = pg_round_down(user_addr);
-  //printf("STACK_GROWTH: user_addr = %0x, newstackpage  = %0x\n", user_addr, new_stack_page);
-  load_page(new_stack_page);
-
+  struct spte* new_spte = (struct spte*)malloc(sizeof(struct spte));
+  struct hash *spt = &thread_current()->spt;
+  if(new_spte == NULL) return NULL;
+  new_spte->user_addr = user_addr;
+  new_spte->status = ON_MEM;
+  new_spte->present = true;
+  new_spte->dirty = false;
+  new_spte->swap_idx = -1;
+  new_spte->wait_for_loading = false;
+  new_spte->frame_locked = false;
+  //insert
+  hash_insert(spt, &(new_spte->elem));
+  return new_spte;
 }
+
+/************************************************************************
+* FUNCTION : found_hash_elem_from_spt                                   *
+* Input : faulted_user_page                                             *
+* Output : hash_elem we found (else NULL)                               *
+* Purpose : find hash elem with faulted_user_page and return it         *
+************************************************************************/
+struct hash_elem* 
+found_hash_elem_from_spt(void *faulted_user_page)
+{
+  //get the spte for this addr
+  struct hash *spt = &thread_current()->spt;
+  // find the spte with infos above(traverse spt)
+  struct spte spte_temp;
+  struct hash_elem *e;
+  spte_temp.user_addr = faulted_user_page;
+  e = hash_find(spt, &spte_temp.elem);
+  return e;
+}
+
+void 
+stack_growth(void *user_addr)
+{
+  void* new_stack_page = pg_round_down(user_addr);
+  load_page_for_write(new_stack_page);
+}
+
+void 
+spte_free(struct spte* spte_to_free)
+{
+  struct hash *spt = &thread_current()->spt;
+  // find the spte with infos above(traverse spt)
+  struct hash_elem *e = hash_find(spt, &spte_to_free->elem);
+  hash_delete(spt, e);
+}
+
+int 
+loading_from_executable(struct spte* spte_target)
+{
+  //given address if waiting for loading. find elf  and allocate frame, read data from the disk to memory.
+  struct file *executable = thread_current()->executable;
+  void* new_frame = frame_allocate(spte_target);
+
+  //changing wait_for_loading flag and initialize values;
+  spte_target->phys_addr = new_frame;      
+  uint32_t page_read_bytes = spte_target->loading_info.page_read_bytes;
+  uint32_t page_zero_bytes = spte_target->loading_info.page_zero_bytes;
+  bool writable = spte_target->writable;
+
+  //reading
+  file_seek (executable, spte_target->loading_info.ofs);
+  if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
+  {
+    frame_free(new_frame);
+    printf("FILE READ FAIL\n");
+    return false;
+  }
+  //set rest of bits to zero 
+  memset(new_frame+ page_read_bytes, 0, page_zero_bytes);
+  //install the page in user page table
+  if(install_page( spte_target->user_addr, new_frame, writable) == false)
+  {
+    frame_free(new_frame);
+    return false;
+  }
+  spte_target->wait_for_loading = false;
+  spte_target->present = true;
+  return true;
+}
+
 bool
 install_page (void *upage, void *kpage, bool writable)
 {

@@ -149,8 +149,7 @@ page_fault (struct intr_frame *f)
   user = (f->error_code & PF_U) != 0;
   
   /***** ADDED CODE *****/
-  /*Deferencing NULL should be exited instead of killed (test : bad_read)*/
-  /*Deferencing addr above 0xC0000000 should be exited instead of killed (test : bad_read)*/
+  // printf("----------------------------------------------\n");
   // printf("faulted_addr: %0x\n", fault_addr);
   // printf("f->esp : %0x\n", f->esp);
   // printf("Errorcode : %d %d %d\n", not_present, write, user);
@@ -173,51 +172,56 @@ page_fault (struct intr_frame *f)
   }
 
   /* check whether invalid by exceeding STACK_MAX*/
-  /* if read , try to load page and if it fails exit
-  /* if write, load_page so that we can write to it*/
+  /* (1)if read , try to load page and if it fails exit*/
+  /* (2)if write, load_page or allocate frame so that we can write to it*/
   if( (uint32_t)PHYS_BASE - (uint32_t)fault_addr >= (uint32_t)STACK_MAX )
   {
     if (write)
     {
-      if (!load_page(fault_addr))
+      if (!load_page_for_write(fault_addr))
         PANIC("Exceeded STACK_MAX");
     }
     else
+    {
       if(!load_page_for_read(fault_addr))
       {
         if (!user)
           sema_up(&filesys_global_lock);
         exit(-1);
       }
+    }
     return;
   }
 
-  /* not_present | read | kernel = 110*/
-  if ( not_present && !write && !user)
+  /* if the page-fault was for reading memery access try load_get_for_read */
+  /* if it fail, exit process withour allocating frame */
+  /* not_present | read | user or kernel = 110 & 111*/
+  if ( not_present && !write)
   {
     if(!load_page_for_read(fault_addr))
     {
-      sema_up(&filesys_global_lock);
+      if (!user)
+        sema_up(&filesys_global_lock);
       exit(-1);
     }
   }
-
-  /* not_present | read | user = 101*/
-  if ( not_present && !write && user)
-  {
-    if(!load_page_for_read(fault_addr))
-      exit(-1);
-  }
-
+  /* if the page-fault was for writing memery access*/
+  /* (1) f->esp > fault_addr */
+  /* then, call stack_growth. if stack_growth fails ,exit process.*/
+  /* (2) f->esp <= falult_addr*/
+  /* then, load_page_for_write, load_page and swop fram if necessary.*/
   /* not_present | write | user or kenerl= 111 || 110*/
-  if ( not_present && write /*&& user*/)
+  if ( not_present && write )
   {
+    //(1)
     if((uint32_t)f->esp > (uint32_t)fault_addr)
     {
+      //(1)-1
       if( (uint32_t)f->esp - (uint32_t)fault_addr <= (uint32_t)STACK_STRIDE)
       {
           stack_growth(fault_addr);
       }
+      //(1)-2
       else
       {
         if(!user)
@@ -227,24 +231,12 @@ page_fault (struct intr_frame *f)
         exit(-1);
       }
     }
+    //(2)
     else
     {
-      if(!load_page(fault_addr))
+      if(!load_page_for_write(fault_addr))
         PANIC("load page failed.");
     }
   }
 
-  if(0)
-    {
-      
-      /* To implement virtual memory, delete the rest of the function
-	 body, and replace it with code that brings in the page to
-	 which fault_addr refers. */
-      printf ("Page fault at %p: %s error %s page in %s context.\n",
-	      fault_addr,
-	      not_present ? "not present" : "rights violation",
-	      write ? "writing" : "reading",
-	      user ? "user" : "kernel");
-      kill (f);
-    }
 }
