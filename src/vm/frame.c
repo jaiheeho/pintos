@@ -172,8 +172,6 @@ void frame_evict()
   //printf("frame_evict:\n");
 
   //start from the beginning of table.
-  if (iter == NULL)
-    PANIC("clock head null errot\n");
   for (iter = clock_head ;;)
   {
     frame_entry= list_entry(iter, struct fte, elem);
