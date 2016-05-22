@@ -54,10 +54,8 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
     {
       // 1) free the underlying frame
       frame_free(target->fte);
-      
       // 2) detach from pt(this is also done in frame_free. doublechecking)
       pagedir_clear_page(thread_current()->pagedir, target->user_addr);
-      
     }
   else
     {
@@ -223,6 +221,7 @@ int load_page_file_lazy(void* user_page_addr, struct file *file, off_t ofs,
 
   //additional initialization
   //wait_for_loading flag is important
+  new_spte->present = false;
   new_spte->wait_for_loading = true;
   new_spte->loading_info.page_read_bytes = page_read_bytes;
   new_spte->loading_info.page_zero_bytes = page_zero_bytes;
@@ -343,6 +342,7 @@ loading_from_executable(struct spte* spte_target)
     return false;
   }
   spte_target->wait_for_loading = false;
+  spte_target->present = true;
   return true;
 }
 

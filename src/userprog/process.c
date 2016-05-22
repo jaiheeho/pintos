@@ -143,9 +143,6 @@ start_process (void *f_name)
   sema_up(&filesys_global_lock);
   /***** END OF ADDED CODE *****/
 
-  if(curr->executable)
-    file_deny_write(thread_current()->executable);
-
   /* If load failed, quit. */
   /***** ADDED CODE *****/
   //Palloc_free_page has to be done to free memory for proc name.
@@ -490,6 +487,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
   //deny write to executable 
   //executable of thread is saved in struct thread
   thread_current()->executable = filesys_open(file_name);
+  file_deny_write(thread_current()->executable);
 
   /* Read and verify executable header. */
   if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
