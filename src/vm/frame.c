@@ -168,10 +168,10 @@ void frame_evict()
 
   //printf("frame_evict:\n");
   //start from the beginning of table.
-  if (clock_head == NULL && list_empty(&frame_table))
-    return;
-  if (clock_head == NULL)
-    clock_head = list_begin(&frame_table);
+  // if (clock_head == NULL && list_empty(&frame_table))
+  //   return;
+  // if (clock_head == NULL)
+  //   clock_head = list_begin(&frame_table);
 
   for (iter = clock_head ;;)
   {
@@ -201,14 +201,17 @@ void frame_evict()
   supplement_page->present = false; 
 
   //detach fte from frame table list
-  list_remove(&frame_entry->elem);
-  if (!list_empty(&frame_table))
+  struct list_elem *next;
+
+  if(list_next(iter) == list_end(&frame_table))
   {
-    if(list_next(&frame_table) == list_end(&frame_table))
-      clock_head = list_begin(&frame_table);
-    else
+    clock_head = list_begin(&frame_table);
+  }
+  else
+  {
       clock_head = list_next(iter);
   }
+  list_remove(&frame_entry->elem);
 
   //detach frame from spte (this is for ensurance)
   pagedir_clear_page(t->pagedir, supplement_page->user_addr);
