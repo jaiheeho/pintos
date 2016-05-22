@@ -136,6 +136,11 @@ start_process (void *f_name)
   //supplemental page table  for proj3 
   sup_page_table_init(&(thread_current()->spt));
 
+  //deny write to executable 
+  //executable of thread is saved in struct thread
+  curr->executable = filesys_open(file_name);
+  file_deny_write(curr->executable);
+
   //addeed filesys_lock
   sema_down(&filesys_global_lock);
   success = load (file_name, &if_.eip, &if_.esp);
@@ -168,10 +173,6 @@ start_process (void *f_name)
   curr->mmap_id_given = 1;
   list_init(&curr->mmap_table);
 
-  //deny write to executable 
-  //executable of thread is saved in struct thread
-  curr->executable = filesys_open(file_name);
-  file_deny_write(curr->executable);
   palloc_free_page (file_name);
   /*for the loading safer (incase of parent waiting for child loading end*/
   sema_try_down(&curr->loading_safer);
