@@ -25,6 +25,7 @@ void frame_table_init()
 {
   list_init(&frame_table);
   sema_init(&frame_table_lock,1);
+  clock_head = NULL;
 }
 
 /************************************************************************
@@ -90,7 +91,7 @@ void* frame_allocate(struct spte* supplement_page)
       
       // insert into frame table 
       //if table is empty, adjust clck_head;
-      if (list_empty(&frame_table))
+      if (list_empty(&frame_table) || clock_head == NULL)
       {
         list_push_back(&frame_table, &new_fte_entry->elem);
         clock_head = list_begin(&frame_table);
@@ -170,8 +171,9 @@ void frame_evict()
   void* new;
 
   //printf("frame_evict:\n");
-
   //start from the beginning of table.
+  if (!clock_head)
+    return;
   for (iter = clock_head ;;)
   {
     frame_entry= list_entry(iter, struct fte, elem);
