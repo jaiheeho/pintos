@@ -48,8 +48,6 @@ struct fte {
   struct list_elem elem;
 };
 
-
-
 void sup_page_table_init(struct hash*);
 void sup_page_table_free(struct hash*);
 int load_page_for_write(void*);
