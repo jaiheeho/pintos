@@ -311,6 +311,7 @@ struct spte*
 create_new_spte_insert_to_spt(void *user_addr)
 {
   struct spte* new_spte = (struct spte*)malloc(sizeof(struct spte));
+  sema_down(&thread_current()->spt_safer_thread);
   struct hash *spt = &thread_current()->spt;
   if(new_spte == NULL) return NULL;
   new_spte->user_addr = user_addr;
@@ -322,6 +323,7 @@ create_new_spte_insert_to_spt(void *user_addr)
   new_spte->frame_locked = false;
   //insert
   hash_insert(spt, &(new_spte->elem));
+  sema_up(&thread_current()->spt_safer_thread);
   return new_spte;
 }
 
