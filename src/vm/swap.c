@@ -99,6 +99,7 @@ void swap_free_slot(size_t idx){
 	int sector_num;
 
 	//check whether swap index is correct
+	printf("idx%d",idx);
 	if (bitmap_test(swap_bitmap, idx) == false)
 		PANIC ("EMPTY SWAP SPACE");
 	//fip the swop talbe from True to False so that make swap-table slot empty
@@ -106,7 +107,6 @@ void swap_free_slot(size_t idx){
 
 	sema_up(&swap_lock);
 }
-
 
 /************************************************************************
 * FUNCTION : swap_table_free                                        	*
