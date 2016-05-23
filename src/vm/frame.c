@@ -123,7 +123,7 @@ void frame_free(struct fte* fte_to_free)
   list_remove(&fte_to_free->elem);
   //detach frame from spte (this is for ensurance)
   //printf("AAA: %0x\n", ((struct spte *)fte_to_free->supplement_page)->user_addr);
-  pagedir_clear_page(fte_to_free->thread->pagedir, ((struct spte *)fte_to_free->supplement_page)->user_addr);
+  pagedir_clear_page(fte_to_free->thread->pagedir, fte_to_free->supplement_page->user_addr);
   // free palloc'd page
   palloc_free_page(fte_to_free->frame_addr);
 
@@ -215,7 +215,7 @@ void frame_evict()
   //   clock_head = list_next(iter);
   //   list_remove(iter);
   // }
-  list_remove(iter)
+  list_remove(iter);
 
   //detach frame from spte (this is for ensurance)
   pagedir_clear_page(t->pagedir, supplement_page->user_addr);

@@ -53,9 +53,9 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
   if(target->present == true)
     {
       // 1) free the underlying frame
-      frame_free(target->fte);
       // 2) detach from pt(this is also done in frame_free. doublechecking)
-      pagedir_clear_page(thread_current()->pagedir, target->user_addr);
+      frame_free(target->fte);
+      //pagedir_clear_page(thread_current()->pagedir, target->user_addr);
     }
   else
     {
