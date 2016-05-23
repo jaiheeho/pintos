@@ -83,7 +83,7 @@ void* frame_allocate(struct spte* supplement_page)
       new_fte_entry->supplement_page = supplement_page;
 
       //link to spte
-      supplement_page->frame_locked = false;
+      supplement_page->present = true;
       supplement_page->phys_addr = new_frame;
       supplement_page->fte = new_fte_entry;
       
@@ -97,7 +97,7 @@ void* frame_allocate(struct spte* supplement_page)
       else
       {
         list_push_back(&frame_table, &new_fte_entry->elem);
-        clock_head = list_next(&clock_head);
+        clock_head = list_next(clock_head);
         if (clock_head = list_end(&frame_table))
         {
           clock_head = list_begin(&frame_table);
@@ -167,7 +167,6 @@ void frame_evict()
   struct fte *frame_entry;
   struct spte *supplement_page;
   struct thread *t;
-  void* new;
 
   //printf("frame_evict:\n");
   //start from the beginning of table.
