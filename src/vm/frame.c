@@ -185,7 +185,7 @@ void frame_evict()
   struct thread *t;
 
   //printf("frame_evict:\n");
-  //start from the beginning of table.
+  //start from the beginning of table.  
 
   if (list_empty(&frame_table))
     PANIC("Frame evict with empty frame_table");
@@ -215,8 +215,8 @@ void frame_evict()
   supplement_page = frame_entry->supplement_page;
   t = frame_entry->thread;
   supplement_page->present = false; 
-  supplement_page->phys_addr = NULL;
-  supplement_page->fte = NULL;
+  // supplement_page->phys_addr = NULL;
+  // supplement_page->fte = NULL;
 
   //detach fte from frame table list
   list_remove(iter);
