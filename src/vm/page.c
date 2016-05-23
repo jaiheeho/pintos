@@ -61,7 +61,7 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
     {
       // 1) free swap slot
       if (!target->wait_for_loading)
-        swap_free_slot(target->swap_idx);
+        //swap_free_slot(target->swap_idx);
     }
   // 3) free spte
   free(target);
