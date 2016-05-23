@@ -55,7 +55,7 @@ void frame_table_free()
 ************************************************************************/
 void* frame_allocate(struct spte* supplement_page)
 {
-  //printf("frame_allocate: \n");
+  printf("frame_allocate: %0x\n", supplement_page->user_addr);
   sema_down(&frame_table_lock);
   void * new_frame=NULL;
   while(1)
