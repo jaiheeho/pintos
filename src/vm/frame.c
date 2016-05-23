@@ -15,7 +15,6 @@ static struct list frame_table;
 static struct semaphore frame_table_lock;
 static struct list_elem *clock_head; 
 
-
 /************************************************************************
 * FUNCTION : frame_table_init                                           *
 * Purpose : initialize frame-table                                      *
@@ -246,10 +245,5 @@ void frame_evict()
   // free malloc'd memory
   free(frame_entry);
 }
-
-
-
-
-
 
 
