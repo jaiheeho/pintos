@@ -151,7 +151,7 @@ int load_page_for_read(void* faulted_user_addr)
   {
     if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
     {
-      printf("Serious Problem\n");
+      PANIC("Serious Problem\n");
     }
     if(!load_page_swap(spte_target))
     {
@@ -244,16 +244,16 @@ int load_page_swap(struct spte* spte_target)
     // the page is in swap space. bring it in
     void* new_frame = frame_allocate(spte_target);
     swap_remove(new_frame, spte_target->swap_idx);
+    spte_target->phys_addr = new_frame;
     install_page(spte_target->user_addr, spte_target->phys_addr, writable);
     spte_target->present = true;
   }
   else
   {
-    //printf("load_page_swap : present bit is true??\n");
-    return 0;
+    PANIC("SOMETHING CANNOT HAPPEN IN LOAD_PAGE_SWAP\n");
   }
   spte_target->frame_locked = false;
-  return 1;
+  return true;
 }
 
 /************************************************************************
@@ -323,7 +323,6 @@ loading_from_executable(struct spte* spte_target)
   void* new_frame = frame_allocate(spte_target);
 
   //changing wait_for_loading flag and initialize values;
-  spte_target->phys_addr = new_frame;      
   uint32_t page_read_bytes = spte_target->loading_info.page_read_bytes;
   uint32_t page_zero_bytes = spte_target->loading_info.page_zero_bytes;
   bool writable = spte_target->writable;
@@ -332,8 +331,8 @@ loading_from_executable(struct spte* spte_target)
   file_seek (executable, spte_target->loading_info.ofs);
   if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
   {
-    frame_free(new_frame);
     printf("FILE READ FAIL\n");
+    frame_free(new_frame);
     return false;
   }
   //set rest of bits to zero 
@@ -341,9 +340,11 @@ loading_from_executable(struct spte* spte_target)
   //install the page in user page table
   if(install_page( spte_target->user_addr, new_frame, writable) == false)
   {
+    printf("INSTALL PAGE IN LOADING FROM EXEC: FAIL\n");
     frame_free(new_frame);
     return false;
   }
+  spte_target->phys_addr = new_frame;      
   spte_target->wait_for_loading = false;
   spte_target->present = true;
   return true;

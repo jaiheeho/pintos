@@ -184,7 +184,7 @@ void frame_evict()
   struct spte *supplement_page;
   struct thread *t;
 
-  printf("frame_evict:\n");
+  //printf("frame_evict:\n");
   //start from the beginning of table.
 
   if (list_empty(&frame_table))
