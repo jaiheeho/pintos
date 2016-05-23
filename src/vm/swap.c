@@ -24,7 +24,7 @@ void swap_table_init()
 	if(!swap_disk)
 		return;
 	/* get bitmap for swap slots*/
-	swap_size = disk_size(swap_disk)*DISK_SECTOR_SIZE;
+	swap_size = disk_size(swap_disk)/8;
 	swap_bitmap = bitmap_create(swap_size);
 	if (swap_bitmap == NULL)
 		PANIC ("CANNOT ACHIEVE SWAPTABLE");
@@ -96,7 +96,7 @@ void swap_free_slot(size_t idx){
 
 	sema_down(&swap_lock);
 	//check whether swap index is correct
-	printf("swap size %u, idx%d\n",swap_size, idx);
+	//printf("swap size %u, idx%d\n",swap_size, idx);
 	if (bitmap_test(swap_bitmap, idx) == false)
 		PANIC ("EMPTY SWAP SPACE");
 	//fip the swop talbe from True to False so that make swap-table slot empty
