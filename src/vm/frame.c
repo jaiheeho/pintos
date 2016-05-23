@@ -86,23 +86,22 @@ void* frame_allocate(struct spte* supplement_page)
       supplement_page->present = true;
       supplement_page->phys_addr = new_frame;
       supplement_page->fte = new_fte_entry;
-      list_push_back(&frame_table, &new_fte_entry->elem);
+      //list_push_back(&frame_table, &new_fte_entry->elem);
       // insert into frame table 
-      //if table is empty, adjust clck_head;
-      // if (list_empty(&frame_table))
-      // {
-      //   list_push_back(&frame_table, &new_fte_entry->elem);
-      //   clock_head = list_begin(&frame_table);
-      // }
-      // else
-      // {
-      //   list_push_back(&frame_table, &new_fte_entry->elem);
-      //   clock_head = list_next(clock_head);
-      //   if (clock_head == list_end(&frame_table))
-      //   {
-      //     clock_head = list_begin(&frame_table);
-      //   }
-      // }
+      // if table is empty, adjust clck_head;
+      if (list_empty(&frame_table))
+      {
+        list_push_back(&frame_table, &new_fte_entry->elem);
+        clock_head = list_begin(&frame_table);
+      }
+      else
+      {
+        list_push_back(&frame_table, &new_fte_entry->elem);
+        if (clock_head == list_head(&frame_table))
+        {
+          clock_head = list_begin(&frame_table);
+        }
+      }
       break;
     }              
   }
@@ -171,9 +170,10 @@ void frame_evict()
   //printf("frame_evict:\n");
   //start from the beginning of table.
 
-  // if (clock_head == NULL)
-  //   PANIC("clock_head == NULL\n");
-  for (iter = list_begin(&frame_table);;)
+  if (clock_head == NULL)
+    PANIC("clock_head == NULL\n");
+  // for (iter = list_begin(&frame_table);;)
+  for (iter = clock_head;;)
   {
     frame_entry= list_entry(iter, struct fte, elem);
     struct spte *paired_spte = frame_entry->supplement_page;  
@@ -202,20 +202,20 @@ void frame_evict()
 
   //detach fte from frame table list
 
-  // if(list_next(iter) == list_end(&frame_table))
-  // {
-  //   list_remove(iter);
-  //   if (list_empty(&frame_table))
-  //     clock_head = list_head(&frame_table);
-  //   else
-  //     clock_head = list_begin(&frame_table);
-  // }
-  // else
-  // {
-  //   clock_head = list_next(iter);
-  //   list_remove(iter);
-  // }
-  list_remove(iter);
+  if(list_next(iter) == list_end(&frame_table))
+  {
+    list_remove(iter);
+    if (list_empty(&frame_table))
+      clock_head = list_head(&frame_table);
+    else
+      clock_head = list_begin(&frame_table);
+  }
+  else
+  {
+    clock_head = list_next(iter);
+    list_remove(iter);
+  }
+  // list_remove(iter);
 
   //detach frame from spte (this is for ensurance)
   pagedir_clear_page(t->pagedir, supplement_page->user_addr);
