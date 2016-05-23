@@ -114,7 +114,7 @@ int load_page_for_write(void* faulted_user_addr)
     //given address is not waiting for loading => just swap in
     if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
     {
-       printf("Serious Problem\n");
+       PANIC("Serious Problem\n");
     }
     if(!load_page_swap(spte_target))
     {
