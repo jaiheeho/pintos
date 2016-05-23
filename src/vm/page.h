@@ -17,6 +17,7 @@ enum spte_status{
 
 struct fte;
 
+/* loading information for each page for lazy loading*/
 struct lazy_loading_info{
   uint32_t page_read_bytes;
   uint32_t page_zero_bytes;
@@ -43,7 +44,6 @@ struct fte {
   void* frame_addr;
   struct spte* supplement_page;
   struct thread* thread;
-  int use;
   bool frame_locked;
   struct list_elem elem;
 };

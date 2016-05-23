@@ -25,7 +25,7 @@ void frame_table_init()
 {
   list_init(&frame_table);
   sema_init(&frame_table_lock,1);
-  clock_head = NULL;
+  clock_head = list_head(&frame_table);
 }
 
 /************************************************************************
@@ -75,23 +75,21 @@ void* frame_allocate(struct spte* supplement_page)
       struct fte* new_fte_entry = (struct fte*)malloc(sizeof(struct fte));
       if(new_fte_entry == NULL)
     	{
-    	   printf("cannot allocate new fte!!\n");
     	   PANIC("Cannot allocate new fte!!");
     	}
       // configure elements of fte
       new_fte_entry->frame_addr = new_frame;
-      new_fte_entry->use = 1;
       new_fte_entry->thread = thread_current();
-      supplement_page->frame_locked = true;
+      new_fte_entry->supplement_page = supplement_page;
 
       //link to spte
+      supplement_page->frame_locked = false;
       supplement_page->phys_addr = new_frame;
       supplement_page->fte = new_fte_entry;
-      new_fte_entry->supplement_page = supplement_page;
       
       // insert into frame table 
       //if table is empty, adjust clck_head;
-      if (list_empty(&frame_table) || clock_head == NULL)
+      if (list_empty(&frame_table))
       {
         list_push_back(&frame_table, &new_fte_entry->elem);
         clock_head = list_begin(&frame_table);
@@ -99,6 +97,11 @@ void* frame_allocate(struct spte* supplement_page)
       else
       {
         list_push_back(&frame_table, &new_fte_entry->elem);
+        clock_head = list_next(&clock_head);
+        if (clock_head = list_end(&frame_table))
+        {
+          clock_head = list_begin(&frame_table);
+        }
       }
       break;
     }              
@@ -168,17 +171,9 @@ void frame_evict()
 
   //printf("frame_evict:\n");
   //start from the beginning of table.
-  if (clock_head == NULL && list_empty(&frame_table))
-  {
-    printf("????\n");
-    return;
-  }
-  if (clock_head == NULL)
-  {
-    printf("????\n");
-    clock_head = list_begin(&frame_table);
-  }
 
+  if (clock_head == NULL)
+    PANIC("clock_head == NULL\n");
   for (iter = clock_head ;;)
   {
     frame_entry= list_entry(iter, struct fte, elem);
@@ -210,16 +205,16 @@ void frame_evict()
 
   if(list_next(iter) == list_end(&frame_table))
   {
-    list_remove(&frame_entry->elem);
+    list_remove(iter);
     if (list_empty(&frame_table))
-      clock_head = NULL;
+      clock_head = list_head(&frame_table);
     else
       clock_head = list_begin(&frame_table);
   }
   else
   {
     clock_head = list_next(iter);
-    list_remove(&frame_entry->elem);
+    list_remove(iter);
   }
 
   //detach frame from spte (this is for ensurance)
