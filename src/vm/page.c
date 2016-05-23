@@ -77,9 +77,9 @@ void sup_page_table_init(struct hash* sup_page_table)
 
 void sup_page_table_free(struct hash* sup_page_table)
 {
-  sema_down(&curr->spt_safer_thread);
+  sema_down(&thread_current()->spt_safer_thread);
   hash_destroy(sup_page_table, spte_destroyer_func);
-  sema_up(&curr->spt_safer_thread);
+  sema_up(&thread_current()->spt_safer_thread);
 }
 
 /************************************************************************
