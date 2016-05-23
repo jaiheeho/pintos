@@ -256,7 +256,7 @@ loading_from_executable(struct spte* spte_target)
     // printf("FILE READ FAIL\n");
     PANIC("FILE READ FAIL\n");
 
-    frame_free(new_frame);
+    frame_free((void*)new_frame);
     return false;
   }
   //set rest of bits to zero 
@@ -266,7 +266,7 @@ loading_from_executable(struct spte* spte_target)
   {
     printf("INSTALL PAGE IN LOADING FROM EXEC: FAIL\n");
     PANIC("INSTALL PAGE IN LOADING FROM EXEC: FAIL\n");
-    frame_free(new_frame);
+    frame_free((void*)new_frame);
     return false;
   }
   spte_target->wait_for_loading = false;
