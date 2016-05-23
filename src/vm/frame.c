@@ -172,6 +172,8 @@ void frame_evict()
 
   if (clock_head == NULL)
     PANIC("clock_head == NULL\n");
+  if (clock_head == list_begin(&frame_table))
+    PANIC("clock_head == list_begin in fram_evict\n");
   // for (iter = list_begin(&frame_table);;)
   for (iter = clock_head;;)
   {
