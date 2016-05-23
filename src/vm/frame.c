@@ -55,8 +55,10 @@ void frame_table_free()
 ************************************************************************/
 void* frame_allocate(struct spte* supplement_page)
 {
-  printf("frame_allocate: %0x true of false : %d\n", supplement_page->user_addr,clock_head == list_head(&frame_table));
+
   sema_down(&frame_table_lock);
+  printf("frame_allocate: %0x true of false : %d\n", supplement_page->user_addr,clock_head == list_head(&frame_table));
+  printf("clock_head : %0x\n", list_entry(clock_head, struct fte, elem)->frame_addr);
   void * new_frame=NULL;
   while(1)
   {
@@ -64,12 +66,13 @@ void* frame_allocate(struct spte* supplement_page)
     if(new_frame == NULL)
     {
       // all frame slots are full; commence eviction & retry
-      //printf("frame_allocate: need eviction!!\n");
+      printf("frame_allocate: need eviction!!\n");
       frame_evict();
     }
     else
     {
-        // printf("here2-0-4\n");
+        // printf("here2-0-4\n");      
+      printf("frame_allocate: alloced, no need eviction!!\n");
 
       // frame allocation succeeded; add to frame table
       struct fte* new_fte_entry = (struct fte*)malloc(sizeof(struct fte));
@@ -173,7 +176,7 @@ void frame_evict()
   if (clock_head == NULL)
     PANIC("clock_head == NULL\n");
   if (clock_head == list_head(&frame_table))
-    PANIC("clock_head == list_begin in fram_evict\n");
+    PANIC("clock_head == list_head in fram_evict\n");
   // for (iter = list_begin(&frame_table);;)
   for (iter = clock_head;;)
   {
