@@ -59,9 +59,9 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
     }
   else
     {
-      //printf("swap_idx : %d, \n",target->swap_idx);
-      swap_free_slot(target->swap_idx);
       // 1) free swap slot
+      if (!target->wait_for_loading)
+        swap_free_slot(target->swap_idx);
     }
   // 3) free spte
   free(target);
@@ -180,8 +180,6 @@ int load_page_new(void* user_page_addr, bool writable)
   }
   new_spte->frame_locked = false;
   new_spte->present = true;
-    struct hash *spt = &thread_current()->spt;
-  hash_insert(spt, &(new_spte->elem));
   return true;
 }
 
@@ -215,8 +213,6 @@ int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
   }
   new_spte->frame_locked = false;
   new_spte->present = true;
-    struct hash *spt = &thread_current()->spt;
-  hash_insert(spt, &(new_spte->elem));
   return true;
 }
 
@@ -238,9 +234,6 @@ int load_page_file_lazy(void* user_page_addr, struct file *file, off_t ofs,
   new_spte->loading_info.page_zero_bytes = page_zero_bytes;
   new_spte->loading_info.ofs = ofs;
   new_spte->frame_locked = false;
-
-    struct hash *spt = &thread_current()->spt;
-  hash_insert(spt, &(new_spte->elem));
   return true;
 }
 
@@ -321,8 +314,7 @@ create_new_spte_insert_to_spt(void *user_addr)
   new_spte->wait_for_loading = false;
   new_spte->frame_locked = false;
   //insert
-  // struct hash *spt = &thread_current()->spt;
-  // hash_insert(spt, &(new_spte->elem));
+  hash_insert(spt, &(new_spte->elem));
   return new_spte;
 }
 
