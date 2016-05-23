@@ -86,7 +86,7 @@ void* frame_allocate(struct spte* supplement_page)
       supplement_page->present = true;
       supplement_page->phys_addr = new_frame;
       supplement_page->fte = new_fte_entry;
-      
+
       // insert into frame table 
       //if table is empty, adjust clck_head;
       if (list_empty(&frame_table))
@@ -98,7 +98,7 @@ void* frame_allocate(struct spte* supplement_page)
       {
         list_push_back(&frame_table, &new_fte_entry->elem);
         clock_head = list_next(clock_head);
-        if (clock_head = list_end(&frame_table))
+        if (clock_head == list_end(&frame_table))
         {
           clock_head = list_begin(&frame_table);
         }
