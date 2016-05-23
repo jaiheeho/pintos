@@ -136,6 +136,7 @@ start_process (void *f_name)
   //supplemental page table  for proj3 
   struct thread * curr = thread_current();
   sup_page_table_init(&curr->spt);
+  sema_init(&curr->spt_safer_thread, 1);
 
   //addeed filesys_lock
   sema_down(&filesys_global_lock);
