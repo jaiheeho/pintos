@@ -66,7 +66,7 @@ void* frame_allocate(struct spte* supplement_page)
 {
 
   sema_down(&frame_table_lock);
-  
+
   // printf("frame_allocate: %0x true of false : %d\n", supplement_page->user_addr,clock_head == list_head(&frame_table));
   // printf("clock_head : %0x\n", list_entry(clock_head, struct fte, elem)->frame_addr);
   void * new_frame=NULL;
@@ -211,6 +211,7 @@ void frame_evict()
 
   //detach frame from spte (this is for ensurance)
   pagedir_clear_page(t->pagedir, supplement_page->user_addr);
+  
   supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
   // free palloc'd page
   palloc_free_page(frame_entry->frame_addr);
