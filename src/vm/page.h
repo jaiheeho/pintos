@@ -22,6 +22,7 @@ struct lazy_loading_info{
   size_t page_read_bytes;
   size_t page_zero_bytes;
   off_t ofs;
+  struct file *executable;
 };
 
 /* Supplementary page table entry */
