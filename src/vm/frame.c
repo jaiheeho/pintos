@@ -64,8 +64,10 @@ void frame_table_free()
 ************************************************************************/
 void* frame_allocate(struct spte* supplement_page)
 {
-
+  old_level = intr_disable ();
   sema_down(&frame_table_lock);
+  enum intr_level old_level;
+
   // printf("frame_allocate: %0x true of false : %d\n", supplement_page->user_addr,clock_head == list_head(&frame_table));
   // printf("clock_head : %0x\n", list_entry(clock_head, struct fte, elem)->frame_addr);
   void * new_frame=NULL;
@@ -77,6 +79,7 @@ void* frame_allocate(struct spte* supplement_page)
       // all frame slots are full; commence eviction & retry
       // printf("frame_allocate: need eviction!!\n");
       frame_evict();
+      continue;
     }
     else
     {
@@ -92,17 +95,18 @@ void* frame_allocate(struct spte* supplement_page)
       new_fte_entry->frame_addr = new_frame;
       new_fte_entry->thread = thread_current();
       new_fte_entry->supplement_page = supplement_page;
+      list_push_back(&frame_table, &new_fte_entry->elem);
 
       //link to spte
       supplement_page->present = true;
       supplement_page->phys_addr = new_frame;
       supplement_page->fte = new_fte_entry;
-      list_push_back(&frame_table, &new_fte_entry->elem);
 
       break;
     }              
   }
   sema_up(&frame_table_lock);
+  intr_set_level (old_level);
   return new_frame;
 }
 
