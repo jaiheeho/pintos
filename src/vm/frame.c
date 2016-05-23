@@ -146,6 +146,10 @@ void frame_free_nolock(struct fte* fte_to_free)
   list_remove(&fte_to_free->elem);
   //detach frame from spte (this is for ensurance)
   //printf("AAA: %0x\n", ((struct spte *)fte_to_free->supplement_page)->user_addr);
+  struct spte* supplement_page = fte_to_free->supplement_page;
+  supplement_page->present = false;
+  supplement_page->phys_addr = NULL;
+  supplement_page->fte = NULL;
   pagedir_clear_page(fte_to_free->thread->pagedir, ((struct spte *)fte_to_free->supplement_page)->user_addr);
 
   // free palloc'd page
@@ -175,7 +179,7 @@ void frame_evict()
 
   if (clock_head == NULL)
     PANIC("clock_head == NULL\n");
-  if (clock_head == list_head(&frame_table))
+  if (clock_head == list_head(&frame_table)|| clock_head==list_end(&frame_table)||list_empty(&frame_table))
     PANIC("clock_head == list_head in fram_evict\n");
   // for (iter = list_begin(&frame_table);;)
   for (iter = clock_head;;)
