@@ -657,7 +657,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 
       /*********** MODIFIED CODE - PROJ3-2****************/
       //printf("read_bytes=%d zero_bytes=%d\n", read_bytes, zero_bytes);
-      if(!load_page_file(upage, file, ofs, page_read_bytes,
+      if(!load_page_file_lazy(upage, file, ofs, page_read_bytes,
 			 page_zero_bytes, writable))
     	{
     	  printf("load_segment: load_page_file failed\n");
