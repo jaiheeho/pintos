@@ -76,9 +76,9 @@ void sup_page_table_init(struct hash* sup_page_table)
 
 void sup_page_table_free(struct hash* sup_page_table)
 {
-  frame_table_lock();
+  frame_table_locking();
   hash_destroy(sup_page_table, spte_destroyer_func);
-  frame_table_unlock();
+  frame_table_unlocking();
 }
 
 /************************************************************************

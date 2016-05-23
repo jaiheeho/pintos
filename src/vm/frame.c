@@ -26,12 +26,12 @@ void frame_table_init()
   clock_head = list_head(&frame_table);
 }
 
-void frame_table_lock()
+void frame_table_locking()
 {
   sema_down(&frame_table_lock);
 }
 
-void frame_table_unlock()
+void frame_table_unlocking()
 {
   sema_up(&frame_table_lock);
 }
