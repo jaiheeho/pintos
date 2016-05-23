@@ -184,7 +184,7 @@ void frame_evict()
   struct spte *supplement_page;
   struct thread *t;
 
-  // printf("frame_evict:\n");
+  printf("frame_evict:\n");
   //start from the beginning of table.
 
   // if (clock_head == NULL)
@@ -218,6 +218,8 @@ void frame_evict()
   supplement_page = frame_entry->supplement_page;
   t = frame_entry->thread;
   supplement_page->present = false; 
+  supplement_page->phys_addr = NULL;
+  supplement_page->fte = NULL;
 
   //detach fte from frame table list
 
