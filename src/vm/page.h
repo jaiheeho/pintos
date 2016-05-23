@@ -23,6 +23,7 @@ struct lazy_loading_info{
   uint32_t page_zero_bytes;
   int32_t ofs;
 };
+
 /* Supplementary page table entry */
 struct spte {
   enum spte_status status;  //deprecated

@@ -171,7 +171,7 @@ page_fault (struct intr_frame *f)
     exit(-1);
   }
 
-  /* check whether invalid by exceeding STACK_MAX*/
+  /* check whether addr is invalid (exceeding STACK_MAX)*/
   /* (1)if read , try to load page and if it fails exit*/
   /* (2)if write, load_page or allocate frame so that we can write to it*/
   if( (uint32_t)PHYS_BASE - (uint32_t)fault_addr >= (uint32_t)STACK_MAX )
