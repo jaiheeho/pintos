@@ -184,7 +184,7 @@ int load_page_new(void* user_page_addr, bool writable)
 }
 
 
-int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
+int load_page_file(uint8_t* user_page_addr, struct file *file, off_t ofs,
 		   uint32_t page_read_bytes, uint32_t page_zero_bytes, bool writable)
 {
   //Create new spte
@@ -193,7 +193,7 @@ int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
 
   //Additional initialization (incuding allocating framd and install page) 
   new_spte->writable = writable;
-  void* new_frame = frame_allocate(new_spte);
+  uint8_t* new_frame = (uint8_t*)frame_allocate(new_spte);
   new_spte->phys_addr = new_frame;
 
   //Load from file
@@ -216,7 +216,7 @@ int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
   return true;
 }
 
-int load_page_file_lazy(void* user_page_addr, struct file *file, off_t ofs,
+int load_page_file_lazy(uint8_t* user_page_addr, struct file *file, off_t ofs,
        uint32_t page_read_bytes, uint32_t page_zero_bytes, bool writable)
 {
   // create new spte
@@ -242,27 +242,30 @@ loading_from_executable(struct spte* spte_target)
 {
   //given address if waiting for loading. find elf  and allocate frame, read data from the disk to memory.
   struct file *executable = thread_current()->executable;
-  void* new_frame = frame_allocate(spte_target);
+  uint8_t* new_frame = (uint8_t *)frame_allocate(spte_target);
 
   //changing wait_for_loading flag and initialize values;
-  uint32_t page_read_bytes = spte_target->loading_info.page_read_bytes;
-  uint32_t page_zero_bytes = spte_target->loading_info.page_zero_bytes;
+  size_t page_read_bytes = spte_target->loading_info.page_read_bytes;
+  size_t page_zero_bytes = spte_target->loading_info.page_zero_bytes;
   bool writable = spte_target->writable;
 
   //reading
   file_seek (executable, spte_target->loading_info.ofs);
   if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
   {
-    printf("FILE READ FAIL\n");
+    // printf("FILE READ FAIL\n");
+    PANIC("FILE READ FAIL\n");
+
     frame_free(new_frame);
     return false;
   }
   //set rest of bits to zero 
-  memset(new_frame+ page_read_bytes, 0, page_zero_bytes);
+  memset(new_frame + page_read_bytes, 0, page_zero_bytes);
   //install the page in user page table
   if(install_page( spte_target->user_addr, new_frame, writable) == false)
   {
     printf("INSTALL PAGE IN LOADING FROM EXEC: FAIL\n");
+    PANIC("INSTALL PAGE IN LOADING FROM EXEC: FAIL\n");
     frame_free(new_frame);
     return false;
   }
