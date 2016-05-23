@@ -343,7 +343,6 @@ loading_from_executable(struct spte* spte_target)
     frame_free(new_frame);
     return false;
   }
-  spte_target->phys_addr = new_frame;      
   spte_target->wait_for_loading = false;
   spte_target->present = true;
   return true;

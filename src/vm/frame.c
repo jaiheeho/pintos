@@ -98,21 +98,7 @@ void* frame_allocate(struct spte* supplement_page)
       supplement_page->phys_addr = new_frame;
       supplement_page->fte = new_fte_entry;
       list_push_back(&frame_table, &new_fte_entry->elem);
-      // insert into frame table 
-      // if table is empty, adjust clck_head;
-      // if (list_empty(&frame_table))
-      // {
-      //   list_push_back(&frame_table, &new_fte_entry->elem);
-      //   clock_head = list_begin(&frame_table);
-      // }
-      // else
-      // {
-      //   list_push_back(&frame_table, &new_fte_entry->elem);
-      //   if (clock_head == list_head(&frame_table))
-      //   {
-      //     clock_head = list_begin(&frame_table);
-      //   }
-      // }
+
       break;
     }              
   }
@@ -223,7 +209,6 @@ void frame_evict()
 
   //detach frame from spte (this is for ensurance)
   pagedir_clear_page(t->pagedir, supplement_page->user_addr);
-
   supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
   // free palloc'd page
   palloc_free_page(frame_entry->frame_addr);
