@@ -15,7 +15,6 @@ static struct list frame_table;
 static struct semaphore frame_table_lock;
 static struct list_elem *clock_head; 
 
-void frame_free_nolock(struct fte* fte_to_free);
 
 /************************************************************************
 * FUNCTION : frame_table_init                                           *
@@ -27,6 +26,17 @@ void frame_table_init()
   sema_init(&frame_table_lock,1);
   clock_head = list_head(&frame_table);
 }
+
+void frame_table_lock()
+{
+  sema_down(&frame_table_lock);
+}
+
+void frame_table_unlock()
+{
+  sema_up(&frame_table_lock);
+}
+
 
 /************************************************************************
 * FUNCTION : frame_table_free                                           *
@@ -236,18 +246,6 @@ void frame_evict()
   // free malloc'd memory
   free(frame_entry);
 }
-
-void frame_table_lock()
-{
-  sema_down(&frame_table_lock);
-}
-void frame_table_unlock()
-{
-  sema_up(&frame_table_lock);
-}
-
-
-
 
 
 
