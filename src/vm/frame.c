@@ -129,11 +129,9 @@ void frame_free(struct fte* fte_to_free)
   supplement_page->present = false;
   supplement_page->phys_addr = NULL;
   supplement_page->fte = NULL; 
-
   pagedir_clear_page(fte_to_free->thread->pagedir, fte_to_free->supplement_page->user_addr);
   // free palloc'd page
   palloc_free_page(fte_to_free->frame_addr);
-
   // free malloc'd memory
   free(fte_to_free);
   sema_up(&frame_table_lock);
@@ -156,10 +154,8 @@ void frame_free_nolock(struct fte* fte_to_free)
   supplement_page->phys_addr = NULL;
   supplement_page->fte = NULL;
   pagedir_clear_page(fte_to_free->thread->pagedir, ((struct spte *)fte_to_free->supplement_page)->user_addr);
-
   // free palloc'd page
   palloc_free_page(fte_to_free->frame_addr);
-
   // free malloc'd memory
   free(fte_to_free);
 }
@@ -241,6 +237,14 @@ void frame_evict()
   free(frame_entry);
 }
 
+void frame_table_lock(void)
+{
+  sema_down(&frame_table_lock);
+}
+void frame_table_unlock(void)
+{
+  sema_up(&frame_table_lock);
+}
 
 
 

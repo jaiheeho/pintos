@@ -54,7 +54,7 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
     {
       // 1) free the underlying frame
       // 2) detach from pt(this is also done in frame_free. doublechecking)
-      frame_free(target->fte);
+      frame_free_nolock(target->fte);
       //pagedir_clear_page(thread_current()->pagedir, target->user_addr);
     }
   else
@@ -76,7 +76,9 @@ void sup_page_table_init(struct hash* sup_page_table)
 
 void sup_page_table_free(struct hash* sup_page_table)
 {
+  frame_table_lock();
   hash_destroy(sup_page_table, spte_destroyer_func);
+  frame_table_lock();
 }
 
 /************************************************************************
