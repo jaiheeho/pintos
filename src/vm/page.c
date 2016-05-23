@@ -287,7 +287,7 @@ int load_page_swap(struct spte* spte_target)
   {
     // the page is in swap space. bring it in
     void* new_frame = frame_allocate(spte_target);
-    swap_remove(new_frame, spte_target->swap_idx);
+    swap_remove((char*)new_frame, spte_target->swap_idx);
     if (spte_target->fte->supplement_page != spte_target)
       PANIC("frame alloc fail in load page swap\n");
     install_page(spte_target->user_addr, spte_target->phys_addr, writable);
