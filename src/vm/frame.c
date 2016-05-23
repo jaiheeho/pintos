@@ -187,11 +187,8 @@ void frame_evict()
   printf("frame_evict:\n");
   //start from the beginning of table.
 
-  // if (clock_head == NULL)
-  //   PANIC("clock_head == NULL\n");
-  // if (clock_head == list_head(&frame_table)|| clock_head==list_end(&frame_table)||list_empty(&frame_table))
-  //   PANIC("clock_head == list_head in fram_evict\n");
-  // for (iter = list_begin(&frame_table);;)
+  if (list_emptry(&frame_table))
+    PANIC("Frame evict with empty frame_table");
   for (iter = list_begin(&frame_table);;)
   {
     frame_entry= list_entry(iter, struct fte, elem);
@@ -222,20 +219,6 @@ void frame_evict()
   supplement_page->fte = NULL;
 
   //detach fte from frame table list
-
-  // if(list_next(iter) == list_end(&frame_table))
-  // {
-  //   list_remove(iter);
-  //   if (list_empty(&frame_table))
-  //     clock_head = list_head(&frame_table);
-  //   else
-  //     clock_head = list_begin(&frame_table);
-  // }
-  // else
-  // {
-  //   clock_head = list_next(iter);
-  //   list_remove(iter);
-  // }
   list_remove(iter);
 
   //detach frame from spte (this is for ensurance)
