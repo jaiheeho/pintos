@@ -10,8 +10,6 @@
 #include "threads/palloc.h"
 #include "threads/thread.h"
 #include "threads/malloc.h"
-#include "threads/interrupt.h"
-
 
 static struct list frame_table;
 static struct semaphore frame_table_lock;
@@ -66,10 +64,8 @@ void frame_table_free()
 ************************************************************************/
 void* frame_allocate(struct spte* supplement_page)
 {
-  enum intr_level old_level;
-  old_level = intr_disable ();
-  sema_down(&frame_table_lock);
 
+  sema_down(&frame_table_lock);
   // printf("frame_allocate: %0x true of false : %d\n", supplement_page->user_addr,clock_head == list_head(&frame_table));
   // printf("clock_head : %0x\n", list_entry(clock_head, struct fte, elem)->frame_addr);
   void * new_frame=NULL;
@@ -108,7 +104,6 @@ void* frame_allocate(struct spte* supplement_page)
     }              
   }
   sema_up(&frame_table_lock);
-  intr_set_level (old_level);
   return new_frame;
 }
 
