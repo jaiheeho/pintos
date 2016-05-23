@@ -196,15 +196,15 @@ int load_page_file(void* user_page_addr, struct file *file, off_t ofs,
   if(file_read(file, new_frame, page_read_bytes) != (int) page_read_bytes)
   {
     printf("FILE READ FAIL\n");
-    spte_free(new_spte);
     frame_free(new_frame);
+    spte_free(new_spte);
     return false;
   }
   memset(new_frame + page_read_bytes, 0, page_zero_bytes);
   if(install_page(user_page_addr, new_frame, writable) == false)
   {
-    spte_free(new_spte);
     frame_free(new_frame);
+    spte_free(new_spte);
     return false;
   }
   new_spte->frame_locked = false;
@@ -231,7 +231,6 @@ int load_page_file_lazy(void* user_page_addr, struct file *file, off_t ofs,
   new_spte->frame_locked = false;
   return true;
 }
-
 
 int load_page_swap(struct spte* spte_target)
 {
