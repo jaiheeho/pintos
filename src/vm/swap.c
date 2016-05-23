@@ -24,7 +24,7 @@ void swap_table_init()
 	if(!swap_disk)
 		return;
 	/* get bitmap for swap slots*/
-	swap_size = disk_size(swap_disk)/8;
+	swap_size = disk_size(swap_disk)/SECTORSINPAGE;
 	swap_bitmap = bitmap_create(swap_size);
 	if (swap_bitmap == NULL)
 		PANIC ("CANNOT ACHIEVE SWAPTABLE");
@@ -44,6 +44,7 @@ int swap_alloc(char *addr){
 	int sector_num;
 	//scan swap_table which is not allocated and flip the bit first False bit to True
 	idx = bitmap_scan_and_flip (swap_bitmap, 0, 1, false);
+	printf("swap size %u, idx%d\n",swap_size, idx);
 
 	//If swot if full, panic!
 	if (idx == BITMAP_ERROR)
