@@ -237,11 +237,11 @@ void frame_evict()
   free(frame_entry);
 }
 
-void frame_table_lock(void)
+void frame_table_lock()
 {
   sema_down(&frame_table_lock);
 }
-void frame_table_unlock(void)
+void frame_table_unlock()
 {
   sema_up(&frame_table_lock);
 }
