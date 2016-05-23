@@ -187,7 +187,7 @@ void frame_evict()
   printf("frame_evict:\n");
   //start from the beginning of table.
 
-  if (list_emptry(&frame_table))
+  if (list_empty(&frame_table))
     PANIC("Frame evict with empty frame_table");
   for (iter = list_begin(&frame_table);;)
   {
