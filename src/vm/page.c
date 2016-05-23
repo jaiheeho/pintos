@@ -200,14 +200,14 @@ int load_page_file(uint8_t* user_page_addr, struct file *file, off_t ofs,
   if(file_read(file, new_frame, page_read_bytes) != (int) page_read_bytes)
   {
     printf("FILE READ FAIL\n");
-    frame_free(new_frame);
+    frame_free((void*)new_frame);
     spte_free(new_spte);
     return false;
   }
   memset(new_frame + page_read_bytes, 0, page_zero_bytes);
   if(install_page(user_page_addr, new_frame, writable) == false)
   {
-    frame_free(new_frame);
+    frame_free((void*)new_frame);
     spte_free(new_spte);
     return false;
   }
