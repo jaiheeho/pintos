@@ -244,7 +244,6 @@ int load_page_swap(struct spte* spte_target)
     // the page is in swap space. bring it in
     void* new_frame = frame_allocate(spte_target);
     swap_remove(new_frame, spte_target->swap_idx);
-    spte_target->phys_addr = new_frame;
     install_page(spte_target->user_addr, spte_target->phys_addr, writable);
     spte_target->present = true;
   }
