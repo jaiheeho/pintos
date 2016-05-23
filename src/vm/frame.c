@@ -55,7 +55,7 @@ void frame_table_free()
 ************************************************************************/
 void* frame_allocate(struct spte* supplement_page)
 {
-  printf("frame_allocate: %0x\n", supplement_page->user_addr);
+  printf("frame_allocate: %0x true of false : %d\n", supplement_page->user_addr,clock_head == list_head(&frame_table));
   sema_down(&frame_table_lock);
   void * new_frame=NULL;
   while(1)
@@ -167,12 +167,12 @@ void frame_evict()
   struct spte *supplement_page;
   struct thread *t;
 
-  //printf("frame_evict:\n");
+  printf("frame_evict:\n");
   //start from the beginning of table.
 
   if (clock_head == NULL)
     PANIC("clock_head == NULL\n");
-  if (clock_head == list_begin(&frame_table))
+  if (clock_head == list_head(&frame_table))
     PANIC("clock_head == list_begin in fram_evict\n");
   // for (iter = list_begin(&frame_table);;)
   for (iter = clock_head;;)
