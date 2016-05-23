@@ -194,8 +194,7 @@ int load_page_file(uint8_t* user_page_addr, struct file *file, off_t ofs,
   //Additional initialization (incuding allocating framd and install page) 
   new_spte->writable = writable;
   uint8_t* new_frame = (uint8_t*)frame_allocate(new_spte);
-  new_spte->phys_addr = new_frame;
-
+  
   //Load from file
   if(file_read(file, new_frame, page_read_bytes) != (int) page_read_bytes)
   {
@@ -260,7 +259,6 @@ loading_from_executable(struct spte* spte_target)
   {
     // printf("FILE READ FAIL\n");
     PANIC("FILE READ FAIL\n");
-
     frame_free((void*)new_frame);
     return false;
   }
