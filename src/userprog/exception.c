@@ -149,11 +149,11 @@ page_fault (struct intr_frame *f)
   user = (f->error_code & PF_U) != 0;
   
   /***** ADDED CODE *****/
-  printf("----------------------------------------------\n");
-  printf("faulted_addr: %0x\n", fault_addr);
-  printf("f->esp : %0x\n", f->esp);
-  printf("Errorcode : %d %d %d\n", not_present, write, user);
-  // printf("tid: %d\n", thread_current()->tid);
+  // printf("----------------------------------------------\n");
+  // printf("faulted_addr: %0x\n", fault_addr);
+  // printf("f->esp : %0x\n", f->esp);
+  // printf("Errorcode : %d %d %d\n", not_present, write, user);
+  // // printf("tid: %d\n", thread_current()->tid);
   
   /* this case is for invalid fauled_addr exit process and release the lock if thread has lock
   (1) fauld_addr is NULL
