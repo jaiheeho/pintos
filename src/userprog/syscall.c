@@ -509,6 +509,7 @@ mmap (int fd, void *addr)
 	{
             file_close(file_to_mmap);
             free(new_mmap);
+            return -1;
 
 	  struct spte* spte_target = hash_entry(e, struct spte, elem);
 	  
