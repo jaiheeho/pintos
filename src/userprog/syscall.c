@@ -508,7 +508,7 @@ mmap (int fd, void *addr)
       if(e != NULL)
 	{
             file_close(file_to_mmap);
-            list_remove(&curr->mmap_table, &new_mmap->elem);
+            list_remove(&new_mmap->elem);
             free(new_mmap);
             return MAP_FAILED;
 
