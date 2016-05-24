@@ -450,7 +450,7 @@ mmap (int fd, void *addr)
       return MAP_FAILED;
     }
 
-  struct file *file_to_mmap = file_open(fdt->file);
+  struct file *file_to_mmap = file_reopen(fdt->file);
   if (!file_to_mmap)
   {
     sema_up(&filesys_global_lock);
