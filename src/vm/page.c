@@ -14,7 +14,7 @@
 #include "filesys/filesys.h"
 
 struct spte* create_new_spte_insert_to_spt(void *user_addr);
-struct hash_elem* found_hash_elem_from_spt(void *faulted_user_page);
+//struct hash_elem* found_hash_elem_from_spt(void *faulted_user_page);
 bool install_page (void *upage, void *kpage, bool writable);
 void spte_free(struct spte* spte_to_free);
 int loading_from_executable(struct spte* spte_target);

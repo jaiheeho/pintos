@@ -15,6 +15,7 @@
 #include "lib/user/syscall.h" // ADDED HEADER
 #include "devices/input.h" // ADDED HEADER
 #include "vm/page.h"// ADDED HEADER
+#include "vm/frame.h"
 #include <inttypes.h> // ADDED HEADER
 
 
@@ -435,7 +436,7 @@ mapid_t
 mmap (int fd, void *addr)
 {
 
-  if((!is_user_vaddr(addr)) || (addr%PGSIZE != 0) || (fd < 2) || addr < 0x08048000)
+  if((!is_user_vaddr(addr)) || (pg_ofs(addr) != 0) || (fd < 2) || addr < 0x08048000)
     {
       return MAP_FAILED;
     }
@@ -444,6 +445,10 @@ mmap (int fd, void *addr)
   sema_down(&filesys_global_lock);
   struct file_descriptor *fdt;
   fdt = get_struct_fd_struct(fd);
+  if(fdt == NULL)
+    {
+      return MAP_FAILED;
+    }
   struct file *file_to_mmap = file_reopen(fdt->file);
   if (!file_to_mmap)
   {
@@ -499,7 +504,7 @@ mmap (int fd, void *addr)
 	{
 	  struct spte* spte_target = hash_entry(e, struct spte, elem);
 	  
-	  if(spte_target->type != BLANK)
+	  if(0)//spte_target->type != BLANK)
 	    {
 	      // this addr already in use by code/mmap/stack etc.
 	      file_close(file_to_mmap);
@@ -531,7 +536,7 @@ mmap (int fd, void *addr)
 			      page_zero_bytes, writable))
     	{
     	  printf("load_segment: load_page_file failed\n");
-	  unmap(new_mmap->map_id);
+	  munmap(new_mmap->mmap_id);
 	  file_close(file_to_mmap);
 
 	  return MAP_FAILED;
@@ -539,7 +544,7 @@ mmap (int fd, void *addr)
       /* Advance. */
       read_bytes -= page_read_bytes;
       upage += PGSIZE;
-      ofs += PGSIZE;
+      ofs += page_read_bytes;
       new_mmap->last_page = pg_round_down(upage);
 
 
@@ -560,7 +565,7 @@ munmap (mapid_t mmap_id)
 
 
 
-  struct hash *spt = thread_current()->spt;
+  struct hash *spt = &thread_current()->spt;
   void* temp;
 
   for(temp = m->start_addr; temp <= m->last_page ; temp += PGSIZE)
@@ -575,11 +580,11 @@ munmap (mapid_t mmap_id)
       
       struct spte* target = hash_entry(e, struct spte, elem);
       
-      if(target->type != MMAP)
+      /*if(target->type != MMAP)
 	{
 	  // it cant be!!!
 	}
-
+      */
       //lock the frame
       target->frame_locked = true;
 

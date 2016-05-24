@@ -13,6 +13,7 @@ struct mmap_descriptor
   void* start_addr;
   int size;
   void* last_page;
+  struct file* file;
   struct list_elem elem;
 };
 
