@@ -513,7 +513,7 @@ mmap (int fd, void *addr)
 	    {
 	      // this addr already in use by code/mmap/stack etc.
 	      file_close(file_to_mmap);
-          free(new_[mmap);
+          free(new_mmap);
 
 	      return MAP_FAILED;
 	    }
