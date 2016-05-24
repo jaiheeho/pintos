@@ -147,7 +147,7 @@ void frame_free_nolock(struct fte* fte_to_free)
   //printf("AAA: %0x\n", ((struct spte *)fte_to_free->supplement_page)->user_addr);
   struct spte* supplement_page = fte_to_free->supplement_page;
 
-  pagedir_clear_page(fte_to_free->thread->pagedir, ((struct spte *)fte_to_free->supplement_page)->user_addr);
+  pagedir_clear_page(fte_to_free->thread->pagedir, fte_to_free->supplement_page->user_addr);
   // free palloc'd page
   supplement_page->present = false;
 
