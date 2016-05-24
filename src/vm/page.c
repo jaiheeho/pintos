@@ -327,7 +327,7 @@ create_new_spte_insert_to_spt(void *user_addr)
   struct hash *spt = &thread_current()->spt;
   if(new_spte == NULL) return NULL;
   new_spte->user_addr = user_addr;
-  new_spte->status = ON_MEM;
+  // new_spte->status = ON_MEM;
   new_spte->present = false;
   new_spte->dirty = false;
   new_spte->swap_idx = -1;
