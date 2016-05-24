@@ -233,7 +233,7 @@ int load_page_file_lazy(uint8_t* user_page_addr, struct file *file, off_t ofs,
        uint32_t page_read_bytes, uint32_t page_zero_bytes, bool writable)
 {
   // create new spte
-    frame_table_locking();
+  frame_table_locking();
 
   struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
   if(new_spte == NULL) return false;
@@ -250,8 +250,7 @@ int load_page_file_lazy(uint8_t* user_page_addr, struct file *file, off_t ofs,
   new_spte->loading_info.ofs = ofs;
   new_spte->loading_info.executable = file;
 
-  new_spte->frame_locked = false;
-    frame_table_unlocking();
+  frame_table_unlocking();
 
   return true;
 }
@@ -295,6 +294,7 @@ loading_from_executable(struct spte* spte_target)
   }
   spte_target->wait_for_loading = false;
   spte_target->present = true;
+  new_spte->frame_locked = false;
   // printf("loading_from_executable END\n");
   return true;
 }
@@ -318,7 +318,6 @@ int load_page_swap(struct spte* spte_target)
   {
     PANIC("SOMETHING CANNOT HAPPEN IN LOAD_PAGE_SWAP\n");
   }
-  spte_target->frame_locked = false;
   return true;
 }
 
@@ -340,7 +339,7 @@ create_new_spte_insert_to_spt(void *user_addr)
   new_spte->dirty = false;
   new_spte->swap_idx = -1;
   new_spte->wait_for_loading = false;
-  new_spte->frame_locked = false;
+  new_spte->frame_locked = true;
   //insert
   hash_insert(spt, &(new_spte->elem));
   return new_spte;

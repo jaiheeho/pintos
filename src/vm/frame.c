@@ -147,9 +147,9 @@ void frame_free_nolock(struct fte* fte_to_free)
   //printf("AAA: %0x\n", ((struct spte *)fte_to_free->supplement_page)->user_addr);
   struct spte* supplement_page = fte_to_free->supplement_page;
 
+  supplement_page->present = false;
   pagedir_clear_page(fte_to_free->thread->pagedir, fte_to_free->supplement_page->user_addr);
   // free palloc'd page
-  supplement_page->present = false;
 
   supplement_page->phys_addr = NULL;
   supplement_page->fte = NULL;
@@ -184,6 +184,10 @@ void frame_evict()
     struct spte *paired_spte = frame_entry->supplement_page;  
     //if(paired_spte->user_addr >= (void*)0xb0000000
     //printf("user_addr: %0x\n", paired_spte->user_addr);
+    if (paired_spte->frame_lock == True)
+    {
+      continue;
+    }
 	  if(pagedir_is_accessed(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
     {
       pagedir_set_accessed(frame_entry->thread->pagedir, paired_spte->user_addr, false);

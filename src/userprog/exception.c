@@ -187,7 +187,7 @@ page_fault (struct intr_frame *f)
       {
         if (!user)
           sema_up(&filesys_global_lock);
-        PANIC("Exceeded STACK_MAX in read");
+        exit(-1);
       }
     }
     return;
