@@ -56,20 +56,16 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
     {
       // 1) free the underlying frame
       // 2) detach from pt(this is also done in frame_free. doublechecking)
-      // printf("IN destroy: frame -free\n");
       frame_free_nolock(target->fte);
       //pagedir_clear_page(thread_current()->pagedir, target->user_addr);
     }
   else
     {
       // 1) free swap slot
-      //printf("IN destroy: swap");
       if (!target->wait_for_loading)
       {
         swap_free_slot(target->swap_idx);
-        //printf(" -> swap");
       }
-      printf("\n");
     }
   // 3) free spte
   free(target);
