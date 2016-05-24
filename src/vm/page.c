@@ -257,6 +257,8 @@ loading_from_executable(struct spte* spte_target)
   // if (executable != spte_target->loading_info.executable)
   //   PANIC("EXECUTABLE ERROR\n");
   printf("executable loading start\n");
+  if (!executable)
+    PANIC("asdf\n");
 
   uint8_t* new_frame = (uint8_t *)frame_allocate(spte_target);
 
