@@ -233,7 +233,7 @@ int load_page_file_lazy(uint8_t* user_page_addr, struct file *file, off_t ofs,
        uint32_t page_read_bytes, uint32_t page_zero_bytes, bool writable)
 {
   // create new spte
-  frame_table_locking();
+  //frame_table_locking();
 
   struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
   if(new_spte == NULL) return false;
@@ -250,7 +250,7 @@ int load_page_file_lazy(uint8_t* user_page_addr, struct file *file, off_t ofs,
   new_spte->loading_info.ofs = ofs;
   new_spte->loading_info.executable = file;
 
-  frame_table_unlocking();
+  //frame_table_unlocking();
 
   return true;
 }
@@ -294,7 +294,7 @@ loading_from_executable(struct spte* spte_target)
   }
   spte_target->wait_for_loading = false;
   spte_target->present = true;
-  new_spte->frame_locked = false;
+  spte_target->frame_locked = false;
   // printf("loading_from_executable END\n");
   return true;
 }
@@ -307,12 +307,15 @@ int load_page_swap(struct spte* spte_target)
   if(spte_target->present == false)
   {
     // the page is in swap space. bring it in
+    spte_target->frame_locked = true;
+
     void* new_frame = frame_allocate(spte_target);
     swap_remove((char*)new_frame, spte_target->swap_idx);
     if (spte_target->fte->supplement_page != spte_target)
       PANIC("frame alloc fail in load page swap\n");
     install_page(spte_target->user_addr, spte_target->phys_addr, writable);
     spte_target->present = true;
+    spte_target->frame_locked = false;
   }
   else
   {
