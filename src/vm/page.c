@@ -234,6 +234,8 @@ int load_page_file_lazy(uint8_t* user_page_addr, struct file *file, off_t ofs,
        uint32_t page_read_bytes, uint32_t page_zero_bytes, bool writable)
 {
   // create new spte
+    frame_table_locking();
+
   struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
   if(new_spte == NULL) return false;
 
@@ -250,6 +252,8 @@ int load_page_file_lazy(uint8_t* user_page_addr, struct file *file, off_t ofs,
   new_spte->loading_info.executable = file;
 
   new_spte->frame_locked = false;
+    frame_table_unlocking();
+
   return true;
 }
 

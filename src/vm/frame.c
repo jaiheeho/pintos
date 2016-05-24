@@ -120,7 +120,6 @@ void frame_free(struct fte* fte_to_free)
   //detach fte from frame table list
   list_remove(&fte_to_free->elem);
   //detach frame from spte (this is for ensurance)
-  //printf("AAA: %0x\n", ((struct spte *)fte_to_free->supplement_page)->user_addr);
   // printf("in frame_free\n");
   struct spte* supplement_page = fte_to_free->supplement_page;
   supplement_page->present = false;
