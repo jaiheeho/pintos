@@ -85,10 +85,10 @@ syscall_handler (struct intr_frame *f UNUSED)
       returnZ=true;
       break;
     case SYS_REMOVE:
-      break;
       get_args(f->esp, args, 1);
       retval=remove((char *)args[0]);
       returnZ=true;
+      break;
     case SYS_OPEN:
       get_args(f->esp, args, 1);
       retval = open((char *)args[0]);
