@@ -184,7 +184,7 @@ void frame_evict()
     struct spte *paired_spte = frame_entry->supplement_page;  
     //if(paired_spte->user_addr >= (void*)0xb0000000
     //printf("user_addr: %0x\n", paired_spte->user_addr);
-    if (paired_spte->frame_lock == true)
+    if (paired_spte->frame_locked == true)
     {
       continue;
     }
