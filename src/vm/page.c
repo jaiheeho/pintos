@@ -98,7 +98,7 @@ void sup_page_table_free(struct hash* sup_page_table)
 ************************************************************************/
 int load_page_for_write(void* faulted_user_addr)
 {
-  printf("load_page_for_write: faultaddr=%0x\n", faulted_user_addr);
+  // printf("load_page_for_write: faultaddr=%0x\n", faulted_user_addr);
   //printf("roundeddown: %0x\n", pg_round_down(faulted_user_addr));
 
   void* faulted_user_page = pg_round_down(faulted_user_addr);
