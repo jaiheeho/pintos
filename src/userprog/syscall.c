@@ -255,7 +255,7 @@ open(const char *file)
     exit(-1);
   sema_down(&filesys_global_lock);
   //open file with name (file)
-  printf("file name open : %s", file);
+  printf("file name open : %s\n", file);
   filestruct = filesys_open(file);
   //check whether open was successful
   if (filestruct == NULL)
@@ -264,7 +264,7 @@ open(const char *file)
     return -1;
   }
   //allocate memory
-  printf("file name open : %s", file);
+  printf("file name open : %s\n", file);
 
   struct file_descriptor *new_fd;
   new_fd = (struct file_descriptor *)malloc (sizeof (struct file_descriptor));
