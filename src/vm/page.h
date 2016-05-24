@@ -33,7 +33,7 @@ struct spte {
   struct fte* fte;
   bool present;
   bool dirty;
-  size_t swap_idx; // swap slot number
+  int swap_idx; // swap slot number
   bool writable;
   bool frame_locked;
   struct hash_elem elem;
