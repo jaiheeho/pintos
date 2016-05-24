@@ -11,6 +11,8 @@ struct mmap_descriptor
 {
   int mmap_id;
   void* start_addr;
+  int size;
+  void* last_page;
   struct list_elem elem;
 };
 

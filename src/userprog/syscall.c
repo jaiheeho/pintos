@@ -15,7 +15,7 @@
 #include "lib/user/syscall.h" // ADDED HEADER
 #include "devices/input.h" // ADDED HEADER
 #include "vm/page.h"// ADDED HEADER
-
+#include <inttypes.h> // ADDED HEADER
 
 
 static void syscall_handler (struct intr_frame *);
@@ -434,10 +434,17 @@ void close (int fd)
 mapid_t 
 mmap (int fd, void *addr)
 {
+
+  if((!is_user_vaddr(addr)) || (addr%PGSIZE != 0) || (fd < 2) || addr < 0x08048000)
+    {
+      return MAP_FAILED;
+    }
+
+
   sema_down(&filesys_global_lock);
   struct file_descriptor *fdt;
   fdt = get_struct_fd_struct(fd);
-  struct file *file_to_mmap = fdt->file;
+  struct file *file_to_mmap = file_reopen(fdt->file);
   if (!file_to_mmap)
   {
     sema_up(&filesys_global_lock);
@@ -447,26 +454,102 @@ mmap (int fd, void *addr)
 
   if (size == 0)
   {
+    file_close(file_to_mmap);
     sema_up(&filesys_global_lock);
     return MAP_FAILED;  
   }
+
+
+
+  // no need to hold the lock
+  sema_up(&filesys_global_lock);
+
+
+
   //allocate memory
   struct mmap_descriptor *new_mmap;
   new_mmap = (struct mmap_descriptor *)malloc (sizeof (struct mmap_descriptor));
   if (!new_mmap)
   {
-    sema_up(&filesys_global_lock);
+    file_close(file_to_mmap);
     return MAP_FAILED;
   }
+
+
   //initialize new_mmap
   struct thread * curr = thread_current();  
   new_mmap->start_addr = addr;
   new_mmap->mmap_id =  curr->mmap_id_given ++;
+  new_mmap->size = size;
+  new_mmap->last_page = addr;
+  new_mmap->file = file_to_mmap;
+
   list_push_back(&curr->mmap_table, &new_mmap->elem);
-  file_read(file_to_mmap, addr, size);
-  sema_up(&filesys_global_lock);
+
+
+  // check if mmap pages can fit in the addrspace
+
+  void* temp;
+
+  for(temp = addr; temp <= pg_round_down(addr + size); temp += PGSIZE)
+    {
+      struct hash_elem *e = found_hash_elem_from_spt(temp);
+      
+      if(e != NULL)
+	{
+	  struct spte* spte_target = hash_entry(e, struct spte, elem);
+	  
+	  if(spte_target->type != BLANK)
+	    {
+	      // this addr already in use by code/mmap/stack etc.
+	      file_close(file_to_mmap);
+	      return MAP_FAILED;
+	    }
+	}
+    }
+  
+  
+
+  off_t read_bytes = size;
+  off_t ofs = 0;
+  bool writable = true;
+  void* upage = addr;
+
+  while (read_bytes > 0) 
+    {
+      /* Do calculate how to fill this page.
+         We will read PAGE_READ_BYTES bytes from FILE
+         and zero the final PAGE_ZERO_BYTES bytes. */
+ 
+
+
+      size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
+      size_t page_zero_bytes = PGSIZE - page_read_bytes;
+      
+
+      if(!load_page_file_lazy(upage, file_to_mmap, ofs, page_read_bytes,
+			      page_zero_bytes, writable))
+    	{
+    	  printf("load_segment: load_page_file failed\n");
+	  unmap(new_mmap->map_id);
+	  file_close(file_to_mmap);
+
+	  return MAP_FAILED;
+    	}
+      /* Advance. */
+      read_bytes -= page_read_bytes;
+      upage += PGSIZE;
+      ofs += PGSIZE;
+      new_mmap->last_page = pg_round_down(upage);
+
+
+    }
+
   return new_mmap->mmap_id;
 }
+
+
+
 void 
 munmap (mapid_t mmap_id)
 {
@@ -474,6 +557,61 @@ munmap (mapid_t mmap_id)
   m = get_mmap_descriptor(mmap_id);
   if (!m)
     return;
+
+
+
+  struct hash *spt = thread_current()->spt;
+  void* temp;
+
+  for(temp = m->start_addr; temp <= m->last_page ; temp += PGSIZE)
+    {
+      
+      struct hash_elem *e = found_hash_elem_from_spt(temp);
+      
+      if(e == NULL)
+	{
+	  // wtf? it cannot be!!
+	}
+      
+      struct spte* target = hash_entry(e, struct spte, elem);
+      
+      if(target->type != MMAP)
+	{
+	  // it cant be!!!
+	}
+
+      //lock the frame
+      target->frame_locked = true;
+
+
+      if(target->present == true)
+	{
+	  if(pagedir_is_dirty(thread_current()->pagedir, target->user_addr))
+	    {
+	      sema_down(&filesys_global_lock);
+	      file_write_at(m->file, target->user_addr,
+			    target->loading_info.page_read_bytes,
+			    target->loading_info.ofs);
+	      sema_up(&filesys_global_lock);
+	    }
+
+	      // must free the frame
+	      frame_free(target->fte);
+	      pagedir_clear_page(thread_current()->pagedir, target->user_addr);
+	}
+      
+      
+      
+      
+      
+      hash_delete(spt, e);
+
+    }
+
+  sema_down(&filesys_global_lock);
+  file_close(m->file);
+  sema_up(&filesys_global_lock);
+
 
   list_remove(&m->elem);
   //need to implement clear_page 
