@@ -298,7 +298,7 @@ loading_from_executable(struct spte* spte_target)
 
 int load_page_swap(struct spte* spte_target)
 {
-  //printf("load_page_swap: init\n");
+  printf("load_page_swap: init :%0x\n", spte_target->user_addr);
   bool writable = spte_target->writable;
  
   if(spte_target->present == false)
