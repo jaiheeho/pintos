@@ -232,6 +232,7 @@ remove (const char *file)
 {
   bool success;
   sema_down(&filesys_global_lock);
+  file_close(file);
   success = filesys_remove(file);
   sema_up(&filesys_global_lock);
   return success;
@@ -456,7 +457,7 @@ mmap (int fd, void *addr)
       return MAP_FAILED;
     }
 
-  struct file *file_to_mmap = filesys_open(fdt->file);
+  struct file *file_to_mmap = file_reopen(fdt->file);
   if (!file_to_mmap)
   {
     sema_up(&filesys_global_lock);
@@ -470,8 +471,6 @@ mmap (int fd, void *addr)
     sema_up(&filesys_global_lock);
     return MAP_FAILED;  
   }
-
-
 
   // no need to hold the lock
   sema_up(&filesys_global_lock);
