@@ -25,12 +25,10 @@ void frame_table_init()
   sema_init(&frame_table_lock,1);
   clock_head = list_head(&frame_table);
 }
-
 void frame_table_locking()
 {
   sema_down(&frame_table_lock);
 }
-
 void frame_table_unlocking()
 {
   sema_up(&frame_table_lock);
@@ -66,9 +64,6 @@ void* frame_allocate(struct spte* supplement_page)
 {
 
   sema_down(&frame_table_lock);
-
-  // printf("frame_allocate: %0x true of false : %d\n", supplement_page->user_addr,clock_head == list_head(&frame_table));
-  // printf("clock_head : %0x\n", list_entry(clock_head, struct fte, elem)->frame_addr);
   void * new_frame=NULL;
   while(1)
   {
@@ -83,7 +78,6 @@ void* frame_allocate(struct spte* supplement_page)
     else
     {
       // printf("frame_allocate: alloced, no need eviction!!\n");
-
       // frame allocation succeeded; add to frame table
       struct fte* new_fte_entry = (struct fte*)malloc(sizeof(struct fte));
       if(new_fte_entry == NULL)
@@ -120,7 +114,6 @@ void frame_free(struct fte* fte_to_free)
   //detach fte from frame table list
   list_remove(&fte_to_free->elem);
   //detach frame from spte (this is for ensurance)
-  // printf("in frame_free\n");
   struct spte* supplement_page = fte_to_free->supplement_page;
   supplement_page->present = false;
   pagedir_clear_page(fte_to_free->thread->pagedir, fte_to_free->supplement_page->user_addr);
@@ -144,13 +137,10 @@ void frame_free_nolock(struct fte* fte_to_free)
   //detach fte from frame table list
   list_remove(&fte_to_free->elem);
   //detach frame from spte (this is for ensurance)
-  //printf("AAA: %0x\n", ((struct spte *)fte_to_free->supplement_page)->user_addr);
   struct spte* supplement_page = fte_to_free->supplement_page;
-
   supplement_page->present = false;
   pagedir_clear_page(fte_to_free->thread->pagedir, fte_to_free->supplement_page->user_addr);
   // free palloc'd page
-
   supplement_page->phys_addr = NULL;
   supplement_page->fte = NULL;
   palloc_free_page(fte_to_free->frame_addr);
@@ -173,17 +163,14 @@ void frame_evict()
   struct spte *supplement_page;
   struct thread *t;
 
-  //printf("frame_evict:\n");
   //start from the beginning of table.  
-
   if (list_empty(&frame_table))
     PANIC("Frame evict with empty frame_table");
   for (iter = list_begin(&frame_table);;)
   {
     frame_entry= list_entry(iter, struct fte, elem);
     struct spte *paired_spte = frame_entry->supplement_page;  
-    //if(paired_spte->user_addr >= (void*)0xb0000000
-    //printf("user_addr: %0x\n", paired_spte->user_addr);
+    //prevent frame eviction for locked frame
     if (paired_spte->frame_locked == true)
     {
       continue;
@@ -203,7 +190,7 @@ void frame_evict()
   	  iter = list_begin(&frame_table);
   	}  
   }
-  
+  //reset fte before evicting.
   frame_entry= list_entry(iter, struct fte, elem);
   supplement_page = frame_entry->supplement_page;
   t = frame_entry->thread;

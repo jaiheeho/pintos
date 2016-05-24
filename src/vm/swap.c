@@ -8,9 +8,9 @@
 #include "vm/swap.h"
 #define SECTORSINPAGE 8
 static uint32_t swap_size;
-static struct disk *swap_disk;
-static struct semaphore swap_lock;
-static struct bitmap *swap_bitmap;
+static struct disk *swap_disk; //static disk variable
+static struct semaphore swap_lock; //static swap disk lock
+static struct bitmap *swap_bitmap; // bitmap for swap space
 
 /************************************************************************
 * FUNCTION : swap_table_init                                        	*
@@ -85,8 +85,6 @@ void swap_remove(char *addr, size_t idx){
 	sema_up(&swap_lock);
 }
 
-
-
 /************************************************************************
 * FUNCTION : swap_free_slot                                           	*
 * Input : swap index                                                    *
@@ -103,7 +101,6 @@ void swap_free_slot(size_t idx){
 
 	sema_up(&swap_lock);
 }
-
 
 /************************************************************************
 * FUNCTION : swap_table_free                                        	*

@@ -57,7 +57,6 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
       // 2) detach from pt(this is also done in frame_free. doublechecking)
       // printf("IN destroy: frame -free\n");
       frame_free_nolock(target->fte);
-      //pagedir_clear_page(thread_current()->pagedir, target->user_addr);
     }
   else
     {
@@ -67,6 +66,7 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
         swap_free_slot(target->swap_idx);
       }
     }
+
   // 3) free spte
   free(target);
 }
@@ -74,11 +74,21 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
  * handlers to manage supplement hash table (which is hash)END *
  * *************************************************************/
 
+/************************************************************************
+* FUNCTION : sup_page_table_init                                        *
+* Input : sup_page_table                                                *
+* Purpose : Initialize spte table in start_process in process.c         *
+************************************************************************/
 void sup_page_table_init(struct hash* sup_page_table)
 {
   hash_init(sup_page_table, spte_hash_func, spte_less_func, NULL);
 }
 
+/************************************************************************
+* FUNCTION : sup_page_table_free                                        *
+* Input : sup_page_table                                                *
+* Purpose : destroy spte table in process_exit in process.c             *
+************************************************************************/
 void sup_page_table_free(struct hash* sup_page_table)
 {
   frame_table_locking();
@@ -94,8 +104,6 @@ void sup_page_table_free(struct hash* sup_page_table)
 ************************************************************************/
 int load_page_for_write(void* faulted_user_addr)
 {
-  // printf("load_page_for_write: faultaddr=%0x\n", faulted_user_addr);
-  //printf("roundeddown: %0x\n", pg_round_down(faulted_user_addr));
   void* faulted_user_page = pg_round_down(faulted_user_addr);
   struct hash_elem *e = found_hash_elem_from_spt(faulted_user_page);
 
@@ -115,7 +123,6 @@ int load_page_for_write(void* faulted_user_addr)
   }
   else
   {
-    // printf("load_page_for_write: SWAPfaultaddr=%0x\n", faulted_user_addr);
     //given address is not waiting for loading => just swap in
     if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
     {
@@ -137,8 +144,6 @@ int load_page_for_write(void* faulted_user_addr)
 ************************************************************************/
 int load_page_for_read(void* faulted_user_addr)
 {
-  // printf("load_page_for_read: faultaddr=%0x\n", faulted_user_addr);
-
   //get the spte for this addr
   void* faulted_user_page = pg_round_down(faulted_user_addr);
   struct hash_elem *e = found_hash_elem_from_spt(faulted_user_page);
@@ -152,13 +157,11 @@ int load_page_for_read(void* faulted_user_addr)
   //(1) wait_for_loading flag is true -> lazy loading from the code
   if (spte_target->wait_for_loading)
   { 
-    // printf("load_page_for_read: loading executable faultaddr=%0x\n", faulted_user_addr);
     return loading_from_executable(spte_target);
   }
   //(2)not waiting for loading, Swap in 
   else
   {
-    // printf("load_page_for_read: SWAP faultaddr=%0x\n", faulted_user_addr);
     if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
     {
       PANIC("Serious Problem\n");
@@ -171,6 +174,13 @@ int load_page_for_read(void* faulted_user_addr)
   return true;
 }
 
+/************************************************************************
+* FUNCTION : load_page_new                                              *
+* Input : user_page_addr  , writable                                    *
+* Output : Success or FAIL                                              *
+* Purpose : load new page of user_page_addr and                         *
+install it with writable index                                          *
+************************************************************************/
 int load_page_new(void* user_page_addr, bool writable)
 {
   //Create new spte
@@ -191,7 +201,12 @@ int load_page_new(void* user_page_addr, bool writable)
   return true;
 }
 
-
+/************************************************************************
+* FUNCTION : load_page_file                                             *
+* Input : Many                                                          *
+* Output : Success or FAIL                                              *
+* Purpose : immediately load information from the fil                   *
+************************************************************************/
 int load_page_file(uint8_t* user_page_addr, struct file *file, off_t ofs,
 		   uint32_t page_read_bytes, uint32_t page_zero_bytes, bool writable)
 {
@@ -223,12 +238,17 @@ int load_page_file(uint8_t* user_page_addr, struct file *file, off_t ofs,
   return true;
 }
 
+/************************************************************************
+* FUNCTION : load_page_file_lazy                                        *
+* Input : Many                                                          *
+* Output : Success or FAIL                                              *
+* Purpose : lazy load information from the file, so just allocate       *
+new spte and if page-fault occurs load from executable                  *
+************************************************************************/
 int load_page_file_lazy(uint8_t* user_page_addr, struct file *file, off_t ofs,
        uint32_t page_read_bytes, uint32_t page_zero_bytes, bool writable)
 {
   // create new spte
-  //frame_table_locking();
-
   struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
   if(new_spte == NULL) return false;
 
@@ -243,18 +263,20 @@ int load_page_file_lazy(uint8_t* user_page_addr, struct file *file, off_t ofs,
   new_spte->loading_info.page_zero_bytes = page_zero_bytes;
   new_spte->loading_info.ofs = ofs;
   new_spte->loading_info.executable = file;
-  //frame_table_unlocking();
   return true;
 }
 
+/************************************************************************
+* FUNCTION : load_page_swap                                             *
+* Input : spte_target                                                   *
+* Output : Success or FAIL                                              *
+* Purpose : lazyily loading from the executable with given loading_info *
+************************************************************************/
 int 
 loading_from_executable(struct spte* spte_target)
 {
   //given address if waiting for loading. find elf  and allocate frame, read data from the disk to memory.
-
   struct file *executable = spte_target->loading_info.executable;
-  // if (executable != spte_target->loading_info.executable)
-  //   PANIC("EXECUTABLE ERROR\n");
   if (!executable)
     PANIC("asdf\n");
 
@@ -292,17 +314,24 @@ loading_from_executable(struct spte* spte_target)
   return true;
 }
 
+/************************************************************************
+* FUNCTION : load_page_swap                                             *
+* Input : spte_target                                                   *
+* Output : Success or FAIL                                              *
+* Purpose : swap in page for spte_target ( allocatte frame and install page)*
+************************************************************************/
 int load_page_swap(struct spte* spte_target)
 {
-  // printf("load_page_swap: init :%0x\n", spte_target->user_addr);
   bool writable = spte_target->writable;
- 
   if(spte_target->present == false)
   {
     // the page is in swap space. bring it in
     spte_target->frame_locked = true;
+    //first allocate frame
     void* new_frame = frame_allocate(spte_target);
+    //release swap space 
     swap_remove((char*)new_frame, spte_target->swap_idx);
+    // finally, reinstall page information
     if (spte_target->fte->supplement_page != spte_target)
       PANIC("frame alloc fail in load page swap\n");
     install_page(spte_target->user_addr, spte_target->phys_addr, writable);
@@ -359,6 +388,12 @@ found_hash_elem_from_spt(void *faulted_user_page)
   return e;
 }
 
+/************************************************************************
+* FUNCTION : stack_growth                                               *
+* Input : user_addr                                                     *
+* Output : user_addr                                                    *
+* Purpose : increase stack by allocating one more page                  *
+************************************************************************/
 void 
 stack_growth(void *user_addr)
 {
@@ -366,6 +401,11 @@ stack_growth(void *user_addr)
   load_page_for_write(new_stack_page);
 }
 
+/************************************************************************
+* FUNCTION : spte_free                                                  *
+* Input : spte_to_free                                                  *
+* Purpose : free spte                                                   *
+************************************************************************/
 void 
 spte_free(struct spte* spte_to_free)
 {
