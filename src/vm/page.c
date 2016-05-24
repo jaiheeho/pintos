@@ -256,6 +256,7 @@ loading_from_executable(struct spte* spte_target)
   struct file *executable = spte_target->loading_info.executable;
   // if (executable != spte_target->loading_info.executable)
   //   PANIC("EXECUTABLE ERROR\n");
+  printf("executable loading start\n");
 
   uint8_t* new_frame = (uint8_t *)frame_allocate(spte_target);
 
@@ -287,6 +288,7 @@ loading_from_executable(struct spte* spte_target)
   spte_target->wait_for_loading = false;
   spte_target->present = true;
   spte_target->frame_locked = false;
+  printf("executable loading end\n");
 
   return true;
 }
