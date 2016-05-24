@@ -66,7 +66,7 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
       {
         swap_free_slot(target->swap_idx);
       }
-      printf("\n")
+      printf("\n");
     }
   // 3) free spte
   free(target);
