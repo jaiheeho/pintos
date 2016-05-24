@@ -20,7 +20,7 @@ struct fte;
 
 /* loading information for each page for lazy loading*/
 struct lazy_loading_info{
-  size_t page_read_bytes;
+  size_t page_read_bytes;     //read bytes, zero bytes, offset  and executable file for the page loading
   size_t page_zero_bytes;
   off_t ofs;
   struct file *executable;
@@ -29,25 +29,25 @@ struct lazy_loading_info{
 /* Supplementary page table entry */
 struct spte {
   enum spte_type status;  //deprecated
-  void* user_addr;
-  void* phys_addr;
-  struct fte* fte;
-  bool present;
-  bool dirty;
-  int swap_idx; // swap slot number
-  bool writable;
-  bool frame_locked;
+  void* user_addr;                //user address for spte
+  void* phys_addr;                //physical address for spte
+  struct fte* fte;                //linking fte 
+  bool present;                   //check present bit of user address
+  bool dirty;                     //dirty bit
+  int swap_idx;                   // swap slot number
+  bool writable;                  //writable check for the page
+  bool frame_locked;              //requires frame_lock to evade fram -eviction before installation
   struct hash_elem elem;
-  bool wait_for_loading;
-  struct lazy_loading_info loading_info;
+  bool wait_for_loading;          //lazy loading flag
+  struct lazy_loading_info loading_info;  //lazy loding information
 };
 
 /* frame table entry */
 struct fte {
-  void* frame_addr;
-  struct spte* supplement_page;
-  struct thread* thread;
-  bool frame_locked;
+  void* frame_addr;             //physical address
+  struct spte* supplement_page; //linking spte
+  struct thread* thread;        //linking thread
+  bool frame_locked;            //check frame-lock for the frame.
   struct list_elem elem;
 };
 
