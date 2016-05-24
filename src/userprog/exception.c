@@ -184,6 +184,7 @@ page_fault (struct intr_frame *f)
         sema_up(&filesys_global_lock);
         exit(-1);
       }
+      //else load page for writing
       if(!load_page_for_write(fault_addr))
         PANIC("Exceeded STACK_MAX");
     }
