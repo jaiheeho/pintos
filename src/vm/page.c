@@ -94,7 +94,7 @@ void sup_page_table_free(struct hash* sup_page_table)
 ************************************************************************/
 int load_page_for_write(void* faulted_user_addr)
 {
-  printf("load_page_for_write: faultaddr=%0x\n", faulted_user_addr);
+  // printf("load_page_for_write: faultaddr=%0x\n", faulted_user_addr);
   //printf("roundeddown: %0x\n", pg_round_down(faulted_user_addr));
 
   void* faulted_user_page = pg_round_down(faulted_user_addr);
@@ -111,12 +111,12 @@ int load_page_for_write(void* faulted_user_addr)
   //(2) SWAPED in, bring it into memory again
   if (spte_target->wait_for_loading)
   {
-    printf("load_page_for_write: loading executable faultaddr=%0x\n", faulted_user_addr);
+    // printf("load_page_for_write: loading executable faultaddr=%0x\n", faulted_user_addr);
     return loading_from_executable(spte_target);
   }
   else
   {
-    printf("load_page_for_write: SWAPfaultaddr=%0x\n", faulted_user_addr);
+    // printf("load_page_for_write: SWAPfaultaddr=%0x\n", faulted_user_addr);
 
     //given address is not waiting for loading => just swap in
     if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
