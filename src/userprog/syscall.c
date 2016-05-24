@@ -266,7 +266,10 @@ open(const char *file)
   struct file_descriptor *new_fd;
   new_fd = (struct file_descriptor *)malloc (sizeof (struct file_descriptor));
   if (!new_fd)
+  {
+    sema_up(&filesys_global_lock);
     return -1;
+  }
 
   //initialize new_fd
   new_fd->file = filestruct;
