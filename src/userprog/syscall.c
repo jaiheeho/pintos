@@ -441,14 +441,15 @@ mmap (int fd, void *addr)
       return MAP_FAILED;
     }
 
-
   sema_down(&filesys_global_lock);
   struct file_descriptor *fdt;
   fdt = get_struct_fd_struct(fd);
   if(fdt == NULL)
     {
+      sema_up(&filesys_global_lock);
       return MAP_FAILED;
     }
+
   struct file *file_to_mmap = file_reopen(fdt->file);
   if (!file_to_mmap)
   {
