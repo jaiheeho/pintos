@@ -22,7 +22,7 @@ test_main (void)
 
   /* Spawn child and wait. */
   CHECK ((child = exec ("child-inherit")) != -1, "exec \"child-inherit\"");
-  quiet = false;
+  quiet = true;
   CHECK (wait (child) == -1, "wait for child (should return -1)");
   quiet = false;
 
