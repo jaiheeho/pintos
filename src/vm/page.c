@@ -62,13 +62,10 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
   else
     {
       // 1) free swap slot
-      //printf("IN destroy: swap");
       if (!target->wait_for_loading)
       {
         swap_free_slot(target->swap_idx);
-        //printf(" -> swap");
       }
-      // printf("\n");
     }
   // 3) free spte
   free(target);
@@ -99,7 +96,6 @@ int load_page_for_write(void* faulted_user_addr)
 {
   // printf("load_page_for_write: faultaddr=%0x\n", faulted_user_addr);
   //printf("roundeddown: %0x\n", pg_round_down(faulted_user_addr));
-
   void* faulted_user_page = pg_round_down(faulted_user_addr);
   struct hash_elem *e = found_hash_elem_from_spt(faulted_user_page);
 
@@ -114,13 +110,12 @@ int load_page_for_write(void* faulted_user_addr)
   //(2) SWAPED in, bring it into memory again
   if (spte_target->wait_for_loading)
   {
-    printf("load_page_for_write: loading executable faultaddr=%0x\n", faulted_user_addr);
+    // printf("load_page_for_write: loading executable faultaddr=%0x\n", faulted_user_addr);
     return loading_from_executable(spte_target);
   }
   else
   {
-    printf("load_page_for_write: SWAPfaultaddr=%0x\n", faulted_user_addr);
-
+    // printf("load_page_for_write: SWAPfaultaddr=%0x\n", faulted_user_addr);
     //given address is not waiting for loading => just swap in
     if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
     {
@@ -157,13 +152,13 @@ int load_page_for_read(void* faulted_user_addr)
   //(1) wait_for_loading flag is true -> lazy loading from the code
   if (spte_target->wait_for_loading)
   { 
-    printf("load_page_for_read: loading executable faultaddr=%0x\n", faulted_user_addr);
+    // printf("load_page_for_read: loading executable faultaddr=%0x\n", faulted_user_addr);
     return loading_from_executable(spte_target);
   }
   //(2)not waiting for loading, Swap in 
   else
   {
-    printf("load_page_for_read: SWAP faultaddr=%0x\n", faulted_user_addr);
+    // printf("load_page_for_read: SWAP faultaddr=%0x\n", faulted_user_addr);
     if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
     {
       PANIC("Serious Problem\n");
@@ -181,7 +176,6 @@ int load_page_new(void* user_page_addr, bool writable)
   //Create new spte
   struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
   if(new_spte == NULL) return false;
-
   //Additional initialization (incuding allocating framd and install page) 
   new_spte->writable = writable;
   void* new_frame = frame_allocate(new_spte);
@@ -249,9 +243,7 @@ int load_page_file_lazy(uint8_t* user_page_addr, struct file *file, off_t ofs,
   new_spte->loading_info.page_zero_bytes = page_zero_bytes;
   new_spte->loading_info.ofs = ofs;
   new_spte->loading_info.executable = file;
-
   //frame_table_unlocking();
-
   return true;
 }
 
@@ -259,7 +251,6 @@ int
 loading_from_executable(struct spte* spte_target)
 {
   //given address if waiting for loading. find elf  and allocate frame, read data from the disk to memory.
-  // printf("loading_from_executable START\n");
 
   struct file *executable = thread_current()->executable;
   if (executable != spte_target->loading_info.executable)
@@ -295,7 +286,7 @@ loading_from_executable(struct spte* spte_target)
   spte_target->wait_for_loading = false;
   spte_target->present = true;
   spte_target->frame_locked = false;
-  // printf("loading_from_executable END\n");
+
   return true;
 }
 
@@ -308,7 +299,6 @@ int load_page_swap(struct spte* spte_target)
   {
     // the page is in swap space. bring it in
     spte_target->frame_locked = true;
-
     void* new_frame = frame_allocate(spte_target);
     swap_remove((char*)new_frame, spte_target->swap_idx);
     if (spte_target->fte->supplement_page != spte_target)
