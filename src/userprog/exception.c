@@ -176,6 +176,7 @@ page_fault (struct intr_frame *f)
   /* (2)if write, load_page or allocate frame so that we can write to it*/
   if( (uint32_t)PHYS_BASE - (uint32_t)fault_addr >= (uint32_t)STACK_MAX )
   {
+    printf("1\n");
     if (write)
     {
       if (!load_page_for_write(fault_addr))
@@ -198,6 +199,8 @@ page_fault (struct intr_frame *f)
   /* not_present | read | user or kernel = 110 & 111*/
   if ( not_present && !write)
   {
+      printf("2\n");
+
     if(!load_page_for_read(fault_addr))
     {
       if (!user)
