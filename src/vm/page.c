@@ -252,9 +252,9 @@ loading_from_executable(struct spte* spte_target)
 {
   //given address if waiting for loading. find elf  and allocate frame, read data from the disk to memory.
 
-  struct file *executable = thread_current()->executable;
-  if (executable != spte_target->loading_info.executable)
-    PANIC("EXECUTABLE ERROR\n");
+  struct file *executable = spte_target->loading_info.executable;
+  // if (executable != spte_target->loading_info.executable)
+  //   PANIC("EXECUTABLE ERROR\n");
 
   uint8_t* new_frame = (uint8_t *)frame_allocate(spte_target);
 
