@@ -24,6 +24,7 @@ test_main (void)
   CHECK (remove ("sample.txt"), "remove \"sample.txt\"");
   CHECK (open ("sample.txt") == -1, "try to open \"sample.txt\"");
 
+  msg("1234");
   /* Create a new file in hopes of overwriting data from the old
      one, in case the file system has incorrectly freed the
      file's data. */
