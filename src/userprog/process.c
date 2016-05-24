@@ -310,7 +310,6 @@ process_exit (void)
     file_close(f->file);
     free(f);  
   }
-
   sema_up(&filesys_global_lock);
 
   /***** ADDED CODE *****/
@@ -329,10 +328,7 @@ process_exit (void)
   if (curr->parent_proc != NULL)
     list_remove (&curr->child_elem);
 
-
-
   // proj3-2 : unmap all mmaps
-
   struct list *mmap_table = &curr->mmap_table;
   struct list_elem *iter;
   struct mmap_descriptor *m;
@@ -342,7 +338,6 @@ process_exit (void)
       m = list_entry(iter, struct mmap_descriptor, elem);
       munmap(m->mmap_id);
     }
-
 
   //finally free supplement page table for this process.
   sup_page_table_free(&curr->spt);

@@ -85,10 +85,10 @@ syscall_handler (struct intr_frame *f UNUSED)
       returnZ=true;
       break;
     case SYS_REMOVE:
-      break;
       get_args(f->esp, args, 1);
       retval=remove((char *)args[0]);
       returnZ=true;
+      break;
     case SYS_OPEN:
       get_args(f->esp, args, 1);
       retval = open((char *)args[0]);
@@ -266,7 +266,10 @@ open(const char *file)
   struct file_descriptor *new_fd;
   new_fd = (struct file_descriptor *)malloc (sizeof (struct file_descriptor));
   if (!new_fd)
+  {
+    sema_up(&filesys_global_lock);
     return -1;
+  }
 
   //initialize new_fd
   new_fd->file = filestruct;
@@ -432,6 +435,12 @@ void close (int fd)
   sema_up(&filesys_global_lock);
 }
 
+/************************************************************************
+* FUNCTION : mmap                                                       *
+* Input : fd , addr                                                     *
+* Output :   mapid_t                                                    *
+* Purporse : ----------------                                           *
+************************************************************************/
 mapid_t 
 mmap (int fd, void *addr)
 {
@@ -465,8 +474,6 @@ mmap (int fd, void *addr)
     return MAP_FAILED;  
   }
 
-
-
   // no need to hold the lock
   sema_up(&filesys_global_lock);
 
@@ -494,21 +501,25 @@ mmap (int fd, void *addr)
 
 
   // check if mmap pages can fit in the addrspace
-
   void* temp;
-
   for(temp = addr; temp <= pg_round_down(addr + size); temp += PGSIZE)
     {
       struct hash_elem *e = found_hash_elem_from_spt(temp);
-      
       if(e != NULL)
 	{
+            file_close(file_to_mmap);
+            list_remove(&new_mmap->elem);
+            free(new_mmap);
+            return MAP_FAILED;
+
 	  struct spte* spte_target = hash_entry(e, struct spte, elem);
 	  
 	  if(0)//spte_target->type != BLANK)
 	    {
 	      // this addr already in use by code/mmap/stack etc.
 	      file_close(file_to_mmap);
+          free(new_mmap);
+
 	      return MAP_FAILED;
 	    }
 	}
@@ -526,8 +537,6 @@ mmap (int fd, void *addr)
       /* Do calculate how to fill this page.
          We will read PAGE_READ_BYTES bytes from FILE
          and zero the final PAGE_ZERO_BYTES bytes. */
- 
-
 
       size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
       size_t page_zero_bytes = PGSIZE - page_read_bytes;
@@ -539,7 +548,6 @@ mmap (int fd, void *addr)
     	  printf("load_segment: load_page_file failed\n");
 	  munmap(new_mmap->mmap_id);
 	  file_close(file_to_mmap);
-
 	  return MAP_FAILED;
     	}
       /* Advance. */
@@ -547,15 +555,17 @@ mmap (int fd, void *addr)
       read_bytes -= page_read_bytes;
       upage += PGSIZE;
       ofs += page_read_bytes;
-
-
     }
 
   return new_mmap->mmap_id;
 }
 
 
-
+/************************************************************************
+* FUNCTION : munmap                                                     *
+* Input : mmap_id                                                       *
+* Purporse : -------                                        *
+************************************************************************/
 void 
 munmap (mapid_t mmap_id)
 {

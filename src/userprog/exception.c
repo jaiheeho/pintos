@@ -178,7 +178,14 @@ page_fault (struct intr_frame *f)
   {
     if (write)
     {
-      if (!load_page_for_write(fault_addr))
+      //USER must not write below stack arbitrarily 
+      struct hash_elem *e = found_hash_elem_from_spt(pg_round_down(fault_addr));
+      if (user && e == NULL){
+        sema_up(&filesys_global_lock);
+        exit(-1);
+      }
+      //else load page for writing
+      if(!load_page_for_write(fault_addr))
         PANIC("Exceeded STACK_MAX");
     }
     else
