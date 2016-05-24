@@ -264,7 +264,7 @@ open(const char *file)
     return -1;
   }
   //allocate memory
-  printf("file name open : %s\n", file);
+  printf("file name open : %s : %d,\n", file, curr->fd_given+1);
 
   struct file_descriptor *new_fd;
   new_fd = (struct file_descriptor *)malloc (sizeof (struct file_descriptor));
@@ -456,7 +456,7 @@ mmap (int fd, void *addr)
       return MAP_FAILED;
     }
 
-  struct file *file_to_mmap = file_reopen(fdt->file);
+  struct file *file_to_mmap = file_open(fdt->file);
   if (!file_to_mmap)
   {
     sema_up(&filesys_global_lock);
