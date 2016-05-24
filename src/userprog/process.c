@@ -310,16 +310,6 @@ process_exit (void)
     file_close(f->file);
     free(f);  
   }
-  //empty mmap_table  for the process which was malloced when mmaped.
-  struct list *mmap_table = &curr->mmap_table;
-  struct list_elem *iter_md;
-  struct mmap_descriptor *m;  
-  while (!list_empty (mmap_table) && curr->is_loaded == 1)
-  {
-    iter_md = list_pop_front (mmap_table);
-    m = list_entry(iter_md, struct mmap_descriptor, elem);
-    free(m);  
-  }
 
   sema_up(&filesys_global_lock);
 
@@ -346,7 +336,6 @@ process_exit (void)
   struct list *mmap_table = &curr->mmap_table;
   struct list_elem *iter;
   struct mmap_descriptor *m;
-
   for(iter = list_begin(mmap_table); iter != list_tail(mmap_table);
       iter = list_begin(mmap_table))
     {
