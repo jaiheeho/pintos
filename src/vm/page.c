@@ -56,7 +56,7 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
     {
       // 1) free the underlying frame
       // 2) detach from pt(this is also done in frame_free. doublechecking)
-      printf("IN destroy: frame -free");
+      printf("IN destroy: frame -free\n");
       frame_free(target->fte);
       //pagedir_clear_page(thread_current()->pagedir, target->user_addr);
     }
@@ -67,8 +67,9 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
       if (!target->wait_for_loading)
       {
         swap_free_slot(target->swap_idx);
-        printf("IN destroy: -> swap");
+        printf(" -> swap");
       }
+      printf("\n");
     }
   // 3) free spte
   free(target);
@@ -256,7 +257,7 @@ int
 loading_from_executable(struct spte* spte_target)
 {
   //given address if waiting for loading. find elf  and allocate frame, read data from the disk to memory.
-  printf("loading_from_executable start\n");
+  printf("loading_from_executable START\n");
 
   struct file *executable = thread_current()->executable;
   if (executable != spte_target->loading_info.executable)
@@ -291,7 +292,7 @@ loading_from_executable(struct spte* spte_target)
   }
   spte_target->wait_for_loading = false;
   spte_target->present = true;
-  printf("loading_from_executable start\n");
+  printf("loading_from_executable END\n");
   return true;
 }
 
