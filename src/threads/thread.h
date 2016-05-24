@@ -115,7 +115,8 @@ struct thread
     struct hash spt;                    /* hash table for supplemental page table */
     int mmap_id_given;                  /* mmap id*/
     struct list mmap_table;             /* mmap id list*/
-    struct semaphore loading_safer;        /* semaphore that blocks parent proceess to complete loading procedure*/
+    struct semaphore loading_safer;       /* semaphore that blocks parent proceess to complete loading procedure*/
+    struct semaphore spt_safer_thread;
 
     ///WHERE WE ADDED END/////
 

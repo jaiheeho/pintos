@@ -153,7 +153,7 @@ page_fault (struct intr_frame *f)
   // printf("faulted_addr: %0x\n", fault_addr);
   // printf("f->esp : %0x\n", f->esp);
   // printf("Errorcode : %d %d %d\n", not_present, write, user);
-  // printf("tid: %d\n", thread_current()->tid);
+  // // printf("tid: %d\n", thread_current()->tid);
   
   /* this case is for invalid fauled_addr exit process and release the lock if thread has lock
   (1) fauld_addr is NULL
@@ -171,7 +171,7 @@ page_fault (struct intr_frame *f)
     exit(-1);
   }
 
-  /* check whether invalid by exceeding STACK_MAX*/
+  /* check whether addr is invalid (exceeding STACK_MAX)*/
   /* (1)if read , try to load page and if it fails exit*/
   /* (2)if write, load_page or allocate frame so that we can write to it*/
   if( (uint32_t)PHYS_BASE - (uint32_t)fault_addr >= (uint32_t)STACK_MAX )

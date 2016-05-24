@@ -17,11 +17,14 @@ enum spte_status{
 
 struct fte;
 
+/* loading information for each page for lazy loading*/
 struct lazy_loading_info{
-  uint32_t page_read_bytes;
-  uint32_t page_zero_bytes;
-  int32_t ofs;
+  size_t page_read_bytes;
+  size_t page_zero_bytes;
+  off_t ofs;
+  struct file *executable;
 };
+
 /* Supplementary page table entry */
 struct spte {
   enum spte_status status;  //deprecated
@@ -43,7 +46,6 @@ struct fte {
   void* frame_addr;
   struct spte* supplement_page;
   struct thread* thread;
-  int use;
   bool frame_locked;
   struct list_elem elem;
 };
@@ -55,6 +57,6 @@ int load_page_for_read(void*);
 void stack_growth(void*);
 int load_page_swap(struct spte*);
 int load_page_new(void*, bool);
-int load_page_file(void*, struct file*, off_t, uint32_t, uint32_t, bool);
-int load_page_file_lazy(void*, struct file*, off_t, uint32_t, uint32_t, bool);
+int load_page_file(uint8_t*, struct file*, off_t, uint32_t, uint32_t, bool);
+int load_page_file_lazy(uint8_t*, struct file*, off_t, uint32_t, uint32_t, bool);
 #endif

@@ -24,7 +24,7 @@ void swap_table_init()
 	if(!swap_disk)
 		return;
 	/* get bitmap for swap slots*/
-	swap_size = disk_size(swap_disk)*DISK_SECTOR_SIZE;
+	swap_size = disk_size(swap_disk)/SECTORSINPAGE;
 	swap_bitmap = bitmap_create(swap_size);
 	if (swap_bitmap == NULL)
 		PANIC ("CANNOT ACHIEVE SWAPTABLE");
@@ -93,7 +93,6 @@ void swap_remove(char *addr, size_t idx){
 * Purpose : free swap slot idx          								*
 ************************************************************************/
 void swap_free_slot(size_t idx){
-
 	sema_down(&swap_lock);
 	int i;
 	int sector_num;

@@ -136,6 +136,7 @@ start_process (void *f_name)
   //supplemental page table  for proj3 
   struct thread * curr = thread_current();
   sup_page_table_init(&curr->spt);
+  sema_init(&curr->spt_safer_thread, 1);
 
   //addeed filesys_lock
   sema_down(&filesys_global_lock);
@@ -321,7 +322,6 @@ process_exit (void)
   }
 
   sema_up(&filesys_global_lock);
-
 
   /***** ADDED CODE *****/
   //Finally, wake up parent who waiting for this thread*/
@@ -668,7 +668,8 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       read_bytes -= page_read_bytes;
       zero_bytes -= page_zero_bytes;
       upage += PGSIZE;
-      ofs += PGSIZE;
+      // ofs += PGSIZE;
+      ofs += page_read_bytes;
     }
   return true;
 }
