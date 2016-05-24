@@ -146,10 +146,11 @@ void frame_free_nolock(struct fte* fte_to_free)
   //detach frame from spte (this is for ensurance)
   //printf("AAA: %0x\n", ((struct spte *)fte_to_free->supplement_page)->user_addr);
   struct spte* supplement_page = fte_to_free->supplement_page;
-  supplement_page->present = false;
 
   pagedir_clear_page(fte_to_free->thread->pagedir, ((struct spte *)fte_to_free->supplement_page)->user_addr);
   // free palloc'd page
+  supplement_page->present = false;
+
   supplement_page->phys_addr = NULL;
   supplement_page->fte = NULL;
   palloc_free_page(fte_to_free->frame_addr);
