@@ -123,10 +123,10 @@ void frame_free(struct fte* fte_to_free)
   // printf("in frame_free\n");
   struct spte* supplement_page = fte_to_free->supplement_page;
   supplement_page->present = false;
-  supplement_page->phys_addr = NULL;
-  supplement_page->fte = NULL; 
   pagedir_clear_page(fte_to_free->thread->pagedir, fte_to_free->supplement_page->user_addr);
   // free palloc'd page
+  supplement_page->phys_addr = NULL;
+  supplement_page->fte = NULL; 
   palloc_free_page(fte_to_free->frame_addr);
   // free malloc'd memory
   free(fte_to_free);
@@ -147,10 +147,11 @@ void frame_free_nolock(struct fte* fte_to_free)
   //printf("AAA: %0x\n", ((struct spte *)fte_to_free->supplement_page)->user_addr);
   struct spte* supplement_page = fte_to_free->supplement_page;
   supplement_page->present = false;
-  supplement_page->phys_addr = NULL;
-  supplement_page->fte = NULL;
+
   pagedir_clear_page(fte_to_free->thread->pagedir, ((struct spte *)fte_to_free->supplement_page)->user_addr);
   // free palloc'd page
+  supplement_page->phys_addr = NULL;
+  supplement_page->fte = NULL;
   palloc_free_page(fte_to_free->frame_addr);
   // free malloc'd memory
   free(fte_to_free);
