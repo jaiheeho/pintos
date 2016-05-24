@@ -256,7 +256,7 @@ loading_from_executable(struct spte* spte_target)
   struct file *executable = spte_target->loading_info.executable;
   // if (executable != spte_target->loading_info.executable)
   //   PANIC("EXECUTABLE ERROR\n");
-  printf("executable loading start\n");
+  printf("executable loading start : &0x\n",  spte_target->user_addr);
   if (!executable)
     PANIC("asdf\n");
 
