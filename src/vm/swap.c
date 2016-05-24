@@ -93,7 +93,6 @@ void swap_remove(char *addr, size_t idx){
 * Purpose : free swap slot idx          								*
 ************************************************************************/
 void swap_free_slot(size_t idx){
-
 	sema_down(&swap_lock);
 	int i;
 	int sector_num;
