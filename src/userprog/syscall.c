@@ -583,8 +583,8 @@ void get_args(void* esp, int *args, int argsnum)
 }
 
 bool invalid_addr(void* addr){
-  if (!is_user_vaddr(addr))
-    return true;
+  // if (!is_user_vaddr(addr))
+  //   return true;
   //under CODE segment
   if (addr <(void*)0x08048000)
     return true;
