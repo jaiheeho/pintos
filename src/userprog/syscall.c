@@ -543,10 +543,10 @@ mmap (int fd, void *addr)
 	  return MAP_FAILED;
     	}
       /* Advance. */
+      new_mmap->last_page = pg_round_down(upage);
       read_bytes -= page_read_bytes;
       upage += PGSIZE;
       ofs += page_read_bytes;
-      new_mmap->last_page = pg_round_down(upage);
 
 
     }
