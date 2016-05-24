@@ -158,13 +158,13 @@ int load_page_for_read(void* faulted_user_addr)
   //(1) wait_for_loading flag is true -> lazy loading from the code
   if (spte_target->wait_for_loading)
   { 
-    // printf("load_page_for_read: loading executable faultaddr=%0x\n", faulted_user_addr);
+    printf("load_page_for_read: loading executable faultaddr=%0x\n", faulted_user_addr);
     return loading_from_executable(spte_target);
   }
   //(2)not waiting for loading, Swap in 
   else
   {
-    // printf("load_page_for_read: SWAP faultaddr=%0x\n", faulted_user_addr);
+    printf("load_page_for_read: SWAP faultaddr=%0x\n", faulted_user_addr);
     if(pagedir_get_page(thread_current()->pagedir, spte_target->user_addr))
     {
       PANIC("Serious Problem\n");
