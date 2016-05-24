@@ -232,7 +232,6 @@ remove (const char *file)
 {
   bool success;
   sema_down(&filesys_global_lock);
-  file_close(file);
   success = filesys_remove(file);
   sema_up(&filesys_global_lock);
   return success;
@@ -265,7 +264,7 @@ open(const char *file)
     return -1;
   }
   //allocate memory
-  printf("file name open : %s : %d,\n", file, curr->fd_given+1);
+  printf("file name open : %s : %d,\n", file, curr->fd_given);
 
   struct file_descriptor *new_fd;
   new_fd = (struct file_descriptor *)malloc (sizeof (struct file_descriptor));
@@ -499,21 +498,23 @@ mmap (int fd, void *addr)
 
 
   // check if mmap pages can fit in the addrspace
-
   void* temp;
-
   for(temp = addr; temp <= pg_round_down(addr + size); temp += PGSIZE)
     {
       struct hash_elem *e = found_hash_elem_from_spt(temp);
-      
       if(e != NULL)
 	{
+            file_close(file_to_mmap);
+            free(new_mmap);
+
 	  struct spte* spte_target = hash_entry(e, struct spte, elem);
 	  
 	  if(0)//spte_target->type != BLANK)
 	    {
 	      // this addr already in use by code/mmap/stack etc.
 	      file_close(file_to_mmap);
+          free(new_[mmap);
+
 	      return MAP_FAILED;
 	    }
 	}
@@ -544,7 +545,6 @@ mmap (int fd, void *addr)
     	  printf("load_segment: load_page_file failed\n");
 	  munmap(new_mmap->mmap_id);
 	  file_close(file_to_mmap);
-
 	  return MAP_FAILED;
     	}
       /* Advance. */
@@ -552,8 +552,6 @@ mmap (int fd, void *addr)
       read_bytes -= page_read_bytes;
       upage += PGSIZE;
       ofs += page_read_bytes;
-
-
     }
 
   return new_mmap->mmap_id;
