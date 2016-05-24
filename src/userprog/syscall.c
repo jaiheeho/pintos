@@ -532,15 +532,15 @@ mmap (int fd, void *addr)
       size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
       size_t page_zero_bytes = PGSIZE - page_read_bytes;
       
-      printf("syscall : lazy\n");
+      printf("syscall : lazy %0x\n", upage);
       if(!load_page_file_lazy(upage, file_to_mmap, ofs, page_read_bytes,
 			      page_zero_bytes, writable))
     	{
     	  printf("load_segment: load_page_file failed\n");
-	  munmap(new_mmap->mmap_id);
-	  file_close(file_to_mmap);
+        munmap(new_mmap->mmap_id);
+        file_close(file_to_mmap);
 
-	  return MAP_FAILED;
+        return MAP_FAILED;
     	}
       /* Advance. */
       read_bytes -= page_read_bytes;
