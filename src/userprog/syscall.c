@@ -508,8 +508,9 @@ mmap (int fd, void *addr)
       if(e != NULL)
 	{
             file_close(file_to_mmap);
+            list_remove(&curr->mmap_table, &new_mmap->elem);
             free(new_mmap);
-            return -1;
+            return MAP_FAILED;
 
 	  struct spte* spte_target = hash_entry(e, struct spte, elem);
 	  
