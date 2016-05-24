@@ -1,5 +1,8 @@
 
 #include <hash.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "vm/frame.h"
 #include "vm/page.h"
 #include "vm/swap.h"
@@ -10,7 +13,6 @@
 #include "userprog/pagedir.h"
 #include "filesys/file.h"
 #include "filesys/filesys.h"
-#include <string.h>
 
 struct spte* create_new_spte_insert_to_spt(void *user_addr);
 struct hash_elem* found_hash_elem_from_spt(void *faulted_user_page);
@@ -61,6 +63,7 @@ static void spte_destroyer_func(struct hash_elem *e, void *aux)
     {
       // 1) free swap slot
       if (!target->wait_for_loading)
+
         swap_free_slot(target->swap_idx);
     }
   // 3) free spte
