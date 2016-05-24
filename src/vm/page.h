@@ -9,10 +9,11 @@
 #define STACK_MAX 2000 * PGSIZE
 #define STACK_STRIDE 32
 
-enum spte_status{
-  ON_SWAP,
-  ON_MEM,
-  ON_DISK
+enum spte_type{
+  MMAP,
+  CODE,
+  DATA,
+  STACK
 };
 
 struct fte;
@@ -27,7 +28,7 @@ struct lazy_loading_info{
 
 /* Supplementary page table entry */
 struct spte {
-  enum spte_status status;  //deprecated
+  enum spte_type status;  //deprecated
   void* user_addr;
   void* phys_addr;
   struct fte* fte;

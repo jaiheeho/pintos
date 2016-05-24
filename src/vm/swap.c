@@ -94,8 +94,6 @@ void swap_remove(char *addr, size_t idx){
 ************************************************************************/
 void swap_free_slot(size_t idx){
 	sema_down(&swap_lock);
-	int i;
-	int sector_num;
 
 	//check whether swap index is correct
 	if (bitmap_test(swap_bitmap, idx) == false)

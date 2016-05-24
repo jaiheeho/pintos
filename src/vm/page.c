@@ -152,6 +152,7 @@ int load_page_for_read(void* faulted_user_addr)
   //(1) wait_for_loading flag is true -> lazy loading from the code
   if (spte_target->wait_for_loading)
   { 
+    printf("3\n");
     // printf("load_page_for_read: loading executable faultaddr=%0x\n", faulted_user_addr);
     return loading_from_executable(spte_target);
   }
@@ -252,9 +253,11 @@ loading_from_executable(struct spte* spte_target)
 {
   //given address if waiting for loading. find elf  and allocate frame, read data from the disk to memory.
 
-  struct file *executable = thread_current()->executable;
-  if (executable != spte_target->loading_info.executable)
-    PANIC("EXECUTABLE ERROR\n");
+  struct file *executable = spte_target->loading_info.executable;
+  // if (executable != spte_target->loading_info.executable)
+  //   PANIC("EXECUTABLE ERROR\n");
+  if (!executable)
+    PANIC("asdf\n");
 
   uint8_t* new_frame = (uint8_t *)frame_allocate(spte_target);
 
@@ -327,7 +330,7 @@ create_new_spte_insert_to_spt(void *user_addr)
   struct hash *spt = &thread_current()->spt;
   if(new_spte == NULL) return NULL;
   new_spte->user_addr = user_addr;
-  new_spte->status = ON_MEM;
+  // new_spte->status = ON_MEM;
   new_spte->present = false;
   new_spte->dirty = false;
   new_spte->swap_idx = -1;
