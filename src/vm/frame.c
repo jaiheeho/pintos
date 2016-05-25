@@ -214,7 +214,7 @@ void frame_evict()
     clock_head = list_next(iter);
 
   list_remove(iter);
-  if(list_empty(&fream_table))
+  if(list_empty(&frame_table))
     clock_head = list_head(&frame_table);
 
   //detach frame from spte (this is for ensurance)
