@@ -105,7 +105,6 @@ void* frame_allocate(struct spte* supplement_page)
     }              
   }
 
-
   sema_up(&frame_table_lock);
   return new_frame;
 }
@@ -172,7 +171,7 @@ void frame_evict()
   struct thread *t;
 
   //start from the beginning of table.  
-  if (list_empty(&frame_table))
+  if (list_empty(&frame_table) || clock_head == NULL || clock_head = list_head(&frame_table))
     PANIC("Frame evict with empty frame_table");
   for (iter = clock_head /*list_begin(&frame_table)*/;;)
   {
@@ -184,7 +183,7 @@ void frame_evict()
 
     if(pagedir_is_dirty(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
       continue;
-    
+
 	  if(pagedir_is_accessed(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
     {
       pagedir_set_accessed(frame_entry->thread->pagedir, paired_spte->user_addr, false);
@@ -215,6 +214,8 @@ void frame_evict()
     clock_head = list_next(iter);
 
   list_remove(iter);
+  if(list_empty(&fream_table)
+    clock_head = list_head(&frame_table);
 
   //detach frame from spte (this is for ensurance)
   pagedir_clear_page(t->pagedir, supplement_page->user_addr);
