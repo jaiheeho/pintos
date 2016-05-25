@@ -169,6 +169,7 @@ void frame_evict()
   struct fte *frame_entry;
   struct spte *supplement_page;
   struct thread *t;
+  int loop_time = 0;
 
   //start from the beginning of table.  
   if (list_empty(&frame_table) || clock_head == list_head(&frame_table))
@@ -180,7 +181,8 @@ void frame_evict()
     //prevent frame eviction for locked frame
     if (paired_spte->frame_locked == true)
       continue;
-
+    if(pagedir_is_dirty(frame_entry->thread->pagedir, paired_spte->user_addr) == true && loop_time == 0)
+      continue;
 	  if(pagedir_is_accessed(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
     {
       pagedir_set_accessed(frame_entry->thread->pagedir, paired_spte->user_addr, false);
@@ -193,6 +195,7 @@ void frame_evict()
     iter = list_next(iter);
     if(iter == list_end(&frame_table))
   	{
+      loop_time++;
   	  iter = list_begin(&frame_table);
   	}  
   }
