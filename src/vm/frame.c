@@ -198,8 +198,9 @@ void frame_evict()
   }
   //reset fte before evicting.
   frame_entry= list_entry(iter, struct fte, elem);
+
   supplement_page = frame_entry->supplement_page;
-  pagedir_clear_page(t->pagedir, supplement_page->user_addr);
+    supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
 
   t = frame_entry->thread;
   supplement_page->present = false; 
@@ -217,7 +218,9 @@ void frame_evict()
     clock_head = list_head(&frame_table);
 
   //detach frame from spte (this is for ensurance)
-    // free palloc'd page
+  pagedir_clear_page(t->pagedir, supplement_page->user_addr);
+  
+  // free palloc'd page
   palloc_free_page(frame_entry->frame_addr);
   // free malloc'd memory
   free(frame_entry);
