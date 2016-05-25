@@ -88,12 +88,12 @@ void* frame_allocate(struct spte* supplement_page)
       new_fte_entry->frame_addr = new_frame;
       new_fte_entry->thread = thread_current();
       new_fte_entry->supplement_page = supplement_page;
-      if (list_empty(&frame_table))
-      {
-        list_push_back(&frame_table, &new_fte_entry->elem);
-        clock_head = list_begin(&frame_table);
-      }
-      else
+      // if (list_empty(&frame_table))
+      // {
+      //   list_push_back(&frame_table, &new_fte_entry->elem);
+      //   clock_head = list_begin(&frame_table);
+      // }
+      // else
         list_push_back(&frame_table, &new_fte_entry->elem);
 
       //link to spte
@@ -169,12 +169,11 @@ void frame_evict()
   struct fte *frame_entry;
   struct spte *supplement_page;
   struct thread *t;
-  int loop_time = 0;
 
   //start from the beginning of table.  
-  if (list_empty(&frame_table) || clock_head == list_head(&frame_table))
+  if (list_empty(&frame_table))
     PANIC("Frame evict with empty frame_table");
-  for (iter = clock_head /*list_begin(&frame_table)*/;;)
+  for (iter = /*clock_head*/ list_begin(&frame_table);;)
   {
     frame_entry= list_entry(iter, struct fte, elem);
     struct spte *paired_spte = frame_entry->supplement_page;  
@@ -193,7 +192,6 @@ void frame_evict()
     iter = list_next(iter);
     if(iter == list_end(&frame_table))
   	{
-      loop_time++;
   	  iter = list_begin(&frame_table);
   	}  
   }
@@ -206,14 +204,14 @@ void frame_evict()
   supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
 
   //detach fte from frame table list
-  if (list_next(iter) == list_end(&frame_table))
-    clock_head = list_begin(&frame_table);
-  else
-    clock_head = list_next(iter);
+  // if (list_next(iter) == list_end(&frame_table))
+  //   clock_head = list_begin(&frame_table);
+  // else
+  //   clock_head = list_next(iter);
   list_remove(iter);
 
-  if (list_empty(&frame_table))
-    clock_head = list_head(&frame_table);
+  // if (list_empty(&frame_table))
+  //   clock_head = list_head(&frame_table);
 
 
   supplement_page->present = false; 
