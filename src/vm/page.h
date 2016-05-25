@@ -54,6 +54,7 @@ int load_page_swap(struct spte*);
 int load_page_new(void*, bool);
 int load_page_file(uint8_t*, struct file*, off_t, uint32_t, uint32_t, bool);
 int load_page_file_lazy(uint8_t*, struct file*, off_t, uint32_t, uint32_t, bool);
+int load_page_mmap_lazy(uint8_t*, struct file*, off_t, uint32_t, uint32_t, bool);
 struct hash_elem* found_hash_elem_from_spt(void *faulted_user_page);
 
 #endif
