@@ -171,7 +171,7 @@ void frame_evict()
   struct thread *t;
 
   //start from the beginning of table.  
-  if (list_empty(&frame_table) || clock_head == NULL || clock_head = list_head(&frame_table))
+  if (list_empty(&frame_table) || clock_head == NULL || clock_head == list_head(&frame_table))
     PANIC("Frame evict with empty frame_table");
   for (iter = clock_head /*list_begin(&frame_table)*/;;)
   {
