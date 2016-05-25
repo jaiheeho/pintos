@@ -88,14 +88,14 @@ void* frame_allocate(struct spte* supplement_page)
       new_fte_entry->frame_addr = new_frame;
       new_fte_entry->thread = thread_current();
       new_fte_entry->supplement_page = supplement_page;
-      // if (list_empty(&frame_table))
-      // {
-      //   list_push_back(&frame_table, &new_fte_entry->elem);
-      //   clock_head = list_begin(&frame_table);
-      // }
-      // else
-      //   list_push_back(&frame_table, &new_fte_entry->elem);
-      list_push_back(&frame_table, &new_fte_entry->elem);
+      if (list_empty(&frame_table))
+      {
+        list_push_back(&frame_table, &new_fte_entry->elem);
+        clock_head = list_begin(&frame_table);
+      }
+      else
+        list_push_back(&frame_table, &new_fte_entry->elem);
+      // list_push_back(&frame_table, &new_fte_entry->elem);
 
       //link to spte
       supplement_page->present = true;
@@ -181,9 +181,8 @@ void frame_evict()
     //prevent frame eviction for locked frame
     if (paired_spte->frame_locked == true)
       continue;
-
-    if(pagedir_is_dirty(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
-      continue;
+    // if(pagedir_is_dirty(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
+    //   continue;
 
 	  if(pagedir_is_accessed(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
     {
@@ -209,11 +208,11 @@ void frame_evict()
   supplement_page->fte = NULL;
 
   //detach fte from frame table list
-  // if (list_next(iter) == list_end(&frame_table))
-  //   clock_head = list_begin(&frame_table);
-  // else
-  //   clock_head = list_next(iter);
-  list_remove(iter);
+  if (list_next(iter) == list_end(&frame_table))
+    clock_head = list_begin(&frame_table);
+  else
+    clock_head = list_next(iter);
+  // list_remove(iter);
   // if(list_empty(&frame_table))
   //   clock_head = list_head(&frame_table);
 
