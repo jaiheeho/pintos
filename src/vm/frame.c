@@ -88,13 +88,14 @@ void* frame_allocate(struct spte* supplement_page)
       new_fte_entry->frame_addr = new_frame;
       new_fte_entry->thread = thread_current();
       new_fte_entry->supplement_page = supplement_page;
-      if (list_empty(&frame_table))
-      {
-        list_push_back(&frame_table, &new_fte_entry->elem);
-        clock_head = list_begin(&frame_table);
-      }
-      else
-        list_push_back(&frame_table, &new_fte_entry->elem);
+      // if (list_empty(&frame_table))
+      // {
+      //   list_push_back(&frame_table, &new_fte_entry->elem);
+      //   clock_head = list_begin(&frame_table);
+      // }
+      // else
+      //   list_push_back(&frame_table, &new_fte_entry->elem);
+      list_push_back(&frame_table, &new_fte_entry->elem);
 
       //link to spte
       supplement_page->present = true;
@@ -212,7 +213,6 @@ void frame_evict()
   //   clock_head = list_begin(&frame_table);
   // else
   //   clock_head = list_next(iter);
-
   list_remove(iter);
   // if(list_empty(&frame_table))
   //   clock_head = list_head(&frame_table);
