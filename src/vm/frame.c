@@ -95,7 +95,7 @@ void* frame_allocate(struct spte* supplement_page)
       }
       else
         list_push_back(&frame_table, &new_fte_entry->elem);
-      
+
       //link to spte
       supplement_page->present = true;
       supplement_page->phys_addr = new_frame;
@@ -171,7 +171,7 @@ void frame_evict()
   struct thread *t;
 
   //start from the beginning of table.  
-  if (list_empty(&frame_table))
+  if (list_empty(&frame_table) || clock_head == list_head(&frame_table))
     PANIC("Frame evict with empty frame_table");
   for (iter = clock_head /*list_begin(&frame_table)*/;;)
   {
@@ -211,6 +211,9 @@ void frame_evict()
   else
     clock_head = list_next(iter);
   list_remove(iter);
+
+  if (list_empty(&frame_table))
+    clock_head = list_head(&fream_table);
 
   //detach frame from spte (this is for ensurance)
   pagedir_clear_page(t->pagedir, supplement_page->user_addr);
