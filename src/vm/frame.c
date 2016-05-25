@@ -171,7 +171,7 @@ void frame_evict()
   struct thread *t;
 
   //start from the beginning of table.  
-  if (list_empty(&frame_table) || clock_head == NULL || clock_head == list_head(&frame_table))
+  if (list_empty(&frame_table))
     PANIC("Frame evict with empty frame_table");
   for (iter = list_begin(&frame_table);;)
   {
@@ -208,14 +208,14 @@ void frame_evict()
   supplement_page->fte = NULL;
 
   //detach fte from frame table list
-  if (list_next(iter) == list_end(&frame_table))
-    clock_head = list_begin(&frame_table);
-  else
-    clock_head = list_next(iter);
+  // if (list_next(iter) == list_end(&frame_table))
+  //   clock_head = list_begin(&frame_table);
+  // else
+  //   clock_head = list_next(iter);
 
   list_remove(iter);
-  if(list_empty(&frame_table))
-    clock_head = list_head(&frame_table);
+  // if(list_empty(&frame_table))
+  //   clock_head = list_head(&frame_table);
 
   //detach frame from spte (this is for ensurance)
   pagedir_clear_page(t->pagedir, supplement_page->user_addr);
