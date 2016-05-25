@@ -203,10 +203,10 @@ void frame_evict()
 
   if (supplement_page->for_mmap){
 
-    if(pagedir_is_dirty(thread_current()->pagedir, target->user_addr))
+    if(pagedir_is_dirty(t->pagedir, supplement_page->user_addr))
     {
       sema_down(&filesys_global_lock);
-      file_write_at(supplement_page->file, supplement_page->user_addr, 
+      file_write_at(supplement_page->loading_info.loading_file, supplement_page->user_addr, 
         supplement_page->loading_info.page_read_bytes, supplement_page->loading_info.ofs);
       pagedir_clear_page(t->pagedir, supplement_page->user_addr);
       sema_up(&filesys_global_lock);
