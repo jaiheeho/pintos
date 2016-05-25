@@ -293,7 +293,7 @@ loading_from_executable(struct spte* spte_target)
   if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
   {
     // printf("FILE READ FAIL\n");
-    PANIC("FILE READ FAIL\n");
+    printf("FILE READ FAIL\n");
     frame_free((void*)new_frame);
     return false;
   }
@@ -303,7 +303,6 @@ loading_from_executable(struct spte* spte_target)
   if(install_page( spte_target->user_addr, new_frame, writable) == false)
   {
     printf("INSTALL PAGE IN LOADING FROM EXEC: FAIL\n");
-    PANIC("INSTALL PAGE IN LOADING FROM EXEC: FAIL\n");
     frame_free((void*)new_frame);
     return false;
   }
