@@ -180,8 +180,8 @@ void frame_evict()
     //prevent frame eviction for locked frame
     if (paired_spte->frame_locked == true)
       continue;
-    if(pagedir_is_dirty(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
-      continue;
+    // if(pagedir_is_dirty(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
+    //   continue;
 	  if(pagedir_is_accessed(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
     {
       pagedir_set_accessed(frame_entry->thread->pagedir, paired_spte->user_addr, false);
