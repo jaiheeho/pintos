@@ -88,6 +88,7 @@ void* frame_allocate(struct spte* supplement_page)
       new_fte_entry->frame_addr = new_frame;
       new_fte_entry->thread = thread_current();
       new_fte_entry->supplement_page = supplement_page;
+      //adjust clock_head
       if (list_empty(&frame_table))
       {
         list_push_back(&frame_table, &new_fte_entry->elem);
@@ -205,7 +206,7 @@ void frame_evict()
   supplement_page->fte = NULL;
 
  
-  // detach fte from frame table list
+  // detach fte from frame table list and adjust clock_head
   if (list_next(iter) == list_end(&frame_table))
     clock_head = list_begin(&frame_table);
   else
@@ -213,11 +214,10 @@ void frame_evict()
 
   if (list_empty(&frame_table))
     clock_head = list_head(&frame_table);
-  
+
   list_remove(iter);
-
+  //for mmap frame write_out
   if (supplement_page->for_mmap){
-
     if(pagedir_is_dirty(t->pagedir, supplement_page->user_addr))
     {
       sema_down(&filesys_global_lock);
@@ -227,6 +227,7 @@ void frame_evict()
       sema_up(&filesys_global_lock);
     }
   }
+  //for normal frame
   else
   {
     pagedir_clear_page(t->pagedir, supplement_page->user_addr);
