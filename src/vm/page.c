@@ -335,7 +335,9 @@ loading_from_file(struct spte* spte_target)
     frame_free((void*)new_frame);
     return false;
   }
-  spte_target->wait_for_loading = false;
+  // if funcation call was for mmap, 
+  if (spte_target->for_mmap)
+    spte_target->wait_for_loading = false;
   spte_target->present = true;
   spte_target->frame_locked = false;
 

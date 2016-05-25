@@ -513,7 +513,6 @@ mmap (int fd, void *addr)
             return MAP_FAILED;
 
 	  struct spte* spte_target = hash_entry(e, struct spte, elem);
-	  
 	  if(0)//spte_target->type != BLANK)
 	    {
 	      // this addr already in use by code/mmap/stack etc.
