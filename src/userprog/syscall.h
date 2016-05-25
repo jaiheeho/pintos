@@ -9,11 +9,12 @@
 /* ADT for file_descripto which contains file pointer and fd number */
 struct mmap_descriptor
 {
-  int mmap_id;
-  void* start_addr;
-  int size;
-  void* last_page;
-  struct file* file;
+  int mmap_id;  // mmap id
+  void* start_addr; // starting addr of mmaped region
+  int size;         // size of mmaped region
+  void* last_page;  // last virtual page of mmaped
+                    // region.
+  struct file* file; // file structure of mmap target
   struct list_elem elem;
 };
 
