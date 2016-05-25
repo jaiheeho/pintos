@@ -173,7 +173,7 @@ void frame_evict()
   //start from the beginning of table.  
   if (list_empty(&frame_table) || clock_head == NULL || clock_head == list_head(&frame_table))
     PANIC("Frame evict with empty frame_table");
-  for (iter = clock_head /*list_begin(&frame_table)*/;;)
+  for (iter = list_begin(&frame_table);;)
   {
     frame_entry= list_entry(iter, struct fte, elem);
     struct spte *paired_spte = frame_entry->supplement_page;  
