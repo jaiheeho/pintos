@@ -17,7 +17,7 @@ struct spte* create_new_spte_insert_to_spt(void *user_addr);
 //struct hash_elem* found_hash_elem_from_spt(void *faulted_user_page);
 bool install_page (void *upage, void *kpage, bool writable);
 void spte_free(struct spte* spte_to_free);
-int loading_from_executable(struct spte* spte_target);
+int loading_from_file(struct spte* spte_target);
 
 /* *************************************************************
  * handlers to manage supplement hash table (which is hash)    *
@@ -119,7 +119,7 @@ int load_page_for_write(void* faulted_user_addr)
   if (spte_target->wait_for_loading)
   {
     // printf("load_page_for_write: loading executable faultaddr=%0x\n", faulted_user_addr);
-    return loading_from_executable(spte_target);
+    return loading_from_file(spte_target);
   }
   else
   {
@@ -157,7 +157,7 @@ int load_page_for_read(void* faulted_user_addr)
   //(1) wait_for_loading flag is true -> lazy loading from the code
   if (spte_target->wait_for_loading)
   { 
-    return loading_from_executable(spte_target);
+    return loading_from_file(spte_target);
   }
   //(2)not waiting for loading, Swap in 
   else
@@ -262,7 +262,36 @@ int load_page_file_lazy(uint8_t* user_page_addr, struct file *file, off_t ofs,
   new_spte->loading_info.page_read_bytes = page_read_bytes;
   new_spte->loading_info.page_zero_bytes = page_zero_bytes;
   new_spte->loading_info.ofs = ofs;
-  new_spte->loading_info.executable = file;
+  new_spte->loading_info.loading_file = file;
+  return true;
+}
+
+/************************************************************************
+* FUNCTION : load_page_mmap_lazy                                        *
+* Input : Many                                                          *
+* Output : Success or FAIL                                              *
+* Purpose : lazy load information from the mmap file, so just allocate  *
+new spte and if page-fault occurs load from file                        *
+************************************************************************/
+int load_page_mmap_lazy(uint8_t* user_page_addr, struct file *file, off_t ofs,
+       uint32_t page_read_bytes, uint32_t page_zero_bytes, bool writable)
+{
+  // create new spte
+  struct spte * new_spte = create_new_spte_insert_to_spt(user_page_addr);
+  if(new_spte == NULL) return false;
+
+  //additional initialization
+  //wait_for_loading flag is important
+  new_spte->present = false;
+  new_spte->wait_for_loading = true;
+  new_spte->writable = writable;
+  new_spte->for_mmap = true;
+
+  //for loading
+  new_spte->loading_info.page_read_bytes = page_read_bytes;
+  new_spte->loading_info.page_zero_bytes = page_zero_bytes;
+  new_spte->loading_info.ofs = ofs;
+  new_spte->loading_info.loading_file = file;
   return true;
 }
 
@@ -273,11 +302,11 @@ int load_page_file_lazy(uint8_t* user_page_addr, struct file *file, off_t ofs,
 * Purpose : lazyily loading from the executable with given loading_info *
 ************************************************************************/
 int 
-loading_from_executable(struct spte* spte_target)
+loading_from_file(struct spte* spte_target)
 {
   //given address if waiting for loading. find elf  and allocate frame, read data from the disk to memory.
-  struct file *executable = spte_target->loading_info.executable;
-  if (!executable)
+  struct file *loading_file = spte_target->loading_info.loading_file;
+  if (!loading_file)
     PANIC("asdf\n");
 
   uint8_t* new_frame = (uint8_t *)frame_allocate(spte_target);
@@ -289,8 +318,8 @@ loading_from_executable(struct spte* spte_target)
   bool writable = spte_target->writable;
 
   //reading
-  file_seek (executable, ofs);
-  if(file_read(executable, new_frame, page_read_bytes) != (int) page_read_bytes)
+  file_seek (loading_file, ofs);
+  if(file_read(loading_file, new_frame, page_read_bytes) != (int) page_read_bytes)
   {
     // printf("FILE READ FAIL\n");
     printf("FILE READ FAIL\n");
@@ -363,6 +392,7 @@ create_new_spte_insert_to_spt(void *user_addr)
   new_spte->swap_idx = -1;
   new_spte->wait_for_loading = false;
   new_spte->frame_locked = true;
+  new_spte->for_mmap = false;
   //insert
   hash_insert(spt, &(new_spte->elem));
   return new_spte;
