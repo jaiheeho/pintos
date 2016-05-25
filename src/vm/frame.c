@@ -199,11 +199,12 @@ void frame_evict()
   }
   //reset fte before evicting.
   frame_entry= list_entry(iter, struct fte, elem);
-
   supplement_page = frame_entry->supplement_page;
-    supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
-
   t = frame_entry->thread;
+  //detach frame from spte (this is for ensurance)
+  pagedir_clear_page(t->pagedir, supplement_page->user_addr);
+  supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
+
   //detach fte from frame table list
   if (list_next(iter) == list_end(&frame_table))
     clock_head = list_begin(&frame_table);
@@ -214,8 +215,6 @@ void frame_evict()
   if (list_empty(&frame_table))
     clock_head = list_head(&frame_table);
 
-  //detach frame from spte (this is for ensurance)
-  pagedir_clear_page(t->pagedir, supplement_page->user_addr);
 
   supplement_page->present = false; 
   supplement_page->phys_addr = NULL;
