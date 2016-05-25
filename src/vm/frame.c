@@ -203,10 +203,6 @@ void frame_evict()
     supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
 
   t = frame_entry->thread;
-  supplement_page->present = false; 
-  supplement_page->phys_addr = NULL;
-  supplement_page->fte = NULL;
-
   //detach fte from frame table list
   if (list_next(iter) == list_end(&frame_table))
     clock_head = list_begin(&frame_table);
@@ -219,6 +215,11 @@ void frame_evict()
 
   //detach frame from spte (this is for ensurance)
   pagedir_clear_page(t->pagedir, supplement_page->user_addr);
+
+  supplement_page->present = false; 
+  supplement_page->phys_addr = NULL;
+  supplement_page->fte = NULL;
+
   
   // free palloc'd page
   palloc_free_page(frame_entry->frame_addr);
