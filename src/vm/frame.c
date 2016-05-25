@@ -200,8 +200,25 @@ void frame_evict()
   supplement_page = frame_entry->supplement_page;
   t = frame_entry->thread;
   //detach frame from spte (this is for ensurance)
+
+  if (supplement_page->for_mmap){
+
+    if(pagedir_is_dirty(thread_current()->pagedir, target->user_addr))
+    {
+      sema_down(&filesys_global_lock);
+      file_write_at(supplement_page->file, supplement_page->user_addr, 
+        supplement_page->loading_info.page_read_bytes, supplement_page->loading_info.ofs);
+      pagedir_clear_page(t->pagedir, supplement_page->user_addr);
+      sema_up(&filesys_global_lock);
+    }
+  }
+  else
+  {
+    pagedir_clear_page(t->pagedir, supplement_page->user_addr);
+    supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
+  }
+
   pagedir_clear_page(t->pagedir, supplement_page->user_addr);
-  supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
 
   //detach fte from frame table list
   // if (list_next(iter) == list_end(&frame_table))
@@ -212,8 +229,6 @@ void frame_evict()
 
   // if (list_empty(&frame_table))
   //   clock_head = list_head(&frame_table);
-
-
   supplement_page->present = false; 
   supplement_page->phys_addr = NULL;
   supplement_page->fte = NULL;
