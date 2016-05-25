@@ -618,11 +618,6 @@ munmap (mapid_t mmap_id)
 	      frame_free(target->fte);
 	      pagedir_clear_page(thread_current()->pagedir, target->user_addr);
 	}
-      
-      
-      
-      
-      
       hash_delete(spt, e);
 
     }
