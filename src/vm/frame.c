@@ -213,7 +213,7 @@ void frame_evict()
   list_remove(iter);
 
   if (list_empty(&frame_table))
-    clock_head = list_head(&fream_table);
+    clock_head = list_head(&frame_table);
 
   //detach frame from spte (this is for ensurance)
   pagedir_clear_page(t->pagedir, supplement_page->user_addr);
