@@ -221,7 +221,7 @@ void frame_evict()
   {
     pagedir_clear_page(t->pagedir, supplement_page->user_addr);
     supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
-  // }
+  }
 
 
  
