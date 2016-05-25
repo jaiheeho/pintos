@@ -9,13 +9,6 @@
 #define STACK_MAX 2000 * PGSIZE
 #define STACK_STRIDE 32
 
-enum spte_type{
-  MMAP,
-  CODE,
-  DATA,
-  STACK
-};
-
 struct fte;
 
 /* loading information for each page for lazy loading*/
@@ -23,12 +16,11 @@ struct lazy_loading_info{
   size_t page_read_bytes;     //read bytes, zero bytes, offset  and executable file for the page loading
   size_t page_zero_bytes;
   off_t ofs;
-  struct file *executable;
+  struct file *loading_file;
 };
 
 /* Supplementary page table entry */
 struct spte {
-  enum spte_type status;  //deprecated
   void* user_addr;                //user address for spte
   void* phys_addr;                //physical address for spte
   struct fte* fte;                //linking fte 
@@ -39,7 +31,9 @@ struct spte {
   bool frame_locked;              //requires frame_lock to evade fram -eviction before installation
   struct hash_elem elem;
   bool wait_for_loading;          //lazy loading flag
+  bool for_mmap;
   struct lazy_loading_info loading_info;  //lazy loding information
+
 };
 
 /* frame table entry */
@@ -60,6 +54,7 @@ int load_page_swap(struct spte*);
 int load_page_new(void*, bool);
 int load_page_file(uint8_t*, struct file*, off_t, uint32_t, uint32_t, bool);
 int load_page_file_lazy(uint8_t*, struct file*, off_t, uint32_t, uint32_t, bool);
+int load_page_mmap_lazy(uint8_t*, struct file*, off_t, uint32_t, uint32_t, bool);
 struct hash_elem* found_hash_elem_from_spt(void *faulted_user_page);
 
 #endif

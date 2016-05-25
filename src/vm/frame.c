@@ -88,7 +88,14 @@ void* frame_allocate(struct spte* supplement_page)
       new_fte_entry->frame_addr = new_frame;
       new_fte_entry->thread = thread_current();
       new_fte_entry->supplement_page = supplement_page;
-      list_push_back(&frame_table, &new_fte_entry->elem);
+      //adjust clock_head
+      if (list_empty(&frame_table))
+      {
+        list_push_back(&frame_table, &new_fte_entry->elem);
+        clock_head = list_begin(&frame_table);
+      }
+      else
+        list_push_back(&frame_table, &new_fte_entry->elem);
 
       //link to spte
       supplement_page->present = true;
@@ -98,6 +105,7 @@ void* frame_allocate(struct spte* supplement_page)
       break;
     }              
   }
+
   sema_up(&frame_table_lock);
   return new_frame;
 }
@@ -166,15 +174,13 @@ void frame_evict()
   //start from the beginning of table.  
   if (list_empty(&frame_table))
     PANIC("Frame evict with empty frame_table");
-  for (iter = list_begin(&frame_table);;)
+  for (iter = /*clock_head*/ list_begin(&frame_table);;)
   {
     frame_entry= list_entry(iter, struct fte, elem);
     struct spte *paired_spte = frame_entry->supplement_page;  
     //prevent frame eviction for locked frame
     if (paired_spte->frame_locked == true)
-    {
       continue;
-    }
 	  if(pagedir_is_accessed(frame_entry->thread->pagedir, paired_spte->user_addr) == true)
     {
       pagedir_set_accessed(frame_entry->thread->pagedir, paired_spte->user_addr, false);
@@ -194,17 +200,39 @@ void frame_evict()
   frame_entry= list_entry(iter, struct fte, elem);
   supplement_page = frame_entry->supplement_page;
   t = frame_entry->thread;
+  //detach frame from spte (this is for ensurance)
   supplement_page->present = false; 
   supplement_page->phys_addr = NULL;
   supplement_page->fte = NULL;
 
-  //detach fte from frame table list
-  list_remove(iter);
+ 
+  // detach fte from frame table list and adjust clock_head
+  if (list_next(iter) == list_end(&frame_table))
+    clock_head = list_begin(&frame_table);
+  else
+    clock_head = list_next(iter);
 
-  //detach frame from spte (this is for ensurance)
-  pagedir_clear_page(t->pagedir, supplement_page->user_addr);
-  
-  supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
+  if (list_empty(&frame_table))
+    clock_head = list_head(&frame_table);
+
+  list_remove(iter);
+  //for mmap frame write_out
+  if (supplement_page->for_mmap){
+    if(pagedir_is_dirty(t->pagedir, supplement_page->user_addr))
+    {
+      sema_down(&filesys_global_lock);
+      file_write_at(supplement_page->loading_info.loading_file, supplement_page->user_addr, 
+        supplement_page->loading_info.page_read_bytes, supplement_page->loading_info.ofs);
+      pagedir_clear_page(t->pagedir, supplement_page->user_addr);
+      sema_up(&filesys_global_lock);
+    }
+  }
+  //for normal frame
+  else
+  {
+    pagedir_clear_page(t->pagedir, supplement_page->user_addr);
+    supplement_page->swap_idx = swap_alloc((char*)frame_entry->frame_addr);
+  }
   // free palloc'd page
   palloc_free_page(frame_entry->frame_addr);
   // free malloc'd memory
