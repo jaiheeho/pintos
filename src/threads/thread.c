@@ -11,6 +11,10 @@
 #include "threads/switch.h"
 #include "threads/synch.h"
 #include "threads/vaddr.h"
+//for proj3 
+#include "vm/frame.h"
+#include "vm/swap.h"
+
 #ifdef USERPROG
 #include "userprog/process.h"
 #endif
@@ -106,8 +110,10 @@ thread_init (void)
   ASSERT (intr_get_level () == INTR_OFF);
 
   lock_init (&tid_lock);
+  // ADDED CODE //
   list_init (&ready_list);
   list_init (&sleep_list);
+  // END OF ADDED CODE//
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
@@ -868,9 +874,6 @@ init_thread (struct thread *t, const char *name, int priority)
   {
     list_push_back (&thread_current()->child_procs, &t->child_elem);
     t->parent_proc = thread_current();
-    //For syscall filedecripter
-    // list_init(&thread_current()->file_descriptor_table);
-    // thread_current()->fd_given = 2;  
   }
   else
   {
@@ -880,12 +883,14 @@ init_thread (struct thread *t, const char *name, int priority)
   t->is_wait_called = false;
   t->is_process = false;
   t->exit_status = 0;
-  t->is_loaded = true;
+  t->is_loaded = 2;
   //To check executable
   t->executable = NULL;
-  //FOR GLOBAL FILESYS LOCK in proj2 only 'main' init this//
+  sema_init(&t->loading_safer,1);
+  //initialize only in Main thread.
   if (thread_start_complete == 0)
   {
+    //FOR GLOBAL FILESYS LOCK in proj2 only 'main' init this//
     sema_init(&filesys_global_lock, 1);
   }
   ///WHERE WE ADDED END/////

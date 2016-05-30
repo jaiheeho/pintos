@@ -3,9 +3,9 @@
 
 #include <debug.h>
 #include <list.h>
+#include <hash.h>
 #include <stdint.h>
 #include "threads/synch.h"
-
 /* States in a thread's life cycle. */
 enum thread_status
   {
@@ -106,9 +106,18 @@ struct thread
     struct semaphore sema_wait;         /* semaphore that blocks parent proceess who wait for this thread*/
     int exit_status;                    /* store exit_status when it is called */
     bool is_process;                    /* check whether thread is proces of kernel thread*/
-    bool is_loaded;                     /* check whether thread's child process is loaded successfully */
+    int is_loaded;                      /* check whether thread's child process is loaded successfully 0
+                                            0 load-fail, 1 load-success, 2 load- notyet*/
     int fd_given;                       /* check last fd number give for the opened file */
     struct file * executable;           /* to deny and allow executable */
+
+    //For Project 3
+    struct hash spt;                    /* hash table for supplemental page table */
+    int mmap_id_given;                  /* mmap id*/
+    struct list mmap_table;             /* mmap id list*/
+    struct semaphore loading_safer;       /* semaphore that blocks parent proceess to complete loading procedure*/
+    struct semaphore spt_safer_thread;
+
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */

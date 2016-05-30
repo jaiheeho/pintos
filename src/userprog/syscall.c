@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> // ADDED HEADER
 #include <syscall-nr.h>
+#include <hash.h> // ADDED HEADER
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/init.h" // ADDED HEADER
@@ -13,9 +14,13 @@
 #include "filesys/filesys.h" // ADDED HEADER
 #include "lib/user/syscall.h" // ADDED HEADER
 #include "devices/input.h" // ADDED HEADER
+#include "vm/page.h"// ADDED HEADER
+#include "vm/frame.h"
+#include <inttypes.h> // ADDED HEADER
+
+
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
-
 /************************************************************************
 * FUNCTION : syscall_init                                               *
 * Input : NONE                                                          *
@@ -80,10 +85,10 @@ syscall_handler (struct intr_frame *f UNUSED)
       returnZ=true;
       break;
     case SYS_REMOVE:
-      break;
       get_args(f->esp, args, 1);
       retval=remove((char *)args[0]);
       returnZ=true;
+      break;
     case SYS_OPEN:
       get_args(f->esp, args, 1);
       retval = open((char *)args[0]);
@@ -117,6 +122,15 @@ syscall_handler (struct intr_frame *f UNUSED)
       get_args(f->esp, args, 1);
       close(args[0]);
       break;    
+    case SYS_MMAP:
+      get_args(f->esp, args, 2);
+      retval=mmap(args[0],(void *)args[1]);
+      returnZ=true;
+      break;
+    case SYS_MUNMAP:
+      get_args(f->esp, args, 1);
+      munmap(args[0]);
+      break;
     }
   // if return value is needed, plug in the return value
   if(returnZ)
@@ -217,8 +231,6 @@ bool
 remove (const char *file)
 {
   bool success;
-  if(invalid_addr((void*)file))
-    exit(-1);
   sema_down(&filesys_global_lock);
   success = filesys_remove(file);
   sema_up(&filesys_global_lock);
@@ -239,14 +251,13 @@ open(const char *file)
 
   struct file *filestruct;
   struct thread *curr = thread_current(); 
-  
   if(invalid_addr((void*)file))
     exit(-1);
   sema_down(&filesys_global_lock);
   //open file with name (file)
   filestruct = filesys_open(file);
-  //check wheter open was successful
-  if (!filestruct)
+  //check whether open was successful
+  if (filestruct == NULL)
   {
     sema_up(&filesys_global_lock);
     return -1;
@@ -255,7 +266,10 @@ open(const char *file)
   struct file_descriptor *new_fd;
   new_fd = (struct file_descriptor *)malloc (sizeof (struct file_descriptor));
   if (!new_fd)
+  {
+    sema_up(&filesys_global_lock);
     return -1;
+  }
 
   //initialize new_fd
   new_fd->file = filestruct;
@@ -296,15 +310,13 @@ int read (int fd, void *buffer, unsigned length)
   uint32_t i;
   uint8_t* buf_char = (uint8_t *) buffer;
   int retval;
-  if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
-    exit(-1); 
   if(fd == 0)
   {
     //std out 
     for(i = 0; i<length; i++)
     {
       *(buf_char + i) = input_getc();
-    }
+    } 
     retval = length;
   }
   else if(fd == 1)
@@ -319,8 +331,9 @@ int read (int fd, void *buffer, unsigned length)
     if (!file)
     {
       sema_up(&filesys_global_lock);
-      return -1;
+      return -1;  
     }
+
     retval = file_read(file, buffer, length);
     sema_up(&filesys_global_lock);
   }
@@ -338,8 +351,6 @@ int write(int fd, const void *buffer, unsigned length)
 {
   int retval;
   uint8_t* buf_char = (uint8_t *) buffer; 
-  if(invalid_addr((void*)buf_char) || invalid_addr((void*)(buf_char + length-1)))
-    exit(-1);
   if(fd <= 0)
     {
       //error
@@ -425,6 +436,222 @@ void close (int fd)
 }
 
 /************************************************************************
+* FUNCTION : mmap                                                       *
+* Input : fd , addr                                                     *
+* Output :   mapid_t                                                    *
+* Purpose:   maps the file indicated by fd at user addr addr.           *
+************************************************************************/
+mapid_t 
+mmap (int fd, void *addr)
+{
+
+  // check for invalid addresses.
+  // (bad guys might try to sneak pass the kernel by stating the mmap 
+  // on an inoccent address, and mapping a big file, thus overwriting
+  // other crucial memories. However, this issue is self-handled in
+  // numerous validity checkings that we do inside mmap().)
+  if((!is_user_vaddr(addr)) || (pg_ofs(addr) != 0) || (fd < 2) || addr < 0x08048000)
+    {
+      return MAP_FAILED;
+    }
+
+
+  sema_down(&filesys_global_lock);
+  struct file_descriptor *fdt;
+  fdt = get_struct_fd_struct(fd); // get the struct file
+  if(fdt == NULL)
+    {
+      sema_up(&filesys_global_lock);
+      return MAP_FAILED;
+    }
+
+  // reopen the file.This is needed, since we must not
+  // tamper with the original fils structure because
+  // it is linked with the fd and thus still can be used
+  // by the user.
+  struct file *file_to_mmap = file_reopen(fdt->file); 
+  if (!file_to_mmap)
+  {
+    sema_up(&filesys_global_lock);
+    return MAP_FAILED;  
+  }
+
+  // get file size
+  int size = file_length(file_to_mmap);
+
+  if (size == 0)
+  {
+    file_close(file_to_mmap);
+    sema_up(&filesys_global_lock);
+    return MAP_FAILED;  
+  }
+
+  // no need to hold the lock
+  sema_up(&filesys_global_lock);
+
+
+
+  //allocate memory
+  struct mmap_descriptor *new_mmap;
+  new_mmap = (struct mmap_descriptor *)malloc (sizeof (struct mmap_descriptor));
+  if (!new_mmap)
+  {
+    file_close(file_to_mmap);
+    return MAP_FAILED;
+  }
+
+
+  //initialize new_mmap
+  struct thread * curr = thread_current();  
+  new_mmap->start_addr = addr;
+  new_mmap->mmap_id =  curr->mmap_id_given ++;
+  new_mmap->size = size;
+  new_mmap->last_page = addr;
+  new_mmap->file = file_to_mmap;
+
+  list_push_back(&curr->mmap_table, &new_mmap->elem);
+
+
+  // check if mmap pages can fit in the addrspace(check for overlaps)
+  void* temp;
+  for(temp = addr; temp <= pg_round_down(addr + size); temp += PGSIZE)
+    {
+      struct hash_elem *e = found_hash_elem_from_spt(temp);
+      if(e != NULL) //page is already in use!! mmap failed
+	{
+            file_close(file_to_mmap);
+            list_remove(&new_mmap->elem);
+            free(new_mmap);
+            return MAP_FAILED;
+	}
+    }
+  
+  
+
+  // lazily load the file into spt
+
+  off_t read_bytes = size;
+  off_t ofs = 0;
+  bool writable = true;
+  void* upage = addr;
+
+  while (read_bytes > 0) 
+    {
+      /* Do calculate how to fill this page.
+         We will read PAGE_READ_BYTES bytes from FILE
+         and zero the final PAGE_ZERO_BYTES bytes. */
+
+      size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
+      size_t page_zero_bytes = PGSIZE - page_read_bytes;
+      
+
+      if(!load_page_mmap_lazy(upage, file_to_mmap, ofs, page_read_bytes,
+			      page_zero_bytes, writable))
+    	{
+    	  printf("load_segment: load_page_file failed\n");
+    	  munmap(new_mmap->mmap_id);
+    	  file_close(file_to_mmap);
+    	  return MAP_FAILED;
+    	}
+      /* Advance. */
+
+      new_mmap->last_page = pg_round_down(upage);
+      read_bytes -= page_read_bytes;
+      upage += PGSIZE;
+      ofs += page_read_bytes;
+    }
+
+  return new_mmap->mmap_id;
+}
+
+
+/************************************************************************
+* FUNCTION : munmap                                                     *
+* Input : mmap_id                                                       *
+* Purporse : unmaps the mmap specified by mmap_id                       *
+************************************************************************/
+void 
+munmap (mapid_t mmap_id)
+{
+  struct mmap_descriptor *m;
+  m = get_mmap_descriptor(mmap_id);
+  if (!m)
+    return;
+
+
+
+  struct hash *spt = &thread_current()->spt;
+  void* temp;
+
+
+  // loop thru the mmaped region's pages and destroy sptes(and its underlying stuff)
+  for(temp = m->start_addr; temp <= m->last_page ; temp += PGSIZE)
+    {
+      
+      struct hash_elem *e = found_hash_elem_from_spt(temp);
+      
+      if(e == NULL)
+	{
+	  // wth? it cannot be!!
+	}
+      
+      struct spte* target = hash_entry(e, struct spte, elem);
+      
+
+      //lock the frame
+      target->frame_locked = true;
+
+      // if the page was present, we must write back to the file
+      if(target->present == true)
+	{
+	  // if the page is dirty, write back to file.
+	  if(pagedir_is_dirty(thread_current()->pagedir, target->user_addr))
+	    {
+	      sema_down(&filesys_global_lock);
+	      file_write_at(m->file, target->user_addr,
+			    target->loading_info.page_read_bytes,
+			    target->loading_info.ofs);
+	      sema_up(&filesys_global_lock);
+	    }
+
+	      // must free the frame
+	      frame_free(target->fte);
+	      pagedir_clear_page(thread_current()->pagedir, target->user_addr);
+	}
+      hash_delete(spt, e);
+
+    }
+
+  sema_down(&filesys_global_lock);
+  file_close(m->file);
+  sema_up(&filesys_global_lock);
+
+
+  list_remove(&m->elem);
+  free(m);
+
+}
+
+struct mmap_descriptor* get_mmap_descriptor(int mmap_id)
+{
+  struct thread* curr = thread_current();
+  struct list *mmap_table = &curr->mmap_table;
+  struct list_elem *iter_md;
+  struct mmap_descriptor *m;
+
+  for(iter_md = list_begin(mmap_table); iter_md != list_tail(mmap_table);
+      iter_md = list_next(iter_md))
+  {
+    m = list_entry(iter_md, struct mmap_descriptor, elem);
+    if(mmap_id == m->mmap_id)
+    {
+      return m;
+    }
+  }
+  return NULL;
+}
+
+/************************************************************************
 * FUNCTION : get_struct_file                                            *
 * Input : file desciptor number                                         *
 * Output : file pointer                                                 *
@@ -505,15 +732,7 @@ void get_args(void* esp, int *args, int argsnum)
     }
 }
 
-/************************************************************************
-* FUNCTION : invalid_addr                                               *
-* Input : addr                                                          *
-* Output : true of false                                                *
-* Purporse : check wheter given address is valid or not                 *
-************************************************************************/
- /*added function */
 bool invalid_addr(void* addr){
-  //check whether it is user addr
   if (!is_user_vaddr(addr))
     return true;
   //under CODE segment
@@ -522,8 +741,5 @@ bool invalid_addr(void* addr){
   if (addr == NULL)
     return true;
   //Not within pagedir
-  if(!pagedir_get_page (thread_current()->pagedir, addr))
-    return true;
-
   return false;
 }
