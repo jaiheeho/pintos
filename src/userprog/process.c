@@ -110,7 +110,6 @@ process_execute (const char *file_name)
   return tid;
 }
 
-
 /************************************************************************
 * FUNCTION : start_process                                              *
 * Input : f_name                                                        *
