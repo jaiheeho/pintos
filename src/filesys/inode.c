@@ -178,11 +178,13 @@ inode_close (struct inode *inode)
   if (--inode->open_cnt == 0)
     {
 
-      while (length>0)
+      while (inode_left>0)
       {
         disk_sector_t sector_idx = byte_to_sector (inode, bytes_read);
-        off_t inode_left = length - bytes_read;
         buffer_cache_elem_free(sector_idx);
+        bytes_read += DISK_SECTOR_SIZE;
+        inode_left = length-bytes_read;
+
       }
   
       /* Remove from inode list and release lock. */
