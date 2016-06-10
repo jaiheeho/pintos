@@ -171,7 +171,7 @@ inode_close (struct inode *inode)
 
   off_t bytes_read = 0;
   int length = inode_length (inode);
-
+  int inode_left = length;
   /* before close inode flush buffer cache*/
 
   /* Release resources if this was the last opener. */
