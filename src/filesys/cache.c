@@ -57,7 +57,7 @@ void buffer_cache_elem_init(int i)
 
 
 
-int buffer_cache_read(disk_sector_t sector, char* buffer, size_t size, int off)
+int buffer_cache_read(disk_sector_t sector, void* buffer, size_t size, int off)
 {
  
   int iter = 0;
@@ -102,7 +102,7 @@ int buffer_cache_read(disk_sector_t sector, char* buffer, size_t size, int off)
 
 
 
-int buffer_cache_write(disk_sector_t sector, char* buffer, size_t size, int off)
+int buffer_cache_write(disk_sector_t sector, void* buffer, size_t size, int off)
 {
  
   int iter = 0;
