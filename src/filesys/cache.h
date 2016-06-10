@@ -1,5 +1,5 @@
-#ifndef FILESYS_FILE_H
-#define FILESYS_FILE_H
+#ifndef FILESYS_CACHE_H
+#define FILESYS_CACHE_H
 #include <stdio.h>
 #include <stdlib.h>
 #include "devices/disk.h"
