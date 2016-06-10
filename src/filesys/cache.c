@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "devices/disk.h"
 #include "threads/synch.h"
 #include "filesys/cache.h"
 #include "filesys/filesys.c"
