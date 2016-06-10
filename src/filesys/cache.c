@@ -30,6 +30,7 @@ void buffer_cache_elem_init(int i);
 int buffer_cache_allocate(disk_sector_t sector);
 int buffer_cache_evict();
 
+
 void buffer_cache_init()
 {
   int i = 0;
@@ -184,8 +185,6 @@ int buffer_cache_allocate(disk_sector_t sector)
   sema_up(&buffer_cache_global_lock);
   return iter;
 }
-
-
 
 int buffer_cache_evict()
 {
