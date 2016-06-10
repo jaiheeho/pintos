@@ -20,8 +20,6 @@
 #include "threads/palloc.h"
 #include "threads/pte.h"
 #include "threads/thread.h"
-#include "filesys/cache.h"
-
 #include "vm/swap.h"  //added header
 #include "vm/frame.h" //added header
 #ifdef USERPROG
