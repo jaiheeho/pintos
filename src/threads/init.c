@@ -33,6 +33,7 @@
 #endif
 #ifdef FILESYS
 #include "devices/disk.h"
+#include "filesys/cache.h"
 #include "filesys/filesys.h"
 #include "filesys/fsutil.h"
 #endif
@@ -374,6 +375,7 @@ power_off (void)
   const char *p;
 
 #ifdef FILESYS
+  buffer_cache_free();
   filesys_done ();
 #endif
 

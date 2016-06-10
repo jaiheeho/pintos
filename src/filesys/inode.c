@@ -172,16 +172,19 @@ inode_close (struct inode *inode)
   off_t bytes_read = 0;
   int length = inode_length (inode);
 
-  while (length>0)
-  {
-    disk_sector_t sector_idx = byte_to_sector (inode, bytes_read);
-    off_t inode_left = length - bytes_read;
-    int chunk_size = inode_left < DISK_SECTOR_SIZE ? inode_left : DISK_SECTOR_SIZE;
-    buffer_cache_free(sector_idx, chunk_size);
-}
+  /* before close inode flush buffer cache*/
+
   /* Release resources if this was the last opener. */
   if (--inode->open_cnt == 0)
     {
+
+      while (length>0)
+      {
+        disk_sector_t sector_idx = byte_to_sector (inode, bytes_read);
+        off_t inode_left = length - bytes_read;
+        buffer_cache_elem_free(sector_idx, chunk_size);
+      }
+  
       /* Remove from inode list and release lock. */
       list_remove (&inode->elem);
  
@@ -295,6 +298,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       int chunk_size = size < min_left ? size : min_left;
       if (chunk_size <= 0)
         break;
+
       /* before directly access to the disk, we will check buffer cache*/
       if (!buffer_cache_write(sector_idx, buffer + bytes_written , chunk_size, sector_ofs))
       {
@@ -313,7 +317,6 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
                 if (bounce == NULL)
                   break;
               }
-
             /* If the sector contains data before or after the chunk
                we're writing, then we need to read in the sector
                first.  Otherwise we start with a sector of all zeros. */
