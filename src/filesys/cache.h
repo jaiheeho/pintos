@@ -2,8 +2,7 @@
 #define FILESYS_CACHE_H
 
 
-typedef uint32_t disk_sector_t;
-
+#include "devices/disk.h"
 void buffer_cache_init(void);
 int buffer_cache_read(disk_sector_t , char *, size_t, int);
 int buffer_cache_write(disk_sector_t , char *, size_t, int);
