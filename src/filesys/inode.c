@@ -179,9 +179,6 @@ inode_close (struct inode *inode)
     int chunk_size = inode_left < DISK_SECTOR_SIZE ? inode_left : DISK_SECTOR_SIZE;
     buffer_cache_free(sector_idx, chunk_size);
   }
-
-  buffer_cache_out(inode)
-
   /* Release resources if this was the last opener. */
   if (--inode->open_cnt == 0)
     {
