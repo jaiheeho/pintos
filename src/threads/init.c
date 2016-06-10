@@ -20,6 +20,8 @@
 #include "threads/palloc.h"
 #include "threads/pte.h"
 #include "threads/thread.h"
+#include "filesys/cache.h"
+
 #include "vm/swap.h"  //added header
 #include "vm/frame.h" //added header
 #ifdef USERPROG
@@ -35,8 +37,8 @@
 #include "devices/disk.h"
 #include "filesys/filesys.h"
 #include "filesys/fsutil.h"
-#include "filesys/cache.h"
 #endif
+
 
 /* Amount of physical memory, in 4 kB pages. */
 size_t ram_pages;
