@@ -455,7 +455,6 @@ mmap (int fd, void *addr)
       return MAP_FAILED;
     }
 
-
   sema_down(&filesys_global_lock);
   struct file_descriptor *fdt;
   fdt = get_struct_fd_struct(fd); // get the struct file
@@ -464,7 +463,6 @@ mmap (int fd, void *addr)
       sema_up(&filesys_global_lock);
       return MAP_FAILED;
     }
-
   // reopen the file.This is needed, since we must not
   // tamper with the original fils structure because
   // it is linked with the fd and thus still can be used
@@ -489,8 +487,6 @@ mmap (int fd, void *addr)
   // no need to hold the lock
   sema_up(&filesys_global_lock);
 
-
-
   //allocate memory
   struct mmap_descriptor *new_mmap;
   new_mmap = (struct mmap_descriptor *)malloc (sizeof (struct mmap_descriptor));
@@ -499,7 +495,6 @@ mmap (int fd, void *addr)
     file_close(file_to_mmap);
     return MAP_FAILED;
   }
-
 
   //initialize new_mmap
   struct thread * curr = thread_current();  
@@ -510,8 +505,6 @@ mmap (int fd, void *addr)
   new_mmap->file = file_to_mmap;
 
   list_push_back(&curr->mmap_table, &new_mmap->elem);
-
-
   // check if mmap pages can fit in the addrspace(check for overlaps)
   void* temp;
   for(temp = addr; temp <= pg_round_down(addr + size); temp += PGSIZE)
@@ -526,10 +519,7 @@ mmap (int fd, void *addr)
 	}
     }
   
-  
-
   // lazily load the file into spt
-
   off_t read_bytes = size;
   off_t ofs = 0;
   bool writable = true;
@@ -578,11 +568,8 @@ munmap (mapid_t mmap_id)
   if (!m)
     return;
 
-
-
   struct hash *spt = &thread_current()->spt;
   void* temp;
-
 
   // loop thru the mmaped region's pages and destroy sptes(and its underlying stuff)
   for(temp = m->start_addr; temp <= m->last_page ; temp += PGSIZE)
@@ -594,13 +581,9 @@ munmap (mapid_t mmap_id)
 	{
 	  // wth? it cannot be!!
 	}
-      
       struct spte* target = hash_entry(e, struct spte, elem);
-      
-
       //lock the frame
       target->frame_locked = true;
-
       // if the page was present, we must write back to the file
       if(target->present == true)
 	{
@@ -613,7 +596,6 @@ munmap (mapid_t mmap_id)
 			    target->loading_info.ofs);
 	      sema_up(&filesys_global_lock);
 	    }
-
 	      // must free the frame
 	      frame_free(target->fte);
 	      pagedir_clear_page(thread_current()->pagedir, target->user_addr);
