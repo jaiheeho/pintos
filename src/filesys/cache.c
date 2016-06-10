@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "threads/synch.h"
 #include "filesys/cache.h"
-#include "filesys/filesys.c"
+#include "filesys/filesys.h"
 
 #define BUFFER_CACHE_MAX 64
 #define INVALID_SECTOR 0xFFFFFFFF
@@ -24,7 +24,6 @@ static struct semaphore buffer_cache_global_lock;
 void buffer_cache_elem_init(int i);
 int buffer_cache_allocate(disk_sector_t sector);
 int buffer_cache_evict();
-
 
 void buffer_cache_init()
 {
@@ -292,11 +291,7 @@ void buffer_cache_free()
 	  sema_up(&buffer_cache[iter].lock);
 	}
     }
-
-
   sema_up(&buffer_cache_global_lock);
-
-
 
 }
 
