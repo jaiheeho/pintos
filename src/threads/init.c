@@ -35,8 +35,8 @@
 #include "devices/disk.h"
 #include "filesys/filesys.h"
 #include "filesys/fsutil.h"
+#include "filesys/cache.h"
 #endif
-
 
 /* Amount of physical memory, in 4 kB pages. */
 size_t ram_pages;
@@ -375,7 +375,7 @@ power_off (void)
   const char *p;
 
 #ifdef FILESYS
-  // buffer_cache_free();
+  buffer_cache_free();
   filesys_done ();
 #endif
 
