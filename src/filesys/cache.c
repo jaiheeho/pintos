@@ -208,7 +208,7 @@ int buffer_cache_evict()
       break;
   	}
   }
-
+  printf("iter %d\n",iter);
   sema_down(&(buffer_cache[iter].lock));
   //if necessary, write out to disk
   if(buffer_cache[iter].is_dirty == true)
