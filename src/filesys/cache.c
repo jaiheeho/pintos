@@ -22,8 +22,8 @@ static struct buffer_cache_elem buffer_cache[BUFFER_CACHE_MAX];
 static struct semaphore buffer_cache_global_lock;
 
 void buffer_cache_elem_init(int i);
-int buffer_cache_allocate(disk_sector_t sector);
-int buffer_cache_evict();
+int buffer_cache_allocate(disk_sector_t sector, int option);
+int buffer_cache_evict(void);
 
 void buffer_cache_init()
 {
@@ -73,12 +73,12 @@ int buffer_cache_read(disk_sector_t sector, char * buffer, size_t size, int off)
       else
 	{
 	  sema_up(&(buffer_cache[iter].lock));
-	  iter = buffer_cache_allocate(sector); 
+	  iter = buffer_cache_allocate(sector, 1); 
 	}
     }
   else
     {
-      iter = buffer_cache_allocate(sector);    
+      iter = buffer_cache_allocate(sector, 1);    
     }
   
   
@@ -93,7 +93,8 @@ int buffer_cache_read(disk_sector_t sector, char * buffer, size_t size, int off)
 
 
 
-int buffer_cache_write(disk_sector_t sector, char * buffer, size_t size, int off)
+int buffer_cache_write(disk_sector_t sector, char * buffer,
+		       size_t size, int off, int option)
 {
  
   int iter = 0;
@@ -118,16 +119,17 @@ int buffer_cache_write(disk_sector_t sector, char * buffer, size_t size, int off
       else
 	{
 	  sema_up(&(buffer_cache[iter].lock));
-	  iter = buffer_cache_allocate(sector); 
+	  iter = buffer_cache_allocate(sector, option); 
 	}
     }
   else
     {
-      iter = buffer_cache_allocate(sector);    
+      iter = buffer_cache_allocate(sector, option);    
     }
   
-  
 
+  buffer_cache[iter].is_accessed = true;  
+  buffer_cache[iter].is_dirty = true;
   memcpy((buffer_cache[iter].data + off), buffer, size);
   
   
@@ -140,7 +142,7 @@ int buffer_cache_write(disk_sector_t sector, char * buffer, size_t size, int off
 
 
 
-int buffer_cache_allocate(disk_sector_t sector)
+int buffer_cache_allocate(disk_sector_t sector, int option)
 {
   sema_down(&buffer_cache_global_lock);
 
@@ -161,10 +163,15 @@ int buffer_cache_allocate(disk_sector_t sector)
       iter = buffer_cache_evict();
     }
 
-
-  //load data to the cache_elem slot
-  disk_read(filesys_disk, sector, buffer_cache[iter].data);
-  
+  if(option == 0)
+    {
+      memset(buffer_cache[iter].data, 0 , DISK_SECTOR_SIZE);
+    }
+  else if(option == 1)
+    {
+      //load data to the cache_elem slot
+      disk_read(filesys_disk, sector, buffer_cache[iter].data);
+    }
 
   //initialize cache elem metadata
   
@@ -178,7 +185,7 @@ int buffer_cache_allocate(disk_sector_t sector)
   return iter;
 }
 
-int buffer_cache_evict()
+int buffer_cache_evict(void)
 {
 
   int iter = 0;
