@@ -116,8 +116,8 @@ main (void)
   /* Initialize file system. */
   disk_init ();
   filesys_init (format_filesys);
+  //FOR BUFFERCACHE in Proj4//
   buffer_cache_init();
-
   //where we added///
   //swap_table_init for proj3 in main thread
   swap_table_init();

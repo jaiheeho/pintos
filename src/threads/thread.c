@@ -896,11 +896,6 @@ init_thread (struct thread *t, const char *name, int priority)
     //FOR GLOBAL FILESYS LOCK in proj2 only 'main' init this//
     sema_init(&filesys_global_lock, 1);
   }
-  //FOR BUFFERCACHE in Proj4//
-  // if (thread_start_complete == 0)
-  // {
-    // buffer_cache_init();
-  // }
   ///WHERE WE ADDED END/////
 }
 
