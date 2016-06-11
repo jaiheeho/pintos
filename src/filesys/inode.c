@@ -316,9 +316,6 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       /* before directly access to the disk, we will check buffer cache*/
       if (buffer_cache_write(sector_idx, buffer + bytes_written ,chunk_size, sector_ofs) != size)
       {
-
-        // idx = buffer_cache_allocate(sector_idx);
-        // memcpy((buffer_cache[idx].data + off), buffer, size);
         if (sector_ofs == 0 && chunk_size == DISK_SECTOR_SIZE) 
         {
           /* Write full sector directly to disk. */
