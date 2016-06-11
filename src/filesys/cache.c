@@ -179,7 +179,7 @@ int buffer_cache_evict()
 {
 
   int iter = 0;
-  // bool choice_of_victim = false;
+  bool choice_of_victim = false;
   for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
   {
     if(sema_try_down(&buffer_cache[iter].lock))
@@ -187,20 +187,30 @@ int buffer_cache_evict()
   	  sema_up(&buffer_cache[iter].lock);
   	  continue;
   	}
-   //  if(choice_of_victim == false)
-  	// {
-	  if(buffer_cache[iter].is_dirty == true)
-    {
-      continue;
-    }
-	  else
-    {
+    if(choice_of_victim == false)
+  	{
+  	  if(buffer_cache[iter].is_dirty == true)
+	    {
+	      continue;
+	    }
+  	  else
+	    {
+	      break;
+	    }
+  	}
+    else
+  	{
+  	  break;
+  	}
+    if(iter == (BUFFER_CACHE_MAX - 1))
+  	{
+      iter = 0;
       break;
-    }
+  	}
   }
+  printf("iter %d\n",iter);
   if (iter == BUFFER_CACHE_MAX)
     iter = 0;
-
   sema_down(&(buffer_cache[iter].lock));
   //if necessary, write out to disk
   if(buffer_cache[iter].is_dirty == true)
