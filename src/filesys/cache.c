@@ -204,13 +204,12 @@ int buffer_cache_evict()
   	}
     if(iter == (BUFFER_CACHE_MAX - 1))
   	{
+      iter = 0;
       break;
   	}
   }
 
   sema_down(&(buffer_cache[iter].lock));
-
-
   //if necessary, write out to disk
   if(buffer_cache[iter].is_dirty == true)
   {
