@@ -32,9 +32,7 @@ void buffer_cache_init()
     {
       buffer_cache_elem_init(i);
       sema_init(&(buffer_cache[i].lock), 1);
-
     }
-
   sema_init(&buffer_cache_global_lock, 1);
 
 }
