@@ -106,10 +106,10 @@ inode_create (disk_sector_t sector, off_t length)
           }
           else
           {
-            buffer_cache_write(sector, disk_inode , DISK_SECTOR_SIZE, 0)
+            buffer_cache_write(sector, (void *)disk_inode , DISK_SECTOR_SIZE, 0);
             size_t i;
             for (i = 0; i < sectors; i++) 
-              buffer_cache_write(disk_inode->start + i, disk_inode , DISK_SECTOR_SIZE, 0)
+              buffer_cache_write(disk_inode->start + i, (void *)disk_inode , DISK_SECTOR_SIZE, 0);
 
             success = true;
           }
