@@ -115,7 +115,7 @@ main (void)
 #ifdef FILESYS
   /* Initialize file system. */
   disk_init ();
-  buffer_cache_init();
+  // buffer_cache_init();
   filesys_init (format_filesys);
   //FOR BUFFERCACHE in Proj4//
   //where we added///
