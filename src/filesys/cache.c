@@ -27,14 +27,15 @@ int buffer_cache_evict();
 
 void buffer_cache_init()
 {
+  sema_init(&buffer_cache_global_lock, 1);
+  sema_down(&buffer_cache_global_lock);
   int i = 0;
   for(i = 0; i < BUFFER_CACHE_MAX; i++)
     {
       buffer_cache_elem_init(i);
       sema_init(&(buffer_cache[i].lock), 1);
     }
-  sema_init(&buffer_cache_global_lock, 1);
-
+  sema_up(&buffer_cache_global_lock);
 }
 
 void buffer_cache_elem_init(int i)
