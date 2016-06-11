@@ -184,7 +184,7 @@ int buffer_cache_evict()
   {
     if(sema_try_down(&buffer_cache[iter].lock))
   	{
-  	  sema_up(&buffer_cache[iter].lock));
+  	  sema_up(&buffer_cache[iter].lock);
   	  continue;
   	}
     if(choice_of_victim == false)
@@ -202,8 +202,6 @@ int buffer_cache_evict()
   	{
   	  break;
   	}
-
-
     if(iter == (BUFFER_CACHE_MAX - 1))
   	{
       break;
