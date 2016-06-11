@@ -178,7 +178,7 @@ inode_close (struct inode *inode)
   if (--inode->open_cnt == 0)
     {
 
-      while (inode_left>0)
+      while (inode_left>0 && buffer_cache_inited)
       {
         disk_sector_t sector_idx = byte_to_sector (inode, bytes_read);
         buffer_cache_elem_free(sector_idx);
