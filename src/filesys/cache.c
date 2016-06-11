@@ -205,7 +205,6 @@ int buffer_cache_evict()
     if(iter == (BUFFER_CACHE_MAX - 1))
   	{
       choice_of_victim = true;
-      break;
   	}
   }
   printf("iter %d\n",iter);
