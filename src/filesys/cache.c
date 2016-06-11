@@ -37,7 +37,6 @@ void buffer_cache_init()
       buffer_cache_elem_init(i);
       sema_init(&(buffer_cache[i].lock), 1);
     }
-  printf("buffercache inited\n");
   buffer_cache_inited = true;
   sema_up(&buffer_cache_global_lock);
 }
