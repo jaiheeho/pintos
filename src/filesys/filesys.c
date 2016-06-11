@@ -78,11 +78,11 @@ filesys_open (const char *name)
   if (dir != NULL)
     dir_lookup (dir, name, &inode);
   else
-    print("dir prob\n");
+    printf("dir prob\n");
   dir_close (dir);
 
   if (inode == NULL)
-    print("inod prob\n");
+    printf("inod prob\n");
   return file_open (inode);
 }
 
