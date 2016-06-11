@@ -184,7 +184,6 @@ inode_close (struct inode *inode)
         buffer_cache_elem_free(sector_idx);
         bytes_read += DISK_SECTOR_SIZE;
         inode_left = length-bytes_read;
-
       }
   
       /* Remove from inode list and release lock. */

@@ -50,8 +50,6 @@ void buffer_cache_elem_init(int i)
   buffer_cache[i].sector = INVALID_SECTOR;
 }
 
-
-
 int buffer_cache_read(disk_sector_t sector, char * buffer, size_t size, int off)
 {
  
@@ -135,8 +133,6 @@ int buffer_cache_write(disk_sector_t sector, char * buffer, size_t size, int off
       iter = buffer_cache_allocate(sector);    
     }
   
-  
-
   memcpy((buffer_cache[iter].data + off), buffer, size);
   
   

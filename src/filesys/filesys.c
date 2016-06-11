@@ -29,7 +29,7 @@ filesys_init (bool format)
 
   if (format) 
     do_format ();
-  
+
   free_map_open ();
   buffer_cache_init();
 }
@@ -75,6 +75,8 @@ filesys_open (const char *name)
 
   if (dir != NULL)
     dir_lookup (dir, name, &inode);
+  else
+    printf("cacnot find root");
   dir_close (dir);
 
   return file_open (inode);
