@@ -115,9 +115,9 @@ main (void)
 #ifdef FILESYS
   /* Initialize file system. */
   disk_init ();
+  // buffer_cache_init();
   filesys_init (format_filesys);
   //FOR BUFFERCACHE in Proj4//
-  buffer_cache_init();
   //where we added///
   //swap_table_init for proj3 in main thread
   swap_table_init();
@@ -377,7 +377,6 @@ power_off (void)
   const char *p;
 
 #ifdef FILESYS
-  buffer_cache_free();
   filesys_done ();
 #endif
 
