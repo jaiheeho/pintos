@@ -154,7 +154,7 @@ inode_open (disk_sector_t sector)
   inode->removed = false;
   if(!buffer_cache_read(inode->sector, (char *)&inode->data, DISK_SECTOR_SIZE, 0))
     disk_read (filesys_disk, inode->sector, &inode->data);
-  
+
   return inode;
 }
 
@@ -316,7 +316,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
         break;
 
       /* before directly access to the disk, we will check buffer cache*/
-      if (buffer_cache_write(sector_idx, buffer + bytes_written ,chunk_size, sector_ofs) != size)
+      if (!buffer_cache_write(sector_idx, buffer + bytes_written ,chunk_size, sector_ofs))
       {
         if (sector_ofs == 0 && chunk_size == DISK_SECTOR_SIZE) 
         {
