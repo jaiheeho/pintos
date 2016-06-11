@@ -1,6 +1,7 @@
 #include "filesys/filesys.h"
 #include <debug.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "filesys/file.h"
 #include "filesys/free-map.h"
@@ -76,7 +77,7 @@ filesys_open (const char *name)
   if (dir != NULL)
     dir_lookup (dir, name, &inode);
   else
-    printf("cacnot find root");
+      putbuf("root dir null\n", length);
   dir_close (dir);
 
   return file_open (inode);
