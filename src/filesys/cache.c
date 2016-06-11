@@ -273,3 +273,26 @@ void buffer_cache_free()
 }
 
 
+void buffer_cache_flush()
+{
+
+  int iter = 0;
+
+  sema_up(&buffer_cache_global_lock);
+
+  for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
+    {
+      if(buffer_cache[iter].sector != INVALID_SECTOR)
+  {   
+    sema_up(&(buffer_cache[iter].lock));
+    //if necessary, write out to disk
+    if(buffer_cache[iter].is_dirty == true)
+      {
+        disk_write(filesys_disk, buffer_cache[iter].sector, buffer_cache[iter].data);
+      }
+  }
+    }
+}
+
+
+

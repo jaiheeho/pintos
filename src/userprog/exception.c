@@ -168,6 +168,7 @@ page_fault (struct intr_frame *f)
   	{
   	  sema_up(&filesys_global_lock);
   	}
+    buffer_cache_flush();
     exit(-1);
   }
 
@@ -182,6 +183,7 @@ page_fault (struct intr_frame *f)
       struct hash_elem *e = found_hash_elem_from_spt(pg_round_down(fault_addr));
       if (user && e == NULL){
         sema_up(&filesys_global_lock);
+        buffer_cache_flush();
         exit(-1);
       }
       //else load page for writing
@@ -194,6 +196,8 @@ page_fault (struct intr_frame *f)
       {
         if (!user)
           sema_up(&filesys_global_lock);
+
+        buffer_cache_flush();
         exit(-1);
       }
     }
@@ -209,6 +213,8 @@ page_fault (struct intr_frame *f)
     {
       if (!user)
         sema_up(&filesys_global_lock);
+
+      buffer_cache_flush();
       exit(-1);
     }
   }
@@ -235,6 +241,7 @@ page_fault (struct intr_frame *f)
         {
             sema_up(&filesys_global_lock);
         }
+        buffer_cache_flush();
         exit(-1);
       }
     }

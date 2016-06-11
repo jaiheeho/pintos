@@ -377,7 +377,6 @@ power_off (void)
   const char *p;
 
 #ifdef FILESYS
-  buffer_cache_free();
   filesys_done ();
 #endif
 
