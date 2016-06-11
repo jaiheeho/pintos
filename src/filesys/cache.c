@@ -133,7 +133,7 @@ int buffer_cache_write(disk_sector_t sector, char * buffer, size_t size, int off
   }
   
   memcpy((buffer_cache[iter].data + off), buffer, size);
-  
+  buffer_cache[iter].is_dirty == true;
   
   sema_up(&(buffer_cache[iter].lock));
   return size;
