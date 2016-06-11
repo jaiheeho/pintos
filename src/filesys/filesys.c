@@ -80,6 +80,8 @@ filesys_open (const char *name)
     print("dir prob\n");
   dir_close (dir);
 
+  if (inode == NULL)
+    print("inod prob\n");
   return file_open (inode);
 }
 
