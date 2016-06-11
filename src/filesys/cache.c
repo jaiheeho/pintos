@@ -57,6 +57,10 @@ int buffer_cache_read(disk_sector_t sector, char * buffer, size_t size, int off)
  
   int iter = 0;
   bool found = false;
+
+  if (!buffer_cache_inited)
+    return 0;
+
   for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
     {
       if(buffer_cache[iter].sector == sector)
@@ -100,6 +104,9 @@ int buffer_cache_write(disk_sector_t sector, char * buffer, size_t size, int off
  
   int iter = 0;
   bool found = false;
+
+  if (!buffer_cache_inited)
+    return 0;
   for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
     {
       if(buffer_cache[iter].sector == sector)
@@ -137,9 +144,6 @@ int buffer_cache_write(disk_sector_t sector, char * buffer, size_t size, int off
   return size;
 
 }
-
-
-
 
 
 int buffer_cache_allocate(disk_sector_t sector)
