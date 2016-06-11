@@ -204,7 +204,7 @@ int buffer_cache_evict()
   	}
     if(iter == (BUFFER_CACHE_MAX - 1))
   	{
-      iter = 0;
+      choice_of_victim = true;
       break;
   	}
   }
@@ -213,10 +213,10 @@ int buffer_cache_evict()
     iter = 0;
   sema_down(&(buffer_cache[iter].lock));
   //if necessary, write out to disk
-  // if(buffer_cache[iter].is_dirty == true)
-  // {
+  if(buffer_cache[iter].is_dirty == true)
+  {
     disk_write(filesys_disk, buffer_cache[iter].sector, buffer_cache[iter].data);
-  // }
+  }
   return iter;
 
 }
