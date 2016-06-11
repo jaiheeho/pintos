@@ -301,34 +301,36 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
         break;
 
       /* before directly access to the disk, we will check buffer cache*/
-      if (!buffer_cache_write(sector_idx, buffer + bytes_written ,chunk_size, sector_ofs))
+      if (buffer_cache_write(sector_idx, buffer + bytes_written ,chunk_size, sector_ofs) != size)
       {
 
+        // idx = buffer_cache_allocate(sector_idx);
+        // memcpy((buffer_cache[idx].data + off), buffer, size);
         if (sector_ofs == 0 && chunk_size == DISK_SECTOR_SIZE) 
-          {
-            /* Write full sector directly to disk. */
-            disk_write (filesys_disk, sector_idx, buffer + bytes_written); 
-          }
-        else 
-          {
-            /* We need a bounce buffer. */
-            if (bounce == NULL) 
-              {
-                bounce = malloc (DISK_SECTOR_SIZE);
-                if (bounce == NULL)
-                  break;
-              }
-            /* If the sector contains data before or after the chunk
-               we're writing, then we need to read in the sector
-               first.  Otherwise we start with a sector of all zeros. */
-            if (sector_ofs > 0 || chunk_size < sector_left) 
-              disk_read (filesys_disk, sector_idx, bounce);
-            else
-              memset (bounce, 0, DISK_SECTOR_SIZE);
-            memcpy (bounce + sector_ofs, buffer + bytes_written, chunk_size);
-            disk_write (filesys_disk, sector_idx, bounce); 
-          }
+        {
+          /* Write full sector directly to disk. */
+          disk_write (filesys_disk, sector_idx, buffer + bytes_written); 
         }
+        else 
+        {
+          /* We need a bounce buffer. */
+          if (bounce == NULL) 
+            {
+              bounce = malloc (DISK_SECTOR_SIZE);
+              if (bounce == NULL)
+                break;
+            }
+          /* If the sector contains data before or after the chunk
+             we're writing, then we need to read in the sector
+             first.  Otherwise we start with a sector of all zeros. */
+          if (sector_ofs > 0 || chunk_size < sector_left) 
+            disk_read (filesys_disk, sector_idx, bounce);
+          else
+            memset (bounce, 0, DISK_SECTOR_SIZE);
+          memcpy (bounce + sector_ofs, buffer + bytes_written, chunk_size);
+          disk_write (filesys_disk, sector_idx, bounce); 
+        }
+      }
       /* Advance. */
       size -= chunk_size;
       offset += chunk_size;

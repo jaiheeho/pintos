@@ -163,18 +163,15 @@ int buffer_cache_allocate(disk_sector_t sector)
       iter = buffer_cache_evict();
     }
 
-
   //load data to the cache_elem slot
   disk_read(filesys_disk, sector, buffer_cache[iter].data);
   
-
   //initialize cache elem metadata
   
   buffer_cache[iter].occupied = true;
   buffer_cache[iter].is_accessed = false;
   buffer_cache[iter].is_dirty = false;
   buffer_cache[iter].sector = sector;
-
 
   sema_up(&buffer_cache_global_lock);
   return iter;
@@ -260,7 +257,6 @@ void buffer_cache_elem_free(disk_sector_t sector)
   sema_up(&buffer_cache_global_lock);
 
 }
-
 
 
 void buffer_cache_free()
