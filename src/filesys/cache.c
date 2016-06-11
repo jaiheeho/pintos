@@ -89,7 +89,6 @@ int buffer_cache_read(disk_sector_t sector, char * buffer, size_t size, int off)
   
   memcpy(buffer, (buffer_cache[iter].data + off), size);
   
-  
   sema_up(&(buffer_cache[iter].lock));
   return size;
 
@@ -105,33 +104,33 @@ int buffer_cache_write(disk_sector_t sector, char * buffer, size_t size, int off
 
   if (!buffer_cache_inited)
     return 0;
+
   for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
-    {
-      if(buffer_cache[iter].sector == sector)
-	{
-	  found = true;
-	  break;
-	}
-    }
+  {
+    if(buffer_cache[iter].sector == sector)
+  	{
+  	  found = true;
+  	  break;
+  	}
+  }
 
   if(found == true)
-    {
-      sema_down(&(buffer_cache[iter].lock));
-      if(buffer_cache[iter].occupied != false && 
-	 buffer_cache[iter].sector != INVALID_SECTOR)
-	{
-	  buffer_cache[iter].is_accessed = true;
-	}
-      else
-	{
-	  sema_up(&(buffer_cache[iter].lock));
-	  iter = buffer_cache_allocate(sector); 
-	}
-    }
+  {
+    sema_down(&(buffer_cache[iter].lock));
+    if(buffer_cache[iter].occupied != false && buffer_cache[iter].sector != INVALID_SECTOR)
+  	{
+  	  buffer_cache[iter].is_accessed = true;
+  	}
+    else
+  	{
+  	  sema_up(&(buffer_cache[iter].lock));
+  	  iter = buffer_cache_allocate(sector); 
+  	}
+  }
   else
-    {
-      iter = buffer_cache_allocate(sector);    
-    }
+  {
+    iter = buffer_cache_allocate(sector);    
+  }
   
   memcpy((buffer_cache[iter].data + off), buffer, size);
   
@@ -149,19 +148,18 @@ int buffer_cache_allocate(disk_sector_t sector)
   int iter = 0;
   bool found = false;
   for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
-    {
-      if(buffer_cache[iter].occupied == false)
-	{
-	  sema_down(&(buffer_cache[iter].lock));
-	  found = true;
-	  break;
-	}
-    }
-
+  {
+    if(buffer_cache[iter].occupied == false)
+  	{
+  	  sema_down(&(buffer_cache[iter].lock));
+  	  found = true;
+  	  break;
+  	}
+  }
   if(found == false)
-    {
-      iter = buffer_cache_evict();
-    }
+  {
+    iter = buffer_cache_evict();
+  }
 
   //load data to the cache_elem slot
   disk_read(filesys_disk, sector, buffer_cache[iter].data);
@@ -183,52 +181,46 @@ int buffer_cache_evict()
   int iter = 0;
   bool choice_of_victim = false;
   for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
-    {
-
-      if(sema_try_down(&buffer_cache[iter].lock))
-	{
-	  sema_up(&buffer_cache[iter].lock);
-	  continue;
-	}
-      if(choice_of_victim == false)
-	{
-	  if(buffer_cache[iter].is_dirty == true)
+  {
+    if(sema_try_down((&buffer_cache[iter].lock))
+  	{
+  	  sema_up((&buffer_cache[iter].lock));
+  	  continue;
+  	}
+    if(choice_of_victim == false)
+  	{
+  	  if(buffer_cache[iter].is_dirty == true)
 	    {
 	      continue;
 	    }
-	  else
+  	  else
 	    {
 	      break;
 	    }
-	}
-      else
-	{
-	  break;
-	}
+  	}
+    else
+  	{
+  	  break;
+  	}
 
-      if(iter == (BUFFER_CACHE_MAX - 1))
-	{
-	  choice_of_victim = true;
-	}
 
-    }
+    if(iter == (BUFFER_CACHE_MAX - 1))
+  	{
+      break;
+  	}
+  }
 
   sema_down(&(buffer_cache[iter].lock));
 
 
   //if necessary, write out to disk
   if(buffer_cache[iter].is_dirty == true)
-    {
-      disk_write(filesys_disk, buffer_cache[iter].sector, buffer_cache[iter].data);
-    }
-  
+  {
+    disk_write(filesys_disk, buffer_cache[iter].sector, buffer_cache[iter].data);
+  }
   return iter;
 
 }
-
-
-
-
 void buffer_cache_elem_free(disk_sector_t sector)
 {
 
@@ -241,7 +233,6 @@ void buffer_cache_elem_free(disk_sector_t sector)
       if(buffer_cache[iter].sector == sector)
 	{	  
 	  sema_down(&(buffer_cache[iter].lock));
-	  
 	  
 	  //if necessary, write out to disk
 	  if(buffer_cache[iter].is_dirty == true)
