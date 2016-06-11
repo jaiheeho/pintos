@@ -35,6 +35,7 @@ void buffer_cache_init()
       buffer_cache_elem_init(i);
       sema_init(&(buffer_cache[i].lock), 1);
     }
+  buffer_cache_inited = true;
   sema_up(&buffer_cache_global_lock);
 }
 
@@ -82,8 +83,6 @@ int buffer_cache_read(disk_sector_t sector, char * buffer, size_t size, int off)
       iter = buffer_cache_allocate(sector);    
     }
   
-  
-
   memcpy(buffer, (buffer_cache[iter].data + off), size);
   
   
@@ -261,8 +260,6 @@ void buffer_cache_elem_free(disk_sector_t sector)
 
 
   sema_up(&buffer_cache_global_lock);
-
-
 
 }
 

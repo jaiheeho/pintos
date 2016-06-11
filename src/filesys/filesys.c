@@ -23,7 +23,6 @@ filesys_init (bool format)
   if (filesys_disk == NULL)
     PANIC ("hd0:1 (hdb) not present, file system initialization failed");
 
-  buffer_cache_init();
 
   inode_init ();
   free_map_init ();
@@ -32,6 +31,8 @@ filesys_init (bool format)
     do_format ();
 
   free_map_open ();
+
+  buffer_cache_init();
 }
 
 /* Shuts down the file system module, writing any unwritten data
