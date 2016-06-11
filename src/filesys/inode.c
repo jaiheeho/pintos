@@ -139,7 +139,17 @@ inode_open (disk_sector_t sector)
   inode->open_cnt = 1;
   inode->deny_write_cnt = 0;
   inode->removed = false;
-  disk_read (filesys_disk, inode->sector, &inode->data);
+
+  if (buffer_cache_inited)
+  {
+    if (buffer_cache_read(sector_idx, buffer + bytes_read, chunk_size, sector_ofs) != chunk_size)
+      disk_read (filesys_disk, inode->sector, &inode->data);
+
+  }
+  else
+  {
+    disk_read (filesys_disk, inode->sector, &inode->data);
+  }
   return inode;
 }
 
@@ -177,7 +187,6 @@ inode_close (struct inode *inode)
   /* Release resources if this was the last opener. */
   if (--inode->open_cnt == 0)
     {
-
       while (buffer_cache_inited && inode_left>0)
       {
         disk_sector_t sector_idx = byte_to_sector (inode, bytes_read);
@@ -240,6 +249,8 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
 
       if (buffer_cache_inited)
       {
+        printf("]buffercache inited\n");
+
         if (buffer_cache_read(sector_idx, buffer + bytes_read, chunk_size, sector_ofs) != chunk_size)
         {
           if (sector_ofs == 0 && chunk_size == DISK_SECTOR_SIZE) 
@@ -264,6 +275,8 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       }
       else 
       {
+        printf("]buffercache not inited\n");
+
         if (sector_ofs == 0 && chunk_size == DISK_SECTOR_SIZE) 
         {
           /* Read full sector directly into caller's buffer. */
@@ -330,6 +343,8 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
       if (buffer_cache_inited)
       {
+          printf("]buffercache not inited\n");
+
         if (buffer_cache_write(sector_idx, buffer + bytes_written ,chunk_size, sector_ofs) != chunk_size)
         {
 
@@ -361,6 +376,8 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       }
       else
       {
+          printf("]buffercache not inited\n");
+
         if (sector_ofs == 0 && chunk_size == DISK_SECTOR_SIZE) 
           {
             /* Write full sector directly to disk. */

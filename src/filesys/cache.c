@@ -37,6 +37,7 @@ void buffer_cache_init()
       buffer_cache_elem_init(i);
       sema_init(&(buffer_cache[i].lock), 1);
     }
+  printf("buffercache inited\n");
   buffer_cache_inited = true;
   sema_up(&buffer_cache_global_lock);
 }
@@ -209,8 +210,6 @@ int buffer_cache_evict()
 	  break;
 	}
 
-
-
       if(iter == (BUFFER_CACHE_MAX - 1))
 	{
 	  choice_of_victim = true;
@@ -259,8 +258,6 @@ void buffer_cache_elem_free(disk_sector_t sector)
 	  break;
 	}
     }
-
-
   sema_up(&buffer_cache_global_lock);
 
 }
