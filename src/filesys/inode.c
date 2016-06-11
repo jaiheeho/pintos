@@ -141,7 +141,15 @@ inode_open (disk_sector_t sector)
   inode->deny_write_cnt = 0;
   inode->removed = false;
 
-  disk_read (filesys_disk, inode->sector, &inode->data);
+  if (buffer_cache_inited)
+  {
+    if (!buffer_cache_read(sector, &inode->data, DISK_SECTOR_SIZE, 0))
+      disk_read (filesys_disk, inode->sector, &inode->data);
+  }
+  else
+  {
+    disk_read (filesys_disk, inode->sector, &inode->data);
+  }
   return inode;
 }
 
