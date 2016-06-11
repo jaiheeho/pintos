@@ -159,7 +159,7 @@ inode_open (disk_sector_t sector)
   }
   else
   {
-    buffer_cache_read(inode->sector, &inode->data, DISK_SECTOR_SIZE, 0))
+    buffer_cache_read(inode->sector, (char *)&inode->data, DISK_SECTOR_SIZE, 0);
   }
 }
 
