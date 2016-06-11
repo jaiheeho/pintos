@@ -91,16 +91,28 @@ inode_create (disk_sector_t sector, off_t length)
       disk_inode->magic = INODE_MAGIC;
       if (free_map_allocate (sectors, &disk_inode->start))
         {
-          disk_write (filesys_disk, sector, disk_inode);
-          if (sectors > 0) 
-            {
-              static char zeros[DISK_SECTOR_SIZE];
-              size_t i;
-              
-              for (i = 0; i < sectors; i++) 
-                disk_write (filesys_disk, disk_inode->start + i, zeros); 
-            }
-          success = true; 
+          if (buffer_cache_inited == false)
+          {
+            disk_write (filesys_disk, sector, disk_inode);
+            if (sectors > 0) 
+              {
+                static char zeros[DISK_SECTOR_SIZE];
+                size_t i;
+                
+                for (i = 0; i < sectors; i++) 
+                  disk_write (filesys_disk, disk_inode->start + i, zeros); 
+              }
+            success = true; 
+          }
+          else
+          {
+            buffer_cache_write(sector, disk_inode , DISK_SECTOR_SIZE, 0)
+            size_t i;
+            for (i = 0; i < sectors; i++) 
+              buffer_cache_write(disk_inode->start + i, disk_inode , DISK_SECTOR_SIZE, 0)
+
+            success = true;
+          }
         } 
       free (disk_inode);
     }
