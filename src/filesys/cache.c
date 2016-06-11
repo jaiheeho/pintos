@@ -212,10 +212,10 @@ int buffer_cache_evict()
     iter = 0;
   sema_down(&(buffer_cache[iter].lock));
   //if necessary, write out to disk
-  // if(buffer_cache[iter].is_dirty == true)
-  // {
+  if(buffer_cache[iter].is_dirty == true)
+  {
     disk_write(filesys_disk, buffer_cache[iter].sector, buffer_cache[iter].data);
-  // }
+  }
   return iter;
 
 }
@@ -227,24 +227,23 @@ void buffer_cache_elem_free(disk_sector_t sector)
   sema_down(&buffer_cache_global_lock);
 
   for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
-    {
-      if(buffer_cache[iter].sector == sector)
-	{	  
-	  sema_down(&(buffer_cache[iter].lock));
+  {
+    if(buffer_cache[iter].sector == sector)
+    {	  
+      sema_down(&(buffer_cache[iter].lock));
+      
+      //if necessary, write out to disk
+      // if(buffer_cache[iter].is_dirty == true)
+      //   {
+          disk_write(filesys_disk, buffer_cache[iter].sector, buffer_cache[iter].data);
+        // }
 	  
-	  //if necessary, write out to disk
-	  if(buffer_cache[iter].is_dirty == true)
-	    {
-	      disk_write(filesys_disk, buffer_cache[iter].sector, buffer_cache[iter].data);
-	    }
-	  
-	  buffer_cache_elem_init(iter);
-	  sema_up(&buffer_cache[iter].lock);
-	  break;
-	}
-    }
+  	  buffer_cache_elem_init(iter);
+  	  sema_up(&buffer_cache[iter].lock);
+  	  break;
+  	}
+  }
   sema_up(&buffer_cache_global_lock);
-
 }
 
 
