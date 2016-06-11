@@ -98,8 +98,6 @@ inode_create (disk_sector_t sector, off_t length)
             disk_write (filesys_disk, sector, disk_inode);
             if (sectors > 0) 
               {
-
-                
                 for (i = 0; i < sectors; i++) 
                   disk_write (filesys_disk, disk_inode->start + i, zeros); 
               }
@@ -140,7 +138,6 @@ inode_open (disk_sector_t sector)
           return inode; 
         }
     }
-
   /* Allocate memory. */
   inode = malloc (sizeof *inode);
   if (inode == NULL)
@@ -193,7 +190,7 @@ inode_close (struct inode *inode)
   if (--inode->open_cnt == 0)
     {
 
-      while (inode_left>0 && buffer_cache_inited)
+      while (inode_left >0 && buffer_cache_inited)
       {
         disk_sector_t sector_idx = byte_to_sector (inode, bytes_read);
         buffer_cache_elem_free(sector_idx);
