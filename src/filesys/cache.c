@@ -9,6 +9,8 @@
 #define BUFFER_CACHE_MAX 64
 #define INVALID_SECTOR 0xFFFFFFFF
 
+bool buffer_cache_inited = false;
+
 struct buffer_cache_elem {
   bool occupied;
   disk_sector_t sector;

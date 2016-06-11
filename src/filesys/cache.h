@@ -9,6 +9,6 @@ void buffer_cache_elem_free(disk_sector_t);
 void buffer_cache_free(void);
 
 
-extern bool buffer_cache_inited = false;
+extern bool buffer_cache_inited;
 
 #endif
