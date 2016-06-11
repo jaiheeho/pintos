@@ -25,7 +25,7 @@ static struct semaphore buffer_cache_global_lock;
 
 void buffer_cache_elem_init(int i);
 int buffer_cache_allocate(disk_sector_t sector);
-int buffer_cache_evict();
+int buffer_cache_evict(void);
 
 void buffer_cache_init()
 {
@@ -182,9 +182,9 @@ int buffer_cache_evict()
   bool choice_of_victim = false;
   for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
   {
-    if(sema_try_down((&buffer_cache[iter].lock))
+    if(sema_try_down(&buffer_cache[iter].lock))
   	{
-  	  sema_up((&buffer_cache[iter].lock));
+  	  sema_up(&buffer_cache[iter].lock));
   	  continue;
   	}
     if(choice_of_victim == false)
