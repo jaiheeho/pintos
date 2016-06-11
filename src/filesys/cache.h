@@ -1,7 +1,6 @@
 #ifndef FILESYS_CACHE_H
 #define FILESYS_CACHE_H
 
-
 #include "devices/disk.h"
 void buffer_cache_init(void);
 int buffer_cache_read(disk_sector_t , char *, size_t, int);
