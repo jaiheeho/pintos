@@ -74,7 +74,6 @@ byte_to_sector (const struct inode *inode, off_t pos)
 {
   ASSERT (inode != NULL);
   int length = (int) inode->data.links[0]->links[0]->links[0];
-
   printf("in byte_to_sector :pos : %d, length%d\n",pos, length);
   if (pos < length)
   {
@@ -96,9 +95,8 @@ static disk_sector_t
 byte_to_sector_disk (const struct inode_disk *disk_inode, off_t pos) 
 {
   ASSERT (disk_inode != NULL);
-    printf("in byte_to_sector_disk :pos : %d, length%d\n",pos, length);
-
   int length = (int) disk_inode->links[0]->links[0]->links[0];
+  printf("in byte_to_sector_disk :pos : %d, length%d\n",pos, length);
   if (pos < length)
   {
     length = pos / DISK_SECTOR_SIZE + 1;
@@ -247,7 +245,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
         printf("i,j,k; %d, %d, %d\n", i,j,k);
         if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
           return false;
-        printf("alloced : %u\n", (disk_sector_t *)indirect->links[k]);
+        printf("alloced : %u\n", (disk_sector_t)indirect->links[k]);
 
       }
     }
@@ -268,7 +266,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
     {
       if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
         return false;
-      printf("alloced : %u\n", (disk_sector_t *)indirect->links[k]);
+      printf("alloced : %u\n", (disk_sector_t)indirect->links[k]);
     }
   }
 
@@ -280,7 +278,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   {
     if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
       return false;
-    printf("alloced : %u\n", (disk_sector_t *)indirect->links[k]);
+    printf("alloced : %u\n", (disk_sector_t)indirect->links[k]);
   }
 
   printf("length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
