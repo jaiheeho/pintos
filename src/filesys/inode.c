@@ -13,7 +13,7 @@
 /* Identifies an inode. */
 #define INODE_MAGIC 0x494e4f44
 
-#define INDIRECT_MAX_SIZE 0x00010000 /* 64KB*/
+#define INDIRECT_MAX_SIZE 0x00004000 /* 64KB*/
 #define MAX_SIZE          0x00800000 /* 8MB*/
 /* On-disk inode.
    Must be exactly DISK_SECTOR_SIZE bytes long. */
@@ -72,9 +72,10 @@ static disk_sector_t
 byte_to_sector (const struct inode *inode, off_t pos) 
 {
   ASSERT (inode != NULL);
-  int length = (int) inode->data.links[0]->links[0]->links[0] + DISK_SECTOR_SIZE;
+  int length = (int) inode->data.links[0]->links[0]->links[0];
   if (pos < length)
   {
+    length = bytes_to_sectors(pos) + 1;
     int double_indirect_size = length / INDIRECT_MAX_SIZE ;
     int indirect_size = (length % INDIRECT_MAX_SIZE) / DISK_SECTOR_SIZE;
     int direct_size = (length % INDIRECT_MAX_SIZE) % DISK_SECTOR_SIZE;
@@ -88,9 +89,10 @@ static disk_sector_t
 byte_to_sector_disk (const struct inode_disk *disk_inode, off_t pos) 
 {
   ASSERT (disk_inode != NULL);
-  int length = (int) disk_inode->links[0]->links[0]->links[0] + DISK_SECTOR_SIZE;
+  int length = (int) disk_inode->links[0]->links[0]->links[0];
   if (pos < length)
   {
+    length = bytes_to_sectors(pos) + 1;
     int double_indirect_size = length / INDIRECT_MAX_SIZE ;
     int indirect_size = (length % INDIRECT_MAX_SIZE) / DISK_SECTOR_SIZE;
     int direct_size = (length % INDIRECT_MAX_SIZE) % DISK_SECTOR_SIZE;
@@ -192,7 +194,7 @@ inode_create (disk_sector_t sector, off_t length)
 
 bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
 {
-  length = length + DISK_SECTOR_SIZE;
+  length = length + 1;
   int double_indirect_size = length / INDIRECT_MAX_SIZE + 1;
   int indirect_size = (length % INDIRECT_MAX_SIZE) / DISK_SECTOR_SIZE + 1;
   int direct_size = (length % INDIRECT_MAX_SIZE) % DISK_SECTOR_SIZE + 1;
