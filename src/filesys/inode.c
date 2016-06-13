@@ -75,7 +75,7 @@ byte_to_sector (const struct inode *inode, off_t pos)
   ASSERT (inode != NULL);
   int length = (int) inode->data.links[0]->links[0]->links[0];
 
-  printf("in byte_to_sector :pos : %d, length%d\n",length );
+  printf("in byte_to_sector :pos : %d, length%d\n",pos, length);
   if (pos < length)
   {
     length = bytes_to_sectors(pos);
