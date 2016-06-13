@@ -84,6 +84,22 @@ byte_to_sector (const struct inode *inode, off_t pos)
     return -1;
 }
 
+static disk_sector_t
+byte_to_sector_disk (const struct disk_inode *inode_disk, off_t pos) 
+{
+  ASSERT (inode != NULL);
+  int length = (int) inode_disk->links[0]->links[0]->links[0] + DISK_SECTOR_SIZE;
+  if (pos < length)
+  {
+    int double_indirect_size = length / INDIRECT_MAX_SIZE ;
+    int indirect_size = (length % INDIRECT_MAX_SIZE) / DISK_SECTOR_SIZE;
+    int direct_size = (length % INDIRECT_MAX_SIZE) % DISK_SECTOR_SIZE;
+    return (disk_sector_t)inode_disk->links[double_indirect_size]->links[indirect_size]->links[direct_size];
+  }
+  else
+    return -1;
+}
+
 /* List of open inodes, so that opening a single inode twice
    returns the same `struct inode'. */
 static struct list open_inodes;
@@ -129,7 +145,7 @@ inode_create (disk_sector_t sector, off_t length)
           if (sectors > 0) 
             {
               for (i = 0; i < sectors; i++) 
-                disk_write (filesys_disk, byte_to_sector(disk_inode, (off_t)i*DISK_SECTOR_SIZE), zeros); 
+                disk_write (filesys_disk, byte_to_sector_disk(disk_inode, (off_t)i*DISK_SECTOR_SIZE), zeros); 
             }
           success = true; 
         }
@@ -138,7 +154,7 @@ inode_create (disk_sector_t sector, off_t length)
           buffer_cache_write(sector, (char *)disk_inode , DISK_SECTOR_SIZE, 0);
           size_t i;
           for (i = 0; i < sectors; i++) 
-            buffer_cache_write(byte_to_sector(disk_inode, (off_t)i*DISK_SECTOR_SIZE), zeros , DISK_SECTOR_SIZE, 0);
+            buffer_cache_write(byte_to_sector_disk(disk_inode, (off_t)i*DISK_SECTOR_SIZE), zeros , DISK_SECTOR_SIZE, 0);
 
           success = true;
         }
