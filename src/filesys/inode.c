@@ -198,7 +198,6 @@ inode_create (disk_sector_t sector, off_t length)
       // } 
       // free (disk_inode);
     }
-    printf("inode create end length of inode :%d , sectors: %d\n", length, sectors);
 
   return success;
 }
