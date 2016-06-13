@@ -129,7 +129,7 @@ inode_create (disk_sector_t sector, off_t length)
           if (sectors > 0) 
             {
               for (i = 0; i < sectors; i++) 
-                disk_write (filesys_disk, byte_to_sector(disk_inode, i*DISK_SECTOR_SIZE), zeros); 
+                disk_write (filesys_disk, byte_to_sector(disk_inode, (off_t)i*DISK_SECTOR_SIZE), zeros); 
             }
           success = true; 
         }
@@ -138,7 +138,7 @@ inode_create (disk_sector_t sector, off_t length)
           buffer_cache_write(sector, (char *)disk_inode , DISK_SECTOR_SIZE, 0);
           size_t i;
           for (i = 0; i < sectors; i++) 
-            buffer_cache_write(byte_to_sector(disk_inode, i*DISK_SECTOR_SIZE), zeros , DISK_SECTOR_SIZE, 0);
+            buffer_cache_write(byte_to_sector(disk_inode, (off_t)i*DISK_SECTOR_SIZE), zeros , DISK_SECTOR_SIZE, 0);
 
           success = true;
         }
@@ -196,17 +196,17 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
     double_indirect = calloc (1, sizeof (struct inode_disk));
     if (!double_indirect)
       return false;
-    disk_inode->links[i] = (uint32_t)double_indirect;
+    disk_inode->links[i] = double_indirect;
 
     for (j=0; j < DISK_SECTOR_SIZE/4; j++)
     {
       indirect = calloc (1, sizeof (struct inode_disk));
       if (!indirect)
         return false;
-      double_indirect->links[j] = (uint32_t)indirect;
+      double_indirect->links[j] = indirect;
       for (k = 0; k < DISK_SECTOR_SIZE/4; k++)
       {
-        if(!free_map_allocate(1,&indirect->links[k]))
+        if(!free_map_allocate(1,&(disk_sector_t *)indirect->links[k]))
           return false;
       }
     }
@@ -215,17 +215,17 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   double_indirect = calloc (1, sizeof (struct inode_disk));
   if (!double_indirect)
     return false;
-  disk_inode->links[double_indirect_size] = (uint32_t)double_indirect;
+  disk_inode->links[double_indirect_size] = double_indirect;
 
   for (j=0; j < indirect_size - 1 ; j++)
   {
     indirect = calloc (1, sizeof (struct inode_disk));
     if (!indirect)
       return false;
-    double_indirect->links[j] = (uint32_t)indirect;
+    double_indirect->links[j] = indirect;
     for (k = 0; k < DISK_SECTOR_SIZE/4; k++)
     {
-      if(!free_map_allocate(1,&indirect->links[k]))
+      if(!free_map_allocate(1,&(disk_sector_t *)indirect->links[k]))
         return false;
     }
   }
@@ -233,14 +233,14 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   indirect = calloc (1, sizeof (struct inode_disk));
   if (!indirect)
     return false;
-  double_indirect->links[indirect_size] = (uint32_t)indirect;
+  double_indirect->links[indirect_size] = indirect;
 
   for (k = 0; k < direct_size; k++)
   {
-    if(!free_map_allocate(1,&indirect->links[k]))
+    if(!free_map_allocate(1,&(disk_sector_t *)indirect->links[k]))
       return false;
   }
-  inode_disk->links[0]->links[0]->links[0] = length;
+  (disk_sector_t)inode_disk->links[0]->links[0]->links[0] = length;
 
   return true;
 }
@@ -263,7 +263,7 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
 
   for (i = 0; i < double_indirect_size - 1 ; i ++)
   {
-    double_indirect = (struct inode_disk *)disk_inode->links[i];
+    double_indirect = disk_inode->links[i];
     if (double_indirect)
       for (j=0; j < DISK_SECTOR_SIZE/4; j++)
       {
@@ -272,12 +272,12 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
           for (k = 0; k < DISK_SECTOR_SIZE/4; k++)
           {
             if (indirect->links[k])
-              free_map_release(indirect->links[k],1);
+              free_map_release((disk_sector_t)indirect->links[k],1);
           }
       }
   }
 
-  double_indirect = (struct inode_disk *)disk_inode[double_indirect_size];
+  double_indirect = disk_inode[double_indirect_size];
   if (!double_indirect)
     return;
 
@@ -289,17 +289,17 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
     for (k = 0; k < DISK_SECTOR_SIZE/4; k++)
     {
       if(indirect->links[k)
-        free_map_release(indirect->links[k],1);
+        free_map_release((disk_sector_t)indirect->links[k],1);
     }
   }
 
-  indirect = (struct inode_disk *)double_indirect->links[indirect_size];
+  indirect = double_indirect->links[indirect_size];
   if (!indirect)
     return;
   for (k = 0; k < direct_size; k++)
   {
     if (indirect->links[k])
-      free_map_release(indirect->links[k],1);
+      free_map_release((disk_sector_t)indirect->links[k],1);
   }
 
 }
