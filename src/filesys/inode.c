@@ -564,6 +564,8 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
       /* Bytes left in inode, bytes left in sector, lesser of the two. */
       off_t inode_left = inode_length (inode) - offset;
+      printf("power2 : inode_left : %d\n",inode_left);
+
       int sector_left = DISK_SECTOR_SIZE - sector_ofs;
       int min_left = inode_left < sector_left ? inode_left : sector_left;
 
