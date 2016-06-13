@@ -142,9 +142,10 @@ inode_create (disk_sector_t sector, off_t length)
   if (disk_inode != NULL)
     {
       size_t sectors = bytes_to_sectors (length);
+      
       success = inode_free_map_allocate (sectors, disk_inode);
       disk_inode->links[0]->links[0]->links[0] = length;
-
+      printf("length of inode :%d", length);
       if (success)
       {
         static char zeros[DISK_SECTOR_SIZE];
@@ -268,6 +269,9 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
     if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
       return false;
   }
+
+  printf("length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+    length, double_indirect_size, indirect_size, direct_size);
   return true;
 }
 
