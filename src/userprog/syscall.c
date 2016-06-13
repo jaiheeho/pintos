@@ -45,6 +45,7 @@ syscall_init (void)
 static void
 syscall_handler (struct intr_frame *f UNUSED) 
 {
+
   bool returnZ = false;
   int retval=0;
 
@@ -55,6 +56,8 @@ syscall_handler (struct intr_frame *f UNUSED)
     exit(-1);
   else
     syscall_num = *((int*)f->esp);
+
+
 
   //check validity of  syscall_num
   if (syscall_num > SYS_INUMBER)
