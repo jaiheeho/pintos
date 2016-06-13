@@ -159,10 +159,18 @@ inode_create (disk_sector_t sector, off_t length)
         if (buffer_cache_inited == false)
         {
           disk_write (filesys_disk, sector, disk_inode);
+
+          struct inode_disk bounce;
+          memset(bounce, 0, DISK_SECTOR_SIZE);
+          disk_read (filesys_disk, sector, &bounce);
+          printf("test: %d", bounce->links[0]->links[0]->links[0]);
+
           if (sectors > 0) 
             {
               for (i = 0; i < sectors; i++) 
+              {
                 disk_write (filesys_disk, byte_to_sector_disk(disk_inode, (off_t)i*DISK_SECTOR_SIZE), zeros); 
+              }
             }
           success = true; 
         }
