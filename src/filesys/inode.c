@@ -142,7 +142,7 @@ inode_create (disk_sector_t sector, off_t length)
   if (disk_inode != NULL)
     {
       size_t sectors = bytes_to_sectors (length);
-      
+      printf("length of inode :%d", length);
       success = inode_free_map_allocate (sectors, disk_inode);
       disk_inode->links[0]->links[0]->links[0] = length;
       printf("length of inode :%d", length);
@@ -155,7 +155,7 @@ inode_create (disk_sector_t sector, off_t length)
           disk_write (filesys_disk, sector, disk_inode);
           if (sectors > 0) 
             {
-              for (i = 0; i < sectors; i++) 
+              for (i = 1; i < sectors+1; i++) 
                 disk_write (filesys_disk, byte_to_sector_disk(disk_inode, (off_t)i*DISK_SECTOR_SIZE), zeros); 
             }
           success = true; 
@@ -164,7 +164,7 @@ inode_create (disk_sector_t sector, off_t length)
         {
           buffer_cache_write(sector, (char *)disk_inode , DISK_SECTOR_SIZE, 0);
           size_t i;
-          for (i = 0; i < sectors; i++) 
+          for (i = 0; i < sectors+1; i++) 
             buffer_cache_write(byte_to_sector_disk(disk_inode, (off_t)i*DISK_SECTOR_SIZE), zeros , DISK_SECTOR_SIZE, 0);
 
           success = true;
