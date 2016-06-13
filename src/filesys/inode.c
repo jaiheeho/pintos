@@ -104,7 +104,7 @@ byte_to_sector_disk (const struct inode_disk *disk_inode, off_t pos)
   }
   else
   {
-    printf("hererer1\n");
+    printf("hererer2\n");
     return -1;
   }
 }
@@ -142,10 +142,10 @@ inode_create (disk_sector_t sector, off_t length)
   if (disk_inode != NULL)
     {
       size_t sectors = bytes_to_sectors (length);
-      printf("length of inode :%d", length);
+      printf("length of inode :%d , sectors\n", length, sectors);
       success = inode_free_map_allocate (sectors, disk_inode);
       disk_inode->links[0]->links[0]->links[0] = length;
-      printf("length of inode :%d", length);
+      printf("length of inode :%d , sectors\n", length, sectors);
       if (success)
       {
         static char zeros[DISK_SECTOR_SIZE];
@@ -155,7 +155,7 @@ inode_create (disk_sector_t sector, off_t length)
           disk_write (filesys_disk, sector, disk_inode);
           if (sectors > 0) 
             {
-              for (i = 1; i < sectors+1; i++) 
+              for (i = 0; i < sectors; i++) 
                 disk_write (filesys_disk, byte_to_sector_disk(disk_inode, (off_t)i*DISK_SECTOR_SIZE), zeros); 
             }
           success = true; 
@@ -164,7 +164,7 @@ inode_create (disk_sector_t sector, off_t length)
         {
           buffer_cache_write(sector, (char *)disk_inode , DISK_SECTOR_SIZE, 0);
           size_t i;
-          for (i = 0; i < sectors+1; i++) 
+          for (i = 0; i < sectors; i++) 
             buffer_cache_write(byte_to_sector_disk(disk_inode, (off_t)i*DISK_SECTOR_SIZE), zeros , DISK_SECTOR_SIZE, 0);
 
           success = true;
@@ -206,7 +206,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   length = length + 1;
   int double_indirect_size = length / INDIRECT_MAX_SIZE + 1;
   int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) + 1;
-  int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4);
+  int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4) + 1;
 
   printf("length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
     length, double_indirect_size, indirect_size, direct_size);
