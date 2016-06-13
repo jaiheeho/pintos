@@ -218,20 +218,20 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   ASSERT(indirect_size <= DISK_SECTOR_SIZE/4);
   ASSERT(direct_size <= DISK_SECTOR_SIZE/4);
 
-  for (i = 0; i < double_indirect_size - 1 ; i ++)
+  for (i = 0; i < double_indirect_size-2; i ++)
   {
     double_indirect = calloc (1, sizeof (struct inode_disk));
     if (!double_indirect)
       return false;
     disk_inode->links[i] = double_indirect;
 
-    for (j=0; j < DISK_SECTOR_SIZE/4; j++)
+    for (j=0; j < DISK_SECTOR_SIZE/4-1; j++)
     {
       indirect = calloc (1, sizeof (struct inode_disk));
       if (!indirect)
         return false;
       double_indirect->links[j] = indirect;
-      for (k = 0; k < DISK_SECTOR_SIZE/4; k++)
+      for (k = 0; k < DISK_SECTOR_SIZE/4-1; k++)
       {
         printf("i,j,k; %d, %d, %d\n", i,j,k);
         if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
@@ -245,13 +245,13 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
     return false;
   disk_inode->links[double_indirect_size-1] = double_indirect;
 
-  for (j=0; j < indirect_size-1 ; j++)
+  for (j=0; j < indirect_size-2; j++)
   {
     indirect = calloc (1, sizeof (struct inode_disk));
     if (!indirect)
       return false;
     double_indirect->links[j] = indirect;
-    for (k = 0; k < DISK_SECTOR_SIZE/4; k++)
+    for (k = 0; k < DISK_SECTOR_SIZE/4-1; k++)
     {
       if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
         return false;
@@ -262,7 +262,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   if (!indirect)
     return false;
   double_indirect->links[indirect_size-1] = indirect;
-  for (k = 0; k < direct_size; k++)
+  for (k = 0; k < direct_size-1; k++)
   {
     if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
       return false;
@@ -288,15 +288,15 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
   ASSERT(direct_size <= DISK_SECTOR_SIZE/4);
 
 
-  for (i = 0; i < double_indirect_size - 1 ; i ++)
+  for (i = 0; i < double_indirect_size-2; i ++)
   {
     double_indirect = disk_inode->links[i];
     if (double_indirect)
-      for (j=0; j < DISK_SECTOR_SIZE/4; j++)
+      for (j=0; j < DISK_SECTOR_SIZE/4-1; j++)
       {
         indirect = (struct inode_disk *)double_indirect->links[i];
         if (indirect)
-          for (k = 0; k < DISK_SECTOR_SIZE/4; k++)
+          for (k = 0; k < DISK_SECTOR_SIZE/4-1; k++)
           {
             if (indirect->links[k])
               free_map_release((disk_sector_t)indirect->links[k],1);
@@ -304,26 +304,26 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
       }
   }
 
-  double_indirect = disk_inode->links[double_indirect_size];
+  double_indirect = disk_inode->links[double_indirect_size-1];
   if (!double_indirect)
     return;
 
-  for (j=0; j < indirect_size - 1 ; j++)
+  for (j=0; j < indirect_size-2; j++)
   {
     indirect = (struct inode_disk *) double_indirect->links[j];
     if (!indirect)
       continue;
-    for (k = 0; k < DISK_SECTOR_SIZE/4; k++)
+    for (k = 0; k < DISK_SECTOR_SIZE/4-1; k++)
     {
       if(indirect->links[k])
         free_map_release((disk_sector_t)indirect->links[k],1);
     }
   }
 
-  indirect = double_indirect->links[indirect_size];
+  indirect = double_indirect->links[indirect_size-1];
   if (!indirect)
     return;
-  for (k = 0; k < direct_size; k++)
+  for (k = 0; k < direct_size-1; k++)
   {
     if (indirect->links[k])
       free_map_release((disk_sector_t)indirect->links[k],1);
@@ -338,13 +338,13 @@ void inode_free_disk_inode(struct inode_disk *disk_inode)
   struct inode_disk * double_indirect = NULL;
 
   int i, j;
-  for (i=0; i<DISK_SECTOR_SIZE/4 ; i++)
+  for (i=0; i<DISK_SECTOR_SIZE/4-1 ; i++)
   {
     if (disk_inode->links[i] == NULL)
       continue;
     double_indirect = disk_inode->links[i];
 
-    for (j=0; j<DISK_SECTOR_SIZE/4 ; j++)
+    for (j=0; j<DISK_SECTOR_SIZE/4-1 ; j++)
     {
       indirect = indirect->links[j];
       if (indirect)
