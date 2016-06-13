@@ -87,7 +87,7 @@ byte_to_sector (const struct inode *inode, off_t pos)
 static disk_sector_t
 byte_to_sector_disk (const struct disk_inode *inode_disk, off_t pos) 
 {
-  ASSERT (inode != NULL);
+  ASSERT (inode_disk != NULL);
   int length = (int) inode_disk->links[0]->links[0]->links[0] + DISK_SECTOR_SIZE;
   if (pos < length)
   {
