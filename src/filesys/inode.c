@@ -220,7 +220,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   length = length + 1;
   int double_indirect_size = length / INDIRECT_MAX_SIZE + 1;
   int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) + 1;
-  int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4) + 1;
+  int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4);
 
   printf("length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
     length, double_indirect_size, indirect_size, direct_size);
@@ -286,9 +286,9 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   double_indirect->links[indirect_size-1] = indirect;
   for (k = 0; k < direct_size-1; k++)
   {
-      if( double_indirect_size == 1 && indirect_size == 1 && k == 0)
-        continue;    
-      if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
+    if(double_indirect_size == 1 && indirect_size == 1 && k == 0)
+      continue;    
+    if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
       return false;
     printf("alloced : %u\n", (disk_sector_t)indirect->links[k]);
   }
@@ -302,7 +302,7 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
 {
   int double_indirect_size = length / INDIRECT_MAX_SIZE + 1;
   int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4)  + 1;
-  int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4)  + 1;
+  int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4) + 1;
 
   // struct inode_disk * direct = NULL;
   struct inode_disk * indirect = NULL;
@@ -472,7 +472,7 @@ inode_close (struct inode *inode)
       if (inode->removed) 
         {
           free_map_release (inode->sector, 1);
-          inode_free_map_release(length, &inode->data);
+          inode_free_map_release(bytes_to_sectors(length), &inode->data);
           // free_map_release (inode->data.start,
           //                   bytes_to_sectors (inode->data.length)); 
         }
