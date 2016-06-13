@@ -142,10 +142,10 @@ inode_create (disk_sector_t sector, off_t length)
   if (disk_inode != NULL)
     {
       size_t sectors = bytes_to_sectors (length);
-      printf("length of inode :%d , sectors\n", length, sectors);
+      printf("length of inode :%d , sectors: %d\n", length, sectors);
       success = inode_free_map_allocate (sectors, disk_inode);
       disk_inode->links[0]->links[0]->links[0] = length;
-      printf("length of inode :%d , sectors\n", length, sectors);
+      printf("length of inode :%d , sectors: %d\n", length, sectors);
       if (success)
       {
         static char zeros[DISK_SECTOR_SIZE];
