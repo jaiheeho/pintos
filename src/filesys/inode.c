@@ -293,7 +293,7 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
       }
   }
 
-  double_indirect = disk_inode[double_indirect_size];
+  double_indirect = disk_inode->links[double_indirect_size];
   if (!double_indirect)
     return;
 
@@ -331,7 +331,7 @@ void inode_free_disk_inode(struct inode_disk *disk_inode)
   {
     if (disk_inode->links[i] == NULL)
       continue;
-    double_indirect = disk_inode[i];
+    double_indirect = disk_inode->links[i];
 
     for (j=0; j<DISK_SECTOR_SIZE/4 ; j++)
     {
@@ -432,8 +432,7 @@ inode_close (struct inode *inode)
       if (inode->removed) 
         {
           free_map_release (inode->sector, 1);
-          inode_free_map_release(length, inode->data);
-
+          inode_free_map_release(length, &inode->data);
           // free_map_release (inode->data.start,
           //                   bytes_to_sectors (inode->data.length)); 
         }
@@ -542,7 +541,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
         break;
 
       /* before directly access to the disk, we will check buffer cache*/
-      if (!buffer_cache_write(sector_idx, buffer + bytes_written ,chunk_size, sector_ofs))
+      if (!buffer_cache_write(sector_idx, (char *)buffer + bytes_written ,chunk_size, sector_ofs))
       {
         if (sector_ofs == 0 && chunk_size == DISK_SECTOR_SIZE) 
         {
@@ -602,5 +601,5 @@ inode_allow_write (struct inode *inode)
 off_t
 inode_length (const struct inode *inode)
 {
-  return inode->data.length;
+  return (off_t) inode->data.links[0]->links[0]->links[0];
 }
