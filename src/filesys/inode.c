@@ -162,7 +162,7 @@ inode_create (disk_sector_t sector, off_t length)
 
           struct inode_disk bounce;
           disk_read (filesys_disk, sector, &bounce);
-          printf("test: %d", bounce->links[0]->links[0]->links[0]);
+          printf("test: %d", bounce.links[0]->links[0]->links[0]);
 
           if (sectors > 0) 
             {
