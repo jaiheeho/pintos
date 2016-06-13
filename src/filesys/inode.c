@@ -72,15 +72,13 @@ static disk_sector_t
 byte_to_sector (const struct inode *inode, off_t pos) 
 {
   ASSERT (inode != NULL);
-  int length = (int) inode->data.links[0]->links[0]->links[0];
-
+  int length = (int) inode->data.links[0]->links[0]->links[0] + byte_to_sector(i*DISK_SECTOR_SIZE);
   if (pos < length)
   {
     int double_indirect_size = length / INDIRECT_MAX_SIZE ;
     int indirect_size = (length % INDIRECT_MAX_SIZE) / DISK_SECTOR_SIZE;
     int direct_size = (length % INDIRECT_MAX_SIZE) % DISK_SECTOR_SIZE;
-    return inode->data.links[double_indirect_size]->links[indirect_size]->links[direct_size] = length;
-
+    return (disk_sector_t)inode->data.links[double_indirect_size]->links[indirect_size]->links[direct_size];
   }
   else
     return -1;
@@ -112,7 +110,6 @@ inode_create (disk_sector_t sector, off_t length)
   bool success = false;
 
   ASSERT (length >= 0);
-
   /* If this assertion fails, the inode structure is not exactly
      one sector in size, and you should fix that. */
   ASSERT (sizeof *disk_inode == DISK_SECTOR_SIZE);
@@ -134,7 +131,7 @@ inode_create (disk_sector_t sector, off_t length)
           if (sectors > 0) 
             {
               for (i = 0; i < sectors; i++) 
-                disk_write (filesys_disk, disk_inode->start + i, zeros); 
+                disk_write (filesys_disk, byte_to_sector(i*DISK_SECTOR_SIZE), zeros); 
             }
           success = true; 
         }
@@ -143,7 +140,7 @@ inode_create (disk_sector_t sector, off_t length)
           buffer_cache_write(sector, (char *)disk_inode , DISK_SECTOR_SIZE, 0);
           size_t i;
           for (i = 0; i < sectors; i++) 
-            buffer_cache_write(disk_inode->start + i, zeros , DISK_SECTOR_SIZE, 0);
+            buffer_cache_write(byte_to_sector(i*DISK_SECTOR_SIZE), zeros , DISK_SECTOR_SIZE, 0);
 
           success = true;
         }
@@ -181,6 +178,7 @@ inode_create (disk_sector_t sector, off_t length)
 
 bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
 {
+  length = length + DISK_SECTOR_SIZE;
   int double_indirect_size = length / INDIRECT_MAX_SIZE + 1;
   int indirect_size = (length % INDIRECT_MAX_SIZE) / DISK_SECTOR_SIZE + 1;
   int direct_size = (length % INDIRECT_MAX_SIZE) % DISK_SECTOR_SIZE + 1;
