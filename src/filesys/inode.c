@@ -240,7 +240,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
       if (!indirect)
         return false;
       double_indirect->links[j] = indirect;
-      for (k = 0; k < DISK_SECTOR_SIZE/4-1; k++)
+      for (k = 1; k < DISK_SECTOR_SIZE/4-1; k++)
       {
         printf("i,j,k; %d, %d, %d\n", i,j,k);
         if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
