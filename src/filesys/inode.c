@@ -206,6 +206,9 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) + 1;
   int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4)  + 1;
 
+  printf("length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+    length, double_indirect_size, indirect_size, direct_size);
+
   struct inode_disk * direct = NULL;
   struct inode_disk * indirect = NULL;
   struct inode_disk * double_indirect = NULL;
@@ -214,7 +217,6 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   ASSERT(double_indirect_size <= DISK_SECTOR_SIZE/4);
   ASSERT(indirect_size <= DISK_SECTOR_SIZE/4);
   ASSERT(direct_size <= DISK_SECTOR_SIZE/4);
-
 
   for (i = 0; i < double_indirect_size - 1 ; i ++)
   {
@@ -231,6 +233,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
       double_indirect->links[j] = indirect;
       for (k = 0; k < DISK_SECTOR_SIZE/4; k++)
       {
+        printf("i,j,k; %d, %d, %d\n", i,j,k);
         if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
           return false;
       }
@@ -240,9 +243,9 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   double_indirect = calloc (1, sizeof (struct inode_disk));
   if (!double_indirect)
     return false;
-  disk_inode->links[double_indirect_size] = double_indirect;
+  disk_inode->links[double_indirect_size-1] = double_indirect;
 
-  for (j=0; j < indirect_size - 1 ; j++)
+  for (j=0; j < indirect_size-1 ; j++)
   {
     indirect = calloc (1, sizeof (struct inode_disk));
     if (!indirect)
@@ -258,8 +261,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   indirect = calloc (1, sizeof (struct inode_disk));
   if (!indirect)
     return false;
-  double_indirect->links[indirect_size] = indirect;
-
+  double_indirect->links[indirect_size-1] = indirect;
   for (k = 0; k < direct_size; k++)
   {
     if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
