@@ -258,7 +258,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
     if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
       return false;
   }
-  (disk_sector_t)disk_inode->links[0]->links[0]->links[0] = length;
+  disk_inode->links[0]->links[0]->links[0] = length;
 
   return true;
 }
