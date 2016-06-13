@@ -72,7 +72,7 @@ static disk_sector_t
 byte_to_sector (const struct inode *inode, off_t pos) 
 {
   ASSERT (inode != NULL);
-  int length = (int) inode->data.links[0]->links[0]->links[0] + byte_to_sector(i*DISK_SECTOR_SIZE);
+  int length = (int) inode->data.links[0]->links[0]->links[0] + DISK_SECTOR_SIZE;
   if (pos < length)
   {
     int double_indirect_size = length / INDIRECT_MAX_SIZE ;
@@ -131,7 +131,7 @@ inode_create (disk_sector_t sector, off_t length)
           if (sectors > 0) 
             {
               for (i = 0; i < sectors; i++) 
-                disk_write (filesys_disk, byte_to_sector(i*DISK_SECTOR_SIZE), zeros); 
+                disk_write (filesys_disk, byte_to_sector(i*DISK_SECTOR_SIZE,disk_inode ), zeros); 
             }
           success = true; 
         }
@@ -140,7 +140,7 @@ inode_create (disk_sector_t sector, off_t length)
           buffer_cache_write(sector, (char *)disk_inode , DISK_SECTOR_SIZE, 0);
           size_t i;
           for (i = 0; i < sectors; i++) 
-            buffer_cache_write(byte_to_sector(i*DISK_SECTOR_SIZE), zeros , DISK_SECTOR_SIZE, 0);
+            buffer_cache_write(byte_to_sector(i*DISK_SECTOR_SIZE,disk_inode), zeros , DISK_SECTOR_SIZE, 0);
 
           success = true;
         }
