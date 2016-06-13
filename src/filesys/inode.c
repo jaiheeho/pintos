@@ -206,7 +206,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   length = length + 1;
   int double_indirect_size = length / INDIRECT_MAX_SIZE + 1;
   int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) + 1;
-  int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4)  + 1;
+  int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4);
 
   printf("length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
     length, double_indirect_size, indirect_size, direct_size);
