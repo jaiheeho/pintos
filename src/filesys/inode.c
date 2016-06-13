@@ -242,6 +242,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
     }
   }
   printf("\nlength : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+    length, double_indirect_size, indirect_size, direct_size);
 
   double_indirect = calloc (1, sizeof (struct inode_disk));
   if (!double_indirect)
@@ -271,6 +272,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
       return false;
   }
   printf("\nlength : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+    length, double_indirect_size, indirect_size, direct_size);
 
   return true;
 }
