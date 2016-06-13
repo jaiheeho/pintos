@@ -82,7 +82,10 @@ byte_to_sector (const struct inode *inode, off_t pos)
     return (disk_sector_t)inode->data.links[double_indirect_size]->links[indirect_size]->links[direct_size];
   }
   else
+  {
+    printf("hererer1\n");
     return -1;
+  }
 }
 
 static disk_sector_t
@@ -99,7 +102,10 @@ byte_to_sector_disk (const struct inode_disk *disk_inode, off_t pos)
     return (disk_sector_t)disk_inode->links[double_indirect_size]->links[indirect_size]->links[direct_size];
   }
   else
+  {
+    printf("hererer1\n");
     return -1;
+  }
 }
 
 /* List of open inodes, so that opening a single inode twice
