@@ -78,11 +78,11 @@ byte_to_sector (const struct inode *inode, off_t pos)
   printf("in byte_to_sector :pos : %d, length%d\n",pos, length);
   if (pos < length)
   {
-    length = bytes_to_sectors(pos);
+    length = pos / DISK_SECTOR_SIZE + 1;
     int double_indirect_size = length / INDIRECT_MAX_SIZE ;
     int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) ;
     int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4) ;
-    printf("byte_to_sector: ")
+    printf("byte_to_sector: %u", (disk_sector_t)inode->data.links[double_indirect_size]->links[indirect_size]->links[direct_size]);
     return (disk_sector_t)inode->data.links[double_indirect_size]->links[indirect_size]->links[direct_size];
   }
   else
@@ -99,10 +99,12 @@ byte_to_sector_disk (const struct inode_disk *disk_inode, off_t pos)
   int length = (int) disk_inode->links[0]->links[0]->links[0];
   if (pos < length)
   {
-    length = bytes_to_sectors(pos);
+    length = pos / DISK_SECTOR_SIZE + 1;
     int double_indirect_size = length / INDIRECT_MAX_SIZE ;
     int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) ;
     int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4) ;
+    printf("byte_to_sector: %u", 
+      (disk_sector_t)disk_inode->links[double_indirect_size]->links[indirect_size]->links[direct_size]);
     return (disk_sector_t)disk_inode->links[double_indirect_size]->links[indirect_size]->links[direct_size];
   }
   else
@@ -159,7 +161,6 @@ inode_create (disk_sector_t sector, off_t length)
           disk_write (filesys_disk, sector, disk_inode);
           if (sectors > 0) 
             {
-              printf("inode sector : %d\n", byte_to_sector_disk(disk_inode, (off_t)i*DISK_SECTOR_SIZE));
               for (i = 0; i < sectors; i++) 
                 disk_write (filesys_disk, byte_to_sector_disk(disk_inode, (off_t)i*DISK_SECTOR_SIZE), zeros); 
             }
