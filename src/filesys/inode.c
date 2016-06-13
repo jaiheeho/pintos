@@ -27,7 +27,7 @@
 
 struct inode_disk
 {
-  uint32_t links[128];
+  struct inode_disk *links[128];
 };
 
 
@@ -72,7 +72,7 @@ static disk_sector_t
 byte_to_sector (const struct inode *inode, off_t pos) 
 {
   ASSERT (inode != NULL);
-  length = inode->data.links[0]->links[0]->links[0] = length;
+  int length = (int) inode->data.links[0]->links[0]->links[0];
 
   if (pos < length)
   {
