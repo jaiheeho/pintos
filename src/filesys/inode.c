@@ -298,7 +298,6 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
       return false;
   }
 
-    length, double_indirect_size, indirect_size, direct_size);
   return true;
 }
 
