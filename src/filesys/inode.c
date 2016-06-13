@@ -77,8 +77,8 @@ byte_to_sector (const struct inode *inode, off_t pos)
   {
     length = bytes_to_sectors(pos) + 1;
     int double_indirect_size = length / INDIRECT_MAX_SIZE ;
-    int indirect_size = (length % INDIRECT_MAX_SIZE) / DISK_SECTOR_SIZE;
-    int direct_size = (length % INDIRECT_MAX_SIZE) % DISK_SECTOR_SIZE;
+    int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) ;
+    int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4) ;
     return (disk_sector_t)inode->data.links[double_indirect_size]->links[indirect_size]->links[direct_size];
   }
   else
@@ -94,8 +94,8 @@ byte_to_sector_disk (const struct inode_disk *disk_inode, off_t pos)
   {
     length = bytes_to_sectors(pos) + 1;
     int double_indirect_size = length / INDIRECT_MAX_SIZE ;
-    int indirect_size = (length % INDIRECT_MAX_SIZE) / DISK_SECTOR_SIZE;
-    int direct_size = (length % INDIRECT_MAX_SIZE) % DISK_SECTOR_SIZE;
+    int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) ;
+    int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4) ;
     return (disk_sector_t)disk_inode->links[double_indirect_size]->links[indirect_size]->links[direct_size];
   }
   else
@@ -196,8 +196,8 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
 {
   length = length + 1;
   int double_indirect_size = length / INDIRECT_MAX_SIZE + 1;
-  int indirect_size = (length % INDIRECT_MAX_SIZE) / DISK_SECTOR_SIZE + 1;
-  int direct_size = (length % INDIRECT_MAX_SIZE) % DISK_SECTOR_SIZE + 1;
+  int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) + 1;
+  int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4)  + 1;
 
   struct inode_disk * direct = NULL;
   struct inode_disk * indirect = NULL;
@@ -266,8 +266,8 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
 void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
 {
   int double_indirect_size = length / INDIRECT_MAX_SIZE + 1;
-  int indirect_size = (length % INDIRECT_MAX_SIZE) / DISK_SECTOR_SIZE + 1;
-  int direct_size = (length % INDIRECT_MAX_SIZE) % DISK_SECTOR_SIZE + 1;
+  int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4)  + 1;
+  int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4)  + 1;
 
   // struct inode_disk * direct = NULL;
   struct inode_disk * indirect = NULL;
