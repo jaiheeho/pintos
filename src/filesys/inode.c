@@ -72,7 +72,7 @@ static disk_sector_t
 byte_to_sector (const struct inode *inode, off_t pos) 
 {
   ASSERT (inode != NULL);
-  int length = (int)inode->data[0][0][0];
+  int length = (int)(inode->data)[0][0][0];
 
   if (pos < length)
   {
