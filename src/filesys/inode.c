@@ -416,7 +416,7 @@ inode_open (disk_sector_t sector)
   if(!buffer_cache_read(inode->sector, (char *)&inode->data, DISK_SECTOR_SIZE, 0))
     disk_read (filesys_disk, inode->sector, &inode->data);
 
-  printf("test in open: sector : %d\n", sector, inode->data.links[0]->links[0]->links[0]);
+  printf("test in open: sector : %d size : %d\n", sector, inode->data.links[0]->links[0]->links[0]);
 
 
   return inode;
