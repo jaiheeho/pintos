@@ -4,6 +4,7 @@
 #include <round.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include "filesys/filesys.h"
 #include "filesys/free-map.h"
 #include "threads/malloc.h"
