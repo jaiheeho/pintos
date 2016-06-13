@@ -86,7 +86,7 @@ byte_to_sector (const struct inode *inode, off_t pos)
   }
   else
   {
-    printf("hererer1\n");
+    // printf("hererer1\n");
     return -1;
   }
 }
@@ -113,7 +113,7 @@ byte_to_sector_disk (const struct inode_disk *disk_inode, off_t pos)
   }
   else
   {
-    printf("hererer2\n");
+    // printf("hererer2\n");
     return -1;
   }
 }
