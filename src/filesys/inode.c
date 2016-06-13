@@ -85,16 +85,16 @@ byte_to_sector (const struct inode *inode, off_t pos)
 }
 
 static disk_sector_t
-byte_to_sector_disk (const struct disk_inode *inode_disk, off_t pos) 
+byte_to_sector_disk (const struct inode_disk *disk_inode, off_t pos) 
 {
-  ASSERT (inode_disk != NULL);
-  int length = (int) inode_disk->links[0]->links[0]->links[0] + DISK_SECTOR_SIZE;
+  ASSERT (disk_inode != NULL);
+  int length = (int) disk_inode->links[0]->links[0]->links[0] + DISK_SECTOR_SIZE;
   if (pos < length)
   {
     int double_indirect_size = length / INDIRECT_MAX_SIZE ;
     int indirect_size = (length % INDIRECT_MAX_SIZE) / DISK_SECTOR_SIZE;
     int direct_size = (length % INDIRECT_MAX_SIZE) % DISK_SECTOR_SIZE;
-    return (disk_sector_t)inode_disk->links[double_indirect_size]->links[indirect_size]->links[direct_size];
+    return (disk_sector_t)disk_inode->links[double_indirect_size]->links[indirect_size]->links[direct_size];
   }
   else
     return -1;
