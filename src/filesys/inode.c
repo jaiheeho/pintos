@@ -187,7 +187,7 @@ inode_create (disk_sector_t sector, off_t length)
           success = true;
         }
       } 
-      // inode_free_disk_inode(disk_inode);
+      inode_free_disk_inode(disk_inode);
 
       // if (free_map_allocate (sectors, &disk_inode->start))
       // {
