@@ -288,6 +288,9 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   if (!indirect)
     return false;
   double_indirect->links[indirect_size-1] = indirect;
+  if(double_indirect_size == 1 && indirect_size == 1 && k == 0)
+    direct_size++;
+  
   for (k = 0; k < direct_size-1; k++)
   {
     if(double_indirect_size == 1 && indirect_size == 1 && k == 0)
