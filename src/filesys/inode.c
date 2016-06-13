@@ -104,8 +104,6 @@ bool
 inode_create (disk_sector_t sector, off_t length)
 {
   struct inode_disk * disk_inode = NULL;
-  struct inode_disk * indirect = NULL;
-  struct inode_disk * double_indirect = NULL;
 
   bool success = false;
 
@@ -131,7 +129,7 @@ inode_create (disk_sector_t sector, off_t length)
           if (sectors > 0) 
             {
               for (i = 0; i < sectors; i++) 
-                disk_write (filesys_disk, byte_to_sector(i*DISK_SECTOR_SIZE,disk_inode ), zeros); 
+                disk_write (filesys_disk, byte_to_sector(disk_inode, i*DISK_SECTOR_SIZE), zeros); 
             }
           success = true; 
         }
@@ -140,7 +138,7 @@ inode_create (disk_sector_t sector, off_t length)
           buffer_cache_write(sector, (char *)disk_inode , DISK_SECTOR_SIZE, 0);
           size_t i;
           for (i = 0; i < sectors; i++) 
-            buffer_cache_write(byte_to_sector(i*DISK_SECTOR_SIZE,disk_inode), zeros , DISK_SECTOR_SIZE, 0);
+            buffer_cache_write(byte_to_sector(disk_inode, i*DISK_SECTOR_SIZE), zeros , DISK_SECTOR_SIZE, 0);
 
           success = true;
         }
@@ -183,7 +181,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   int indirect_size = (length % INDIRECT_MAX_SIZE) / DISK_SECTOR_SIZE + 1;
   int direct_size = (length % INDIRECT_MAX_SIZE) % DISK_SECTOR_SIZE + 1;
 
-  struct inode_disk * direct = NULL:
+  struct inode_disk * direct = NULL;
   struct inode_disk * indirect = NULL;
   struct inode_disk * double_indirect = NULL;
 
@@ -253,7 +251,7 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
   int indirect_size = (length % INDIRECT_MAX_SIZE) / DISK_SECTOR_SIZE + 1;
   int direct_size = (length % INDIRECT_MAX_SIZE) % DISK_SECTOR_SIZE + 1;
 
-  struct inode_disk * direct = NULL:
+  struct inode_disk * direct = NULL;
   struct inode_disk * indirect = NULL;
   struct inode_disk * double_indirect = NULL;
 
