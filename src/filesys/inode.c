@@ -103,6 +103,10 @@ byte_to_sector_disk (const struct inode_disk *disk_inode, off_t pos)
     int double_indirect_size = length / INDIRECT_MAX_SIZE ;
     int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) ;
     int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4) ;
+
+    printf("length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+      length, double_indirect_size, indirect_size, direct_size);
+
     printf("byte_to_sector_disk: %u\n", 
       (disk_sector_t)disk_inode->links[double_indirect_size]->links[indirect_size]->links[direct_size]);
     return (disk_sector_t)disk_inode->links[double_indirect_size]->links[indirect_size]->links[direct_size];
