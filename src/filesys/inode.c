@@ -161,7 +161,6 @@ inode_create (disk_sector_t sector, off_t length)
           disk_write (filesys_disk, sector, disk_inode);
 
           struct inode_disk bounce;
-          memset(bounce, 0, DISK_SECTOR_SIZE);
           disk_read (filesys_disk, sector, &bounce);
           printf("test: %d", bounce->links[0]->links[0]->links[0]);
 
