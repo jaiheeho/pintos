@@ -22,9 +22,10 @@ struct buffer_cache_elem {
 
 static struct buffer_cache_elem buffer_cache[BUFFER_CACHE_MAX];
 static struct semaphore buffer_cache_global_lock;
+static int buffer_cache_clock_head;
 
 void buffer_cache_elem_init(int i);
-int buffer_cache_allocate(disk_sector_t sector);
+int buffer_cache_allocate(disk_sector_t sector, int option);
 int buffer_cache_evict(void);
 
 void buffer_cache_init()
@@ -38,6 +39,7 @@ void buffer_cache_init()
       sema_init(&(buffer_cache[i].lock), 1);
     }
   buffer_cache_inited = true;
+  buffer_cache_clock_head = 0;
   sema_up(&buffer_cache_global_lock);
 }
 
@@ -56,8 +58,7 @@ int buffer_cache_read(disk_sector_t sector, char * buffer, size_t size, int off)
   int iter = 0;
   bool found = false;
 
-  if (!buffer_cache_inited)
-    return 0;
+
 
   for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
     {
@@ -79,12 +80,12 @@ int buffer_cache_read(disk_sector_t sector, char * buffer, size_t size, int off)
       else
 	{
 	  sema_up(&(buffer_cache[iter].lock));
-	  iter = buffer_cache_allocate(sector); 
+	  iter = buffer_cache_allocate(sector, 1); 
 	}
     }
   else
     {
-      iter = buffer_cache_allocate(sector);    
+      iter = buffer_cache_allocate(sector, 1);    
     }
   
   memcpy(buffer, (buffer_cache[iter].data + off), size);
@@ -96,14 +97,13 @@ int buffer_cache_read(disk_sector_t sector, char * buffer, size_t size, int off)
 
 
 
-int buffer_cache_write(disk_sector_t sector, char * buffer, size_t size, int off)
+int buffer_cache_write(disk_sector_t sector, char * buffer,
+		       size_t size, int off, int option)
 {
  
   int iter = 0;
   bool found = false;
 
-  if (!buffer_cache_inited)
-    return 0;
 
   for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
   {
@@ -117,22 +117,24 @@ int buffer_cache_write(disk_sector_t sector, char * buffer, size_t size, int off
   if(found == true)
   {
     sema_down(&(buffer_cache[iter].lock));
-    if(buffer_cache[iter].occupied != false && buffer_cache[iter].sector != INVALID_SECTOR)
+    if(buffer_cache[iter].occupied != false
+       && buffer_cache[iter].sector != INVALID_SECTOR)
   	{
   	  buffer_cache[iter].is_accessed = true;
   	}
     else
   	{
   	  sema_up(&(buffer_cache[iter].lock));
-  	  iter = buffer_cache_allocate(sector); 
+  	  iter = buffer_cache_allocate(sector, option); 
   	}
   }
   else
   {
-    iter = buffer_cache_allocate(sector);    
+    iter = buffer_cache_allocate(sector, option);    
   }
   
   memcpy((buffer_cache[iter].data + off), buffer, size);
+  buffer_cache[iter].is_accessed = true;
   buffer_cache[iter].is_dirty = true;
   
   sema_up(&(buffer_cache[iter].lock));
@@ -141,7 +143,7 @@ int buffer_cache_write(disk_sector_t sector, char * buffer, size_t size, int off
 }
 
 
-int buffer_cache_allocate(disk_sector_t sector)
+int buffer_cache_allocate(disk_sector_t sector, int option)
 {
   sema_down(&buffer_cache_global_lock);
 
@@ -161,15 +163,24 @@ int buffer_cache_allocate(disk_sector_t sector)
     iter = buffer_cache_evict();
   }
 
-  //load data to the cache_elem slot
-  disk_read(filesys_disk, sector, buffer_cache[iter].data);
-  
+
+
+  if(option == 0)
+    {
+      memset(buffer_cache[iter].data, 0, DISK_SECTOR_SIZE);
+    }
+  else if(option == 1)
+    {
+      //load data to the cache_elem slot
+      disk_read(filesys_disk, sector, buffer_cache[iter].data);
+    }
   //initialize cache elem metadata
   
   buffer_cache[iter].occupied = true;
   buffer_cache[iter].is_accessed = false;
   buffer_cache[iter].is_dirty = false;
   buffer_cache[iter].sector = sector;
+
 
   sema_up(&buffer_cache_global_lock);
   return iter;
@@ -178,46 +189,80 @@ int buffer_cache_allocate(disk_sector_t sector)
 int buffer_cache_evict()
 {
 
-  int iter = 0;
-  bool choice_of_victim = false;
-  for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
-  {
-    if(sema_try_down(&buffer_cache[iter].lock))
+  //printf("buffer_cache_evict: init, head=%d\n", buffer_cache_clock_head);
+  
+  int iter = buffer_cache_clock_head;
+  int clock_head_stored = buffer_cache_clock_head;
+  int choice_of_victim = -1;
+
+  for(;iter < BUFFER_CACHE_MAX; iter = (iter + 1) % BUFFER_CACHE_MAX)
+    {
+
+      
+      if(iter == clock_head_stored)
+	choice_of_victim++;
+      
+      
+
+      //printf("buffer_cache_evict: iter=%d, victim=%d\n", iter, choice_of_victim);
+      //printf("clock_head_stored = %d\n", clock_head_stored);
+      if(!sema_try_down(&buffer_cache[iter].lock))
   	{
-  	  sema_up(&buffer_cache[iter].lock);
+	  //printf("trydown\n");
   	  continue;
   	}
-    if(choice_of_victim == false)
+
+      if(choice_of_victim == 0)
   	{
-  	  if(buffer_cache[iter].is_dirty == true)
-	    {
-	      continue;
-	    }
-  	  else
+  	  if((buffer_cache[iter].is_dirty == false) &&
+	     (buffer_cache[iter].is_accessed == false))
 	    {
 	      break;
 	    }
+  	  else
+	    {     
+	      buffer_cache[iter].is_accessed = false;
+	      sema_up(&(buffer_cache[iter].lock));
+	      continue;
+	    }
   	}
-    else
+      else if(choice_of_victim == 1)
   	{
-  	  break;
+	  
+  	  if((buffer_cache[iter].is_dirty == false))
+	    {
+	      break;
+	    }
+  	  else
+	    {     
+	      sema_up(&(buffer_cache[iter].lock));
+	      continue;
+	    }
+	  
   	}
-    if(iter == (BUFFER_CACHE_MAX - 1))
-  	{
-      choice_of_victim = true;
-  	}
-  }
-  // printf("iter %d\n",iter);
-  if (iter == BUFFER_CACHE_MAX)
-    iter = 0;
-  sema_down(&(buffer_cache[iter].lock));
+      else if(choice_of_victim == 2)
+	{
+	  break;
+	}
+      else PANIC("buffer_cache_evict: this should not happen\n");
+
+      
+    }
+
+
+  //sema_down(&(buffer_cache[iter].lock));
   //if necessary, write out to disk
   if(buffer_cache[iter].is_dirty == true)
-  {
-    disk_write(filesys_disk, buffer_cache[iter].sector, buffer_cache[iter].data);
-  }
-  return iter;
+    {
+      disk_write(filesys_disk, buffer_cache[iter].sector, buffer_cache[iter].data);
+    }
 
+
+  buffer_cache_clock_head = (iter + 1) % BUFFER_CACHE_MAX;
+
+
+  return iter;
+  
 }
 void buffer_cache_elem_free(disk_sector_t sector)
 {
@@ -275,7 +320,7 @@ void buffer_cache_free()
 
 void buffer_cache_flush()
 {
-
+  //printf("buffer_cache_flush: init\n");
   int iter = 0;
 
   sema_up(&buffer_cache_global_lock);
