@@ -431,10 +431,7 @@ inode_open (disk_sector_t sector)
   inode->deny_write_cnt = 0;
   inode->removed = false;
   disk_read (filesys_disk, inode->sector, &inode->data);
-
   // printf("test in open: sector : %d size : %d\n", sector, inode->data.links[0]->links[0]->links[0]);
-
-
   return inode;
 }
 
@@ -621,5 +618,10 @@ inode_allow_write (struct inode *inode)
 off_t
 inode_length (const struct inode *inode)
 {
-  return (off_t) inode->data.links[0]->links[0]->links[0];
+  struct inode_disk indirect;
+  struct inode_disk double_indirect;
+  disk_read (filesys_disk, (disk_sector_t)inode->data.links[0], &double_indirect);
+  disk_read (filesys_disk, (disk_sector_t)double_indirect.links[0], &indirect);
+  int length = (int) indirect.links[0];
+  return length;
 }
