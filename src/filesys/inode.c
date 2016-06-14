@@ -145,7 +145,7 @@ inode_create (disk_sector_t sector, off_t length)
 
     buffer_cache_read((disk_sector_t)disk_inode->links[0], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
     buffer_cache_read((disk_sector_t)double_indirect.links[0], (char *)&indirect, DISK_SECTOR_SIZE, 0);
-    printf("double indirect : %d, indirect : %d, size : %d\n"disk_inode->links[0],double_indirect.links[0], indirect.links[0]);
+    printf("double indirect : %d, indirect : %d, size : %d\n", disk_inode->links[0],double_indirect.links[0], indirect.links[0]);
     length = (int) indirect.links[0]; 
 
      printf("length of inode :%d \n", length);
