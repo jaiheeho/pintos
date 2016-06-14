@@ -101,7 +101,7 @@ byte_to_sector (const struct inode *inode, off_t pos)
   }
   else
   {
-    printf("hererer1\n");
+    // printf("hererer1\n");
     return -1;
   }
 }
@@ -139,7 +139,7 @@ inode_create (disk_sector_t sector, off_t length)
   if (disk_inode != NULL)
   {     
 
-    printf("inode creat:length of inode :%d \n", length);
+    // printf("inode creat:length of inode :%d \n", length);
 
     success = inode_free_map_allocate (length, disk_inode);
     struct inode_disk indirect;
@@ -147,7 +147,7 @@ inode_create (disk_sector_t sector, off_t length)
 
     buffer_cache_read((disk_sector_t)disk_inode->links[0], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
     buffer_cache_read((disk_sector_t)double_indirect.links[0], (char *)&indirect, DISK_SECTOR_SIZE, 0);
-    printf("inode creatdouble indirect : %d, indirect : %d, size : %d\n", disk_inode->links[0],double_indirect.links[0], indirect.links[0]);
+    // printf("inode creatdouble indirect : %d, indirect : %d, size : %d\n", disk_inode->links[0],double_indirect.links[0], indirect.links[0]);
     length = (int) indirect.links[0]; 
 
     disk_write (filesys_disk, sector, disk_inode);
@@ -407,7 +407,7 @@ inode_open (disk_sector_t sector)
   inode->deny_write_cnt = 0;
   inode->removed = false;
   disk_read (filesys_disk, inode->sector, &inode->data);
-  printf("test in open: sector : %d size : %d\n", sector);
+  // printf("test in open: sector : %d size : %d\n", sector);
   return inode;
 }
 
