@@ -301,21 +301,21 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
 
   for (i = 0; i < DISK_SECTOR_SIZE/4-1; i ++)
   {
-    if (disk_inode->links[i] == NULL)
+    if (disk_inode->links[i] == 0)
       continue;
     buffer_cache_read((disk_sector_t)disk_inode->links[i], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
     // disk_read (filesys_disk, (disk_sector_t)disk_inode->links[i], &double_indirect);
     for (j=0; j < DISK_SECTOR_SIZE/4-1; j++)
     {
-      if (double_indirect.links[i] == NULL)
+      if (double_indirect.links[i] == 0)
         continue;
       // disk_read (filesys_disk, (disk_sector_t)double_indirect.links[j], &indirect);
-      buffer_cache_read((disk_sector_t)double_indirect.links[i], (char *)&indirect, DISK_SECTOR_SIZE, 0);
+      buffer_cache_read((disk_sector_t)double_indirect.links[j], (char *)&indirect, DISK_SECTOR_SIZE, 0);
       for (k = 0; k < DISK_SECTOR_SIZE/4-1; k++)
       {
         if( i == 0 && j == 0 && k == 0)
           continue;
-        if (indirect.links[i] == NULL)
+        if (indirect.links[i] == 0)
           continue;
         free_map_release((disk_sector_t)indirect.links[k],1);
       }
@@ -407,7 +407,7 @@ inode_open (disk_sector_t sector)
   inode->deny_write_cnt = 0;
   inode->removed = false;
   disk_read (filesys_disk, inode->sector, &inode->data);
-  // printf("test in open: sector : %d size : %d\n", sector);
+  // printf("test in open: sector : %d\n", sector);
   return inode;
 }
 
@@ -460,8 +460,8 @@ inode_close (struct inode *inode)
       /* Deallocate blocks if removed. */
       if (inode->removed) 
         {
-          free_map_release (inode->sector, 1);
           inode_free_map_release(length, &inode->data);
+          free_map_release (inode->sector, 1);
           // free_map_release (inode->data.start,
           //                   bytes_to_sectors (inode->data.length)); 
         }
