@@ -74,7 +74,6 @@ byte_to_sector (const struct inode *inode, off_t pos)
   struct inode_disk indirect;
   struct inode_disk double_indirect;
 
-
   buffer_cache_read((disk_sector_t)inode->data.links[0], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
   buffer_cache_read((disk_sector_t)double_indirect.links[0], (char *)&indirect, DISK_SECTOR_SIZE, 0);
   int length = (int) indirect.links[0];
@@ -150,8 +149,11 @@ inode_create (disk_sector_t sector, off_t length)
     buffer_cache_read((disk_sector_t)double_indirect.links[0], (char *)&indirect, DISK_SECTOR_SIZE, 0);
     printf("double indirect : %d, indirect : %d, size : %d\n", disk_inode->links[0],double_indirect.links[0], indirect.links[0]);
     length = (int) indirect.links[0]; 
-     printf("length of inode :%d \n", length);
+    printf("length of inode :%d \n", length);
+    
+    disk_write (filesys_disk, sector, disk_inode);
   } 
+
   free (disk_inode);
   return success;
 }
