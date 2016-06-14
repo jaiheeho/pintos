@@ -135,13 +135,21 @@ inode_create (disk_sector_t sector, off_t length)
   disk_inode = calloc (1, sizeof *disk_inode);
 
   if (disk_inode != NULL)
-  {
-    // printf("length of inode :%d , sectors: %d\n", length, sectors);
-    success = inode_free_map_allocate (length, disk_inode);      
-    // printf("length of inode :%d , sectors: %d\n", length, sectors);
-    // printf("inode sector : %d\n", sector);
+  {     
+
+    printf("length of inode :%d \n", length);
+
+    success = inode_free_map_allocate (length, disk_inode);
+    struct inode_disk indirect;
+    struct inode_disk double_indirect;
+
+    buffer_cache_read((disk_sector_t)disk_inode.links[0], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
+    buffer_cache_read((disk_sector_t)double_indirect.links[0], (char *)&indirect, DISK_SECTOR_SIZE, 0);
+    length = (int) indirect.links[0]; 
+
+     printf("length of inode :%d \n", length);
   } 
-  // free (disk_inode);
+  free (disk_inode);
   return success;
 }
 
