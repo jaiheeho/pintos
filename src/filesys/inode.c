@@ -145,6 +145,7 @@ inode_create (disk_sector_t sector, off_t length)
 
     buffer_cache_read((disk_sector_t)disk_inode->links[0], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
     buffer_cache_read((disk_sector_t)double_indirect.links[0], (char *)&indirect, DISK_SECTOR_SIZE, 0);
+    printf("double indirect : %d, indirect : %d, size : %d\n"disk_inode->links[0],double_indirect.links[0], indirect.links[0]);
     length = (int) indirect.links[0]; 
 
      printf("length of inode :%d \n", length);
@@ -197,7 +198,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
       {
         if( i == 0 && j == 0 && k == 0)
         {
-          indirect->links[k] = size;
+          indirect->links[0] = size;
           continue;
         }
         if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
@@ -230,7 +231,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
     {
       if( double_indirect_size == 1 && j == 0 && k == 0)
       {
-        indirect->links[k] = size;
+        indirect->links[0] = size;
         continue;
       }
       if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
@@ -254,7 +255,7 @@ bool inode_free_map_allocate(size_t length, struct inode_disk *disk_inode)
   {
     if(double_indirect_size == 1 && indirect_size == 1 && k == 0)
     {
-      indirect->links[k] = size;
+      indirect->links[0] = size;
       continue;
     }
     if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
