@@ -151,7 +151,7 @@ inode_create (disk_sector_t sector, off_t length)
     length = (int) indirect.links[0]; 
 
     disk_write (filesys_disk, sector, disk_inode);
-`  } 
+  } 
 
   free (disk_inode);
   return success;
