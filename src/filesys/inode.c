@@ -90,8 +90,8 @@ byte_to_sector (const struct inode *inode, off_t pos)
     int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) ;
     int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4) ;
 
-    memset($indirect, 0, sizeof(struct inode_disk));
-    memset($double_indirect, 0, sizeof(struct inode_disk));
+    memset(&indirect, 0, sizeof(struct inode_disk));
+    memset(&double_indirect, 0, sizeof(struct inode_disk));
 
     disk_read (filesys_disk, (disk_sector_t)inode->data[double_indirect_size], &double_indirect);
     disk_read (filesys_disk, (disk_sector_t)double_indirect.links[indirect_size], &indirect);
@@ -304,7 +304,7 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
       }
       free_map_release((disk_sector_t)double_indirect.links[j],1);
     }
-    free_map_release((disk_sector_t)disk_inode->data[i],1);
+    free_map_release((disk_sector_t)disk_inode->links[i],1);
   }
 
 
