@@ -143,7 +143,7 @@ inode_create (disk_sector_t sector, off_t length)
     struct inode_disk indirect;
     struct inode_disk double_indirect;
 
-    buffer_cache_read((disk_sector_t)disk_inode.links[0], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
+    buffer_cache_read((disk_sector_t)disk_inode->links[0], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
     buffer_cache_read((disk_sector_t)double_indirect.links[0], (char *)&indirect, DISK_SECTOR_SIZE, 0);
     length = (int) indirect.links[0]; 
 
