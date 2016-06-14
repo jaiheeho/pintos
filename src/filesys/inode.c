@@ -77,11 +77,11 @@ byte_to_sector (const struct inode *inode, off_t pos)
   struct inode_disk double_indirect;
 
 
-  disk_read (filesys_disk, (disk_sector_t)inode->data[0], &double_indirect);
+  disk_read (filesys_disk, (disk_sector_t)inode->data.links[0], &double_indirect);
   disk_read (filesys_disk, (disk_sector_t)double_indirect.links[0], &indirect);
 
 
-  int length = (int) indirect[0];
+  int length = (int) indirect.links[0];
   // printf("in byte_to_sector :pos : %d, length%d\n",pos, length);
   if (pos < length)
   {
@@ -93,7 +93,7 @@ byte_to_sector (const struct inode *inode, off_t pos)
     memset(&indirect, 0, sizeof(struct inode_disk));
     memset(&double_indirect, 0, sizeof(struct inode_disk));
 
-    disk_read (filesys_disk, (disk_sector_t)inode->data[double_indirect_size], &double_indirect);
+    disk_read (filesys_disk, (disk_sector_t)inode->data.links[double_indirect_size], &double_indirect);
     disk_read (filesys_disk, (disk_sector_t)double_indirect.links[indirect_size], &indirect);
     return (disk_sector_t) indirect.links[direct_size];
   }
