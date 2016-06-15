@@ -661,8 +661,8 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       offset += chunk_size;
       bytes_written += chunk_size;
     }
-    
-    buffer_cache_write(inode->sector, inode->data,
+
+    buffer_cache_write(inode->sector, &inode->data,
       DISK_SECTOR_SIZE, 0, 0);
 
   return bytes_written;
