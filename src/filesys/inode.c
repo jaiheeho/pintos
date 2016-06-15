@@ -199,11 +199,11 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   {
     double_indirect = calloc (1, sizeof (struct inode_disk));
     buffer_cache_read((disk_sector_t)disk_inode->links[_double_indirect_size-1]
-      , (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
+      , (char *)double_indirect, DISK_SECTOR_SIZE, 0);
 
     indirect = calloc (1, sizeof (struct inode_disk));
     buffer_cache_read((disk_sector_t)double_indirect->links[_indirect_size-1]
-      , (char *)&indirect, DISK_SECTOR_SIZE, 0);
+      , (char *)indirect, DISK_SECTOR_SIZE, 0);
     for (k = direct_size; k < _direct_size; k++)
     {
       if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
@@ -224,7 +224,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
       double_indirect = calloc (1, sizeof (struct inode_disk));
       if (start)
       {
-        buffer_cache_read((disk_sector_t)disk_inode->links[i], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
+        buffer_cache_read((disk_sector_t)disk_inode->links[i], (char *)double_indirect, DISK_SECTOR_SIZE, 0);
         j = indirect_size;
         if (double_indirect == _double_indirect_size)
           _j = _indirect_size;
@@ -246,7 +246,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
         indirect = calloc (1, sizeof (struct inode_disk));
         if (start)
         {
-          buffer_cache_read((disk_sector_t)double_indirect->links[j], (char *)&indirect, DISK_SECTOR_SIZE, 0);
+          buffer_cache_read((disk_sector_t)double_indirect->links[j], (char *)indirect, DISK_SECTOR_SIZE, 0);
           k = direct_size;
           _k = DISK_SECTOR_SIZE;
           start = false;
@@ -620,7 +620,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   /* extend file*/
   int length = inode_length (inode);
 
-  // printf("length : %d\n",length);
+  printf("length :  %d\n",length);
   if (length/DISK_SECTOR_SIZE < (size + offset)/DISK_SECTOR_SIZE || length == 0)
     inode_free_map_add (length, size + offset, &inode->data);
 
@@ -662,6 +662,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       offset += chunk_size;
       bytes_written += chunk_size;
     } 
+  print("write end\n")
   return bytes_written;
 }
 
