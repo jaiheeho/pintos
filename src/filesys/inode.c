@@ -230,7 +230,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
       if (start)
       {
         buffer_cache_read((disk_sector_t)disk_inode->links[i], (char *)double_indirect, DISK_SECTOR_SIZE, 0);
-        j = indirect_size;
+        j = indirect_size-1;
         if (double_indirect == _double_indirect_size)
           _j = _indirect_size;
         else 
@@ -245,8 +245,6 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
         if (i == _double_indirect_size-1)
           _j = _indirect_size;
       }
-
-
       for (; j < _j; j++)
       {
         disk_sector_t temp_indirect;
@@ -254,7 +252,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
         if (start)
         {
           buffer_cache_read((disk_sector_t)double_indirect->links[j], (char *)indirect, DISK_SECTOR_SIZE, 0);
-          k = direct_size;
+          k = direct_size-1;
           if (indirect_size == _indirect_size)
             _k = direct_size;
           _k = DISK_SECTOR_SIZE;
