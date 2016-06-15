@@ -157,7 +157,7 @@ inode_create (disk_sector_t sector, off_t length)
 bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
 {
 
-  int length = bytes_to_sectors(size) / DISK_SECTOR_SIZE + 1;
+  int length = bytes_to_sectors(size)  + 1;
   int double_indirect_size = length / INDIRECT_MAX_SIZE +1;
   int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) + 1;
   int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4) ;
@@ -212,7 +212,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
     {
       if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
         return false;
-      // printf("Alloced : %u\n",(disk_sector_t)indirect->links[k]);
+      printf("Alloced : %u\n",(disk_sector_t)indirect->links[k]);
       buffer_cache_write((disk_sector_t)indirect->links[k],zeros, DISK_SECTOR_SIZE, 1,0);
     }
     buffer_cache_write((disk_sector_t)double_indirect->links[_indirect_size-1]
@@ -407,8 +407,8 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
   int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) + 1;
   int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4);
 
-  printf("length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
-    length, double_indirect_size, indirect_size, direct_size);
+  // printf("length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+  //   length, double_indirect_size, indirect_size, direct_size);
 
   struct inode_disk indirect;
   struct inode_disk double_indirect;
@@ -619,26 +619,26 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
 
   length = inode_length (inode);
-  printf("length : %d\n", length);
+  // printf("length : %d\n", length);
 
   while (size > 0) 
     {
       /* Sector to write, starting byte offset within sector. */
-      printf("write _at 1 : offset : %d size : %d \n", offset, size);
+      // printf("write _at 1 : offset : %d size : %d \n", offset, size);
       disk_sector_t sector_idx = byte_to_sector (inode, offset);
       int sector_ofs = offset % DISK_SECTOR_SIZE;
-      printf("write _at 2 : sector_idx : %d\n",sector_idx);
+      // printf("write _at 2 : sector_idx : %d\n",sector_idx);
 
       /* Bytes left in inode, bytes left in sector, lesser of the two. */
       off_t inode_left = length - offset;
-      printf("write _at 3 : inode_left : %d\n",inode_left);
+      // printf("write _at 3 : inode_left : %d\n",inode_left);
 
       int sector_left = DISK_SECTOR_SIZE - sector_ofs;
       int min_left = inode_left < sector_left ? inode_left : sector_left;
 
        // Number of bytes to actually write into this sector. 
       int chunk_size = size < min_left ? size : min_left;
-      printf("write _at 4 : chunk_size : %d\n",chunk_size);
+      // printf("write _at 4 : chunk_size : %d\n",chunk_size);
 
       if (chunk_size <= 0)
         break;
