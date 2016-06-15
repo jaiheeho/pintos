@@ -162,12 +162,12 @@ inode_create (disk_sector_t sector, off_t length)
 bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
 {
 
-  int length = size / DISK_SECTOR_SIZE + 1;
+  int length = bytes_to_sectors(size) / DISK_SECTOR_SIZE + 1;
   int double_indirect_size = length / INDIRECT_MAX_SIZE +1;
   int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) + 1;
   int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4) ;
 
-  int _length = pos / DISK_SECTOR_SIZE + 1;
+  int _length = bytes_to_sectors(pos) + 1;
   int _double_indirect_size = _length / INDIRECT_MAX_SIZE +1;
   int _indirect_size = (_length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) + 1;
   int _direct_size = (_length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4) ;
@@ -186,6 +186,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   memset(zeros, 0, DISK_SECTOR_SIZE);
   bool start = true;
 
+  printf("size : %d new size : %d\n", size, pos);
   printf("AT ADD; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
     length, double_indirect_size, indirect_size, direct_size);
 
