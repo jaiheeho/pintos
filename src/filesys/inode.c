@@ -546,8 +546,7 @@ inode_close (struct inode *inode)
           inode_free_map_release(length, &inode->data);
           free_map_release (inode->sector, 1);
         }
-
-      free (inode); 
+      // free (inode); 
     }
 }
 
