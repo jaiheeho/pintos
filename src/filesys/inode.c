@@ -181,12 +181,12 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   memset(zeros, 0, DISK_SECTOR_SIZE);
   bool start = true;
 
-  printf("size : %d new size : %d\n", size, pos);
-  printf("AT ADD; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
-    length, double_indirect_size, indirect_size, direct_size);
+  // printf("size : %d new size : %d\n", size, pos);
+  // printf("AT ADD; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+  //   length, double_indirect_size, indirect_size, direct_size);
 
-  printf("AT ADD end; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
-    _length, _double_indirect_size, _indirect_size, _direct_size);
+  // printf("AT ADD end; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+  //   _length, _double_indirect_size, _indirect_size, _direct_size);
 
   double_indirect = calloc (1, sizeof (struct inode_disk));
   indirect = calloc (1, sizeof (struct inode_disk));
@@ -231,7 +231,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
       {
         buffer_cache_read((disk_sector_t)disk_inode->links[i], (char *)double_indirect, DISK_SECTOR_SIZE, 0);
         j = indirect_size-1;
-        if (double_indirect == _double_indirect_size)
+        if (double_indirect_size == _double_indirect_size)
           _j = _indirect_size;
         else 
           _j = DISK_SECTOR_SIZE/4;
@@ -253,7 +253,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
         {
           buffer_cache_read((disk_sector_t)double_indirect->links[j], (char *)indirect, DISK_SECTOR_SIZE, 0);
           k = direct_size;
-          if (indirect_size == _indirect_size)
+          if ( double_indirect_size == _double_indirect_size && indirect_size == _indirect_size)
             _k = _direct_size;
           _k = DISK_SECTOR_SIZE/4;
           start = false;
@@ -269,7 +269,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
         }
         for (; k<_k ; k++)
         {
-          printf("In inode_free_map_add i :%d, j:%d, k:%d \n",i,j,k);
+          // printf("In inode_free_map_add i :%d, j:%d, k:%d \n",i,j,k);
           free_map_allocate(1,(disk_sector_t *)&indirect->links[k]);
           buffer_cache_write((disk_sector_t)indirect->links[k], zeros, DISK_SECTOR_SIZE, 0, 0 );
         }
@@ -433,7 +433,7 @@ void inode_free_map_release(size_t size, struct inode_disk *disk_inode)
     if (i == double_indirect_size -1)
       _j = double_indirect_size;
     else
-      _j = DISK_SECTOR_SIZE;
+      _j = DISK_SECTOR_SIZE/4;
 
     for (j=0; j < _j; j++)
     {
@@ -442,7 +442,7 @@ void inode_free_map_release(size_t size, struct inode_disk *disk_inode)
       if (i == double_indirect_size -1 &&  j == indirect_size -1)
         _k = direct_size;
       else
-        _k = DISK_SECTOR_SIZE;
+        _k = DISK_SECTOR_SIZE/4;
 
       for (k = 0; k < _k ; k++)
       {
@@ -614,32 +614,32 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   /* extend file*/
   int length = inode_length (inode);
 
-  printf("length :  %d\n",length);
+  // printf("length :  %d\n",length);
   if (length < size+offset)
     inode_free_map_add (length, size + offset, &inode->data);
 
 
   length = inode_length (inode);
-  printf("length : %d\n", length);
+  // printf("length : %d\n", length);
 
   while (size > 0) 
     {
       /* Sector to write, starting byte offset within sector. */
-      printf("write _at 1 : offset : %d size : %d \n", offset, size);
+      // printf("write _at 1 : offset : %d size : %d \n", offset, size);
       disk_sector_t sector_idx = byte_to_sector (inode, offset);
       int sector_ofs = offset % DISK_SECTOR_SIZE;
-      printf("write _at 2 : sector_idx : %d\n",sector_idx);
+      // printf("write _at 2 : sector_idx : %d\n",sector_idx);
 
       /* Bytes left in inode, bytes left in sector, lesser of the two. */
       off_t inode_left = length - offset;
-      printf("write _at 3 : inode_left : %d\n",inode_left);
+      // printf("write _at 3 : inode_left : %d\n",inode_left);
 
       int sector_left = DISK_SECTOR_SIZE - sector_ofs;
       int min_left = inode_left < sector_left ? inode_left : sector_left;
 
        // Number of bytes to actually write into this sector. 
       int chunk_size = size < min_left ? size : min_left;
-      printf("write _at 4 : chunk_size : %d\n",chunk_size);
+      // printf("write _at 4 : chunk_size : %d\n",chunk_size);
 
       if (chunk_size <= 0)
         break;
