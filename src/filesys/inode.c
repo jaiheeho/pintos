@@ -402,7 +402,7 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
 {
 
   int size = length;
-  int length = bytes_to_sectors(size) +1;
+  length = bytes_to_sectors(size) +1;
   int double_indirect_size = length / INDIRECT_MAX_SIZE + 1;
   int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) + 1;
   int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4);
