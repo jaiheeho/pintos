@@ -620,7 +620,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   int length = inode_length (inode);
 
   printf("length : %d\n",length);
-  if (length/DISK_SECTOR_SIZE < (size + offset)/DISK_SECTOR_SIZE)
+  if (length/DISK_SECTOR_SIZE < (size + offset)/DISK_SECTOR_SIZE || length == 0)
     inode_free_map_add (length, size + offset, &inode->data);
 
 
