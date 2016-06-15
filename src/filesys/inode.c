@@ -645,12 +645,12 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
         break;
 
       /* If the sector contains data before or after the chunk
-	 we're writing, then we need to read in the sector
-	 first.  Otherwise we start with a sector of all zeros. */
+   we're writing, then we need to read in the sector
+   first.  Otherwise we start with a sector of all zeros. */
       if (sector_ofs > 0 || chunk_size < sector_left) 
         buffer_cache_write(sector_idx, buffer + bytes_written, chunk_size, sector_ofs, 1);
       else
-      	buffer_cache_write(sector_idx, buffer + bytes_written,
+        buffer_cache_write(sector_idx, buffer + bytes_written,
           chunk_size, sector_ofs, 0);
       
       /* Advance. */
