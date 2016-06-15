@@ -527,27 +527,26 @@ inode_close (struct inode *inode)
 
   /* Release resources if this was the last opener. */
   if (--inode->open_cnt == 0)
+  {
+    while (inode_left >0)
     {
-
-      while (inode_left >0)
-      {
-        disk_sector_t sector_idx = byte_to_sector (inode, bytes_read);
-        buffer_cache_elem_free(sector_idx);
-        bytes_read += DISK_SECTOR_SIZE;
-        inode_left -= DISK_SECTOR_SIZE;
-      }
-  
-      /* Remove from inode list and release lock. */
-      list_remove (&inode->elem);
- 
-      /* Deallocate blocks if removed. */
-      if (inode->removed) 
-        {
-          inode_free_map_release(length, &inode->data);
-          free_map_release (inode->sector, 1);
-        }
-      free (inode); 
+      disk_sector_t sector_idx = byte_to_sector (inode, bytes_read);
+      buffer_cache_elem_free(sector_idx);
+      bytes_read += DISK_SECTOR_SIZE;
+      inode_left -= DISK_SECTOR_SIZE;
     }
+
+    /* Remove from inode list and release lock. */
+    list_remove (&inode->elem);
+
+    /* Deallocate blocks if removed. */
+    if (inode->removed) 
+      {
+        inode_free_map_release(length, &inode->data);
+        free_map_release (inode->sector, 1);
+      }
+    free (inode); 
+  }
 }
 
 /* Marks INODE to be deleted when it is closed by the last caller who
