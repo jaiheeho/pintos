@@ -428,7 +428,7 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
   for (i = 0; i < double_indirect_size; i ++)
   {
     memset(&double_indirect, 0, DISK_SECTOR_SIZE);
-    buffer_cache_write((disk_sector_t)disk_inode->links[i], (char *)&double_indirect, DISK_SECTOR_SIZE, 0,0);
+    buffer_cache_read((disk_sector_t)disk_inode->links[i], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
     if (i == double_indirect_size -1)
       _j = double_indirect_size;
     else
@@ -437,7 +437,7 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
     for (j=0; j < _j; j++)
     {
       memset(&indirect, 0, DISK_SECTOR_SIZE);
-      buffer_cache_write((disk_sector_t)double_indirect.links[j], (char *)&indirect, DISK_SECTOR_SIZE, 0,0);
+      buffer_cache_read((disk_sector_t)double_indirect.links[j], (char *)&indirect, DISK_SECTOR_SIZE, 0);
       if (i == double_indirect_size -1 &&  j == double_indirect_size -1)
         _k = direct_size;
       else
