@@ -142,8 +142,8 @@ inode_create (disk_sector_t sector, off_t length)
   {     
 
     // printf("inode creat:length of inode :%d \n", length);
-
-    success = inode_free_map_allocate (length, disk_inode);
+    inode_free_map_add(0, length, disk_inode);
+    // success = inode_free_map_allocate (length, disk_inode);
     struct inode_disk indirect;
     struct inode_disk double_indirect;
 
