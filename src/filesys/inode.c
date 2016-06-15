@@ -146,9 +146,10 @@ inode_create (disk_sector_t sector, off_t length)
     // buffer_cache_read((disk_sector_t)double_indirect.links[0], (char *)&indirect, DISK_SECTOR_SIZE, 0);
     // printf("inode creatdouble indirect : %d, indirect : %d, size : %d\n", disk_inode->links[0],double_indirect.links[0], indirect.links[0]);
     // length = (int) indirect.links[0]; 
-    disk_write(filesys_disk, sector, (char*)disk_inode);
-    // buffer_cache_write (sector, disk_inode, DISK_SECTOR_SIZE, 0, 0);
-  }
+
+    disk_write (filesys_disk, sector, disk_inode);
+  } 
+
   free (disk_inode);
   return success;
 }
@@ -267,7 +268,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
         for (; k<_k ; k++)
         {
           free_map_allocate(1,(disk_sector_t *)&indirect->links[k]);
-          buffer_cache_write((disk_sector_t)indirect->links[k], zeros, DISK_SECTOR_SIZE, 0, 0);
+          buffer_cache_write((disk_sector_t)indirect->links[k], zeros, DISK_SECTOR_SIZE, 0, 0 );
         }
         buffer_cache_write((disk_sector_t)double_indirect->links[j], (char*)indirect, DISK_SECTOR_SIZE, 0,0);
         free(indirect);
@@ -327,13 +328,13 @@ bool inode_free_map_allocate(size_t size, struct inode_disk *disk_inode)
         }
         if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
           return false;
-        buffer_cache_write((disk_sector_t)indirect->links[k],zeros, DISK_SECTOR_SIZE, 1,0);
+        disk_write (filesys_disk, (disk_sector_t)indirect->links[k], zeros);
         // printf("alloced : %u\n", (disk_sector_t)indirect->links[k]);
       }
-      buffer_cache_write((disk_sector_t)double_indirect->links[j], (char*)indirect, DISK_SECTOR_SIZE, 0,0);
+      disk_write (filesys_disk, temp_indirect, indirect);
       free(indirect); 
     }
-    buffer_cache_write((disk_sector_t)disk_inode->links[i], (char*)double_indirect, DISK_SECTOR_SIZE, 0,0);
+    disk_write (filesys_disk, temp_double_indirect, double_indirect);
     free(double_indirect);
   }
 
@@ -361,10 +362,10 @@ bool inode_free_map_allocate(size_t size, struct inode_disk *disk_inode)
       }
       if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
         return false;
-      buffer_cache_write((disk_sector_t)indirect->links[k],zeros, DISK_SECTOR_SIZE, 1,0);
+      disk_write (filesys_disk, (disk_sector_t)indirect->links[k], zeros);
       // printf("alloced : %u\n", (disk_sector_t)indirect->links[k]);
     }
-    buffer_cache_write((disk_sector_t)double_indirect->links[j], (char*)indirect, DISK_SECTOR_SIZE, 0,0);
+    disk_write (filesys_disk, temp_indirect, indirect);
     free(indirect); 
   }
 
@@ -386,13 +387,13 @@ bool inode_free_map_allocate(size_t size, struct inode_disk *disk_inode)
     }
     if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
       return false;
-    buffer_cache_write((disk_sector_t)indirect->links[k],zeros, DISK_SECTOR_SIZE, 1,0);
+    disk_write (filesys_disk, (disk_sector_t)indirect->links[k], zeros);
     // printf("alloced : %u\n", (disk_sector_t)indirect->links[k]);
+
   }
-  buffer_cache_write((disk_sector_t)double_indirect->links[temp_indirect], (char*)indirect, DISK_SECTOR_SIZE, 0,0);
+  disk_write (filesys_disk, temp_indirect, indirect);
   free(indirect); 
-  buffer_cache_write((disk_sector_t)disk_inode->links[double_indirect_size-1]
-    , (char*)double_indirect, DISK_SECTOR_SIZE, 0,0);
+  disk_write (filesys_disk, temp_double_indirect, double_indirect);
   free(double_indirect);
   return true;
 }
@@ -488,7 +489,7 @@ inode_open (disk_sector_t sector)
   inode->open_cnt = 1;
   inode->deny_write_cnt = 0;
   inode->removed = false;
-  buffer_cache_read (inode->sector, &inode->data, DISK_SECTOR_SIZE, 0);
+  disk_read (filesys_disk, inode->sector, &inode->data);
   // printf("test in open: sector : %d\n", sector);
   return inode;
 }
@@ -658,7 +659,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       offset += chunk_size;
       bytes_written += chunk_size;
     } 
-    // buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0 , 0);
+    buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0 , 0);
   return bytes_written;
 }
 
