@@ -142,15 +142,15 @@ inode_create (disk_sector_t sector, off_t length)
   {     
 
     // printf("inode creat:length of inode :%d \n", length);
-    inode_free_map_add(0, length, disk_inode);
-    // success = inode_free_map_allocate (length, disk_inode);
-    struct inode_disk indirect;
-    struct inode_disk double_indirect;
+    // inode_free_map_add(0, length, disk_inode);
+    success = inode_free_map_allocate (length, disk_inode);
+    // struct inode_disk indirect;
+    // struct inode_disk double_indirect;
 
-    buffer_cache_read((disk_sector_t)disk_inode->links[0], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
-    buffer_cache_read((disk_sector_t)double_indirect.links[0], (char *)&indirect, DISK_SECTOR_SIZE, 0);
+    // buffer_cache_read((disk_sector_t)disk_inode->links[0], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
+    // buffer_cache_read((disk_sector_t)double_indirect.links[0], (char *)&indirect, DISK_SECTOR_SIZE, 0);
     // printf("inode creatdouble indirect : %d, indirect : %d, size : %d\n", disk_inode->links[0],double_indirect.links[0], indirect.links[0]);
-    length = (int) indirect.links[0]; 
+    // length = (int) indirect.links[0]; 
 
     disk_write (filesys_disk, sector, disk_inode);
   } 
@@ -196,7 +196,6 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
     {
       if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
         return false;
-
       buffer_cache_write((disk_sector_t)indirect->links[k],zeros, DISK_SECTOR_SIZE, 1,0);
     }  
     free(indirect);
@@ -258,6 +257,15 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
       free(double_indirect);
     }
   }
+  double_indirect = calloc (1, sizeof (struct inode_disk));
+  indirect = calloc (1, sizeof (struct inode_disk));
+  buffer_cache_read((disk_sector_t)inode->data.links[0], (char *)double_indirect, DISK_SECTOR_SIZE, 0);
+  buffer_cache_read((disk_sector_t)double_indirect.links[0], (char *)indirect, DISK_SECTOR_SIZE, 0);
+
+  indirect.links[0] = pos;
+  buffer_cache_write((disk_sector_t)double_indirect.links[0], indirect, DISK_SECTOR_SIZE, 0, 0);
+  free(indirect);
+  free(double_indirect);
   return true;   
 }
 
