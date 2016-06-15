@@ -197,7 +197,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
       if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
         return false;
 
-      buffer_cache_write((disk_sector_t)indirect->links[k],zeros, DISK_SECTOR_SIZE, 1);
+      buffer_cache_write((disk_sector_t)indirect->links[k],zeros, DISK_SECTOR_SIZE, 1,0);
     }  
   }
   else
