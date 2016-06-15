@@ -146,8 +146,8 @@ inode_create (disk_sector_t sector, off_t length)
     // buffer_cache_read((disk_sector_t)double_indirect.links[0], (char *)&indirect, DISK_SECTOR_SIZE, 0);
     // printf("inode creatdouble indirect : %d, indirect : %d, size : %d\n", disk_inode->links[0],double_indirect.links[0], indirect.links[0]);
     // length = (int) indirect.links[0]; 
-
-    buffer_cache_write (sector, disk_inode, DISK_SECTOR_SIZE, 0, 0);
+    disk_write(filesys_disk, sector, (char*)disk_inode);
+    // buffer_cache_write (sector, disk_inode, DISK_SECTOR_SIZE, 0, 0);
   }
   free (disk_inode);
   return success;
@@ -658,7 +658,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       offset += chunk_size;
       bytes_written += chunk_size;
     } 
-    buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0 , 0);
+    // buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0 , 0);
   return bytes_written;
 }
 
