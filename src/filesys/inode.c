@@ -173,9 +173,9 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
 
   int i,j,k;
   int _j, _k;
-  ASSERT(double_indirect_size <= DISK_SECTOR_SIZE/4);
-  ASSERT(indirect_size <= DISK_SECTOR_SIZE/4);
-  ASSERT(direct_size <= DISK_SECTOR_SIZE/4);
+  ASSERT(double_indirect_size < DISK_SECTOR_SIZE/4);
+  ASSERT(indirect_size < DISK_SECTOR_SIZE/4);
+  ASSERT(direct_size < DISK_SECTOR_SIZE/4);
 
   char zeros[DISK_SECTOR_SIZE];
   memset(zeros, 0, DISK_SECTOR_SIZE);
@@ -269,6 +269,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
         }
         for (; k<_k ; k++)
         {
+          printf("In inode_free_map_add i :%d, j:%d, k:%d \n",i,j,k);
           free_map_allocate(1,(disk_sector_t *)&indirect->links[k]);
           buffer_cache_write((disk_sector_t)indirect->links[k], zeros, DISK_SECTOR_SIZE, 0, 0 );
         }
