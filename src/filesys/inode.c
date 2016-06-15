@@ -407,8 +407,8 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
   int indirect_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE/4) + 1;
   int direct_size = (length % INDIRECT_MAX_SIZE) % (DISK_SECTOR_SIZE/4);
 
-  // printf("length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
-  //   length, double_indirect_size, indirect_size, direct_size);
+  printf("length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+    length, double_indirect_size, indirect_size, direct_size);
 
   struct inode_disk indirect;
   struct inode_disk double_indirect;
@@ -546,7 +546,7 @@ inode_close (struct inode *inode)
           inode_free_map_release(length, &inode->data);
           free_map_release (inode->sector, 1);
         }
-      // free (inode); 
+      free (inode); 
     }
 }
 
