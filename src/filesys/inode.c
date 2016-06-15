@@ -419,23 +419,20 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
   ASSERT(indirect_size <= DISK_SECTOR_SIZE/4);
   ASSERT(direct_size <= DISK_SECTOR_SIZE/4);
 
-  for (i = 0; i < DISK_SECTOR_SIZE/4-1; i ++)
+  for (i = 0; i < double_indirect_size; i ++)
   {
-    if (disk_inode->links[i] == 0)
-      continue;
+    memset(&double_indirect, 0, DISK_SECTOR_SIZE);
+
     buffer_cache_read((disk_sector_t)disk_inode->links[i], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
-    // disk_read (filesys_disk, (disk_sector_t)disk_inode->links[i], &double_indirect);
-    for (j=0; j < DISK_SECTOR_SIZE/4-1; j++)
+    for (j=0; j < indirect_size; j++)
     {
-      if (double_indirect.links[i] == 0)
-        continue;
+      memset(&indirect, 0, DISK_SECTOR_SIZE);
       // disk_read (filesys_disk, (disk_sector_t)double_indirect.links[j], &indirect);
       buffer_cache_read((disk_sector_t)double_indirect.links[j], (char *)&indirect, DISK_SECTOR_SIZE, 0);
-      for (k = 0; k < DISK_SECTOR_SIZE/4-1; k++)
+      for (k = 0; k < direct_size ; k++)
       {
+        printf("In inode_free_map_release i :%d, j:%d, k:%d \n",i,j,k);
         if( i == 0 && j == 0 && k == 0)
-          continue;
-        if (indirect.links[i] == 0)
           continue;
         free_map_release((disk_sector_t)indirect.links[k],1);
       }
