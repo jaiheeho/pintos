@@ -636,9 +636,9 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       int sector_left = DISK_SECTOR_SIZE - sector_ofs;
       int min_left = inode_left < sector_left ? inode_left : sector_left;
 
-       Number of bytes to actually write into this sector. 
+       // Number of bytes to actually write into this sector. 
       int chunk_size = size < min_left ? size : min_left;
-      // printf("write _at 4 : chunk_size : %d\n",chunk_size);
+      printf("write _at 4 : chunk_size : %d\n",chunk_size);
 
       if (chunk_size <= 0)
         break;
