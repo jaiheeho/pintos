@@ -545,7 +545,6 @@ inode_close (struct inode *inode)
         {
           inode_free_map_release(length, &inode->data);
           free_map_release (inode->sector, 1);
-
         }
 
       free (inode); 
@@ -660,7 +659,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       offset += chunk_size;
       bytes_written += chunk_size;
     } 
-    // buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0 , 0);
+    buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0 , 0);
   // print("write end\n")
   return bytes_written;
 }
