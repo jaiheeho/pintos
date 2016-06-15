@@ -411,8 +411,8 @@ void inode_free_map_release(size_t size, struct inode_disk *disk_inode)
   double_indirect = calloc (1, sizeof (struct inode_disk));
   indirect = calloc (1, sizeof (struct inode_disk));
 
-  buffer_cache_read((disk_sector_t)disk_inode->links[0], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
-  buffer_cache_read((disk_sector_t)double_indirect.links[0], (char *)&indirect, DISK_SECTOR_SIZE, 0);
+  buffer_cache_read((disk_sector_t)disk_inode->links[0], (char *)double_indirect, DISK_SECTOR_SIZE, 0);
+  buffer_cache_read((disk_sector_t)double_indirect->links[0], (char *)indirect, DISK_SECTOR_SIZE, 0);
 
   int i,j,k;
   int _j,_k;
@@ -440,7 +440,7 @@ void inode_free_map_release(size_t size, struct inode_disk *disk_inode)
 
       for (k = 0; k < _k ; k++)
       {
-        printf("In inode_free_map_release i :%d, j:%d, k:%d \n",i,j,k);
+        // printf("In inode_free_map_release i :%d, j:%d, k:%d \n",i,j,k);
         if( i == 0 && j == 0 && k == 0)
           continue;
         free_map_release((disk_sector_t)indirect->links[k],1);
