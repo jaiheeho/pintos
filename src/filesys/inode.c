@@ -188,10 +188,10 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
 
   // printf("size : %d new size : %d\n", size, pos);
   // printf("AT ADD; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
-    length, double_indirect_size, indirect_size, direct_size);
+    // length, double_indirect_size, indirect_size, direct_size);
 
   // printf("AT ADD end; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
-    _length, _double_indirect_size, _indirect_size, _direct_size);
+    // _length, _double_indirect_size, _indirect_size, _direct_size);
 
 
 
