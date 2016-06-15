@@ -484,7 +484,7 @@ inode_open (disk_sector_t sector)
   inode->deny_write_cnt = 0;
   inode->removed = false;
   // disk_read (filesys_disk, inode->sector, &inode->data);
-  buffer_cache_read(inode->sector, &inode->data, DISK_SECTOR_SIZE, 0)
+  buffer_cache_read(inode->sector, &inode->data, DISK_SECTOR_SIZE, 0);
   // printf("test in open: sector : %d\n", sector);
   return inode;
 }
