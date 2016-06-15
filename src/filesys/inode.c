@@ -653,6 +653,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   if (length/DISK_SECTOR_SIZE < (size + offset)/DISK_SECTOR_SIZE)
     inode_free_map_add (length, size + offset, &inode->data);
 
+  length = size + offset;
   while (size > 0) 
     {
       /* Sector to write, starting byte offset within sector. */
