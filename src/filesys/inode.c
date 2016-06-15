@@ -199,6 +199,8 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
 
       buffer_cache_write((disk_sector_t)indirect->links[k],zeros, DISK_SECTOR_SIZE, 1,0);
     }  
+    free(indirect);
+    free(double_indirect);
   }
   else
   {
@@ -252,9 +254,8 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
         buffer_cache_write((disk_sector_t)double_indirect->links[j], (char*)indirect, DISK_SECTOR_SIZE, 0,0);
         free(indirect);
       }
-      free(double_indirect);
       buffer_cache_write((disk_sector_t)disk_inode->links[i], (char*)double_indirect, DISK_SECTOR_SIZE, 0,0);
-      free(indirect);
+      free(double_indirect);
     }
   }
   return true;   
