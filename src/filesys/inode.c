@@ -619,24 +619,24 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
 
   length = inode_length (inode);
-  // printf("length : %d\n", length);
+  printf("length : %d\n", length);
 
   while (size > 0) 
     {
       /* Sector to write, starting byte offset within sector. */
-      // printf("write _at 1 : offset : %d \n", offset);
+      printf("write _at 1 : offset : %d size : %d \n", offset, size);
       disk_sector_t sector_idx = byte_to_sector (inode, offset);
       int sector_ofs = offset % DISK_SECTOR_SIZE;
-      // printf("write _at 2 : sector_idx : %d\n",sector_idx);
+      printf("write _at 2 : sector_idx : %d\n",sector_idx);
 
       /* Bytes left in inode, bytes left in sector, lesser of the two. */
       off_t inode_left = length - offset;
-      // printf("write _at 3 : inode_left : %d\n",inode_left);
+      printf("write _at 3 : inode_left : %d\n",inode_left);
 
       int sector_left = DISK_SECTOR_SIZE - sector_ofs;
       int min_left = inode_left < sector_left ? inode_left : sector_left;
 
-      /* Number of bytes to actually write into this sector. */
+       Number of bytes to actually write into this sector. 
       int chunk_size = size < min_left ? size : min_left;
       // printf("write _at 4 : chunk_size : %d\n",chunk_size);
 

@@ -291,7 +291,6 @@ void buffer_cache_elem_free(disk_sector_t sector)
   sema_up(&buffer_cache_global_lock);
 }
 
-
 void buffer_cache_free()
 {
 
