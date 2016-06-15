@@ -147,9 +147,8 @@ inode_create (disk_sector_t sector, off_t length)
     // printf("inode creatdouble indirect : %d, indirect : %d, size : %d\n", disk_inode->links[0],double_indirect.links[0], indirect.links[0]);
     // length = (int) indirect.links[0]; 
 
-    disk_write (filesys_disk, sector, disk_inode);
-  } 
-
+    buffer_cache_write (sector, disk_inode, DISK_SECTOR_SIZE, 0, 0);
+  }
   free (disk_inode);
   return success;
 }
@@ -394,7 +393,6 @@ bool inode_free_map_allocate(size_t size, struct inode_disk *disk_inode)
   free(indirect); 
   buffer_cache_write((disk_sector_t)disk_inode->links[double_indirect_size-1]
     , (char*)double_indirect, DISK_SECTOR_SIZE, 0,0);
-  
   free(double_indirect);
   return true;
 }
@@ -490,7 +488,7 @@ inode_open (disk_sector_t sector)
   inode->open_cnt = 1;
   inode->deny_write_cnt = 0;
   inode->removed = false;
-  disk_read (filesys_disk, inode->sector, &inode->data);
+  buffer_cache_read (inode->sector, &inode->data, DISK_SECTOR_SIZE, 0);
   // printf("test in open: sector : %d\n", sector);
   return inode;
 }
