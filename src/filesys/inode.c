@@ -189,15 +189,21 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   if (double_indirect_size == _double_indirect_size && indirect_size == _indirect_size)
   {
     double_indirect = calloc (1, sizeof (struct inode_disk));
-    buffer_cache_read((disk_sector_t)disk_inode->links[i], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
+    buffer_cache_read((disk_sector_t)disk_inode->links[_double_indirect_size-1]
+      , (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
+
     indirect = calloc (1, sizeof (struct inode_disk));
-    buffer_cache_read((disk_sector_t)double_indirect->links[j], (char *)&indirect, DISK_SECTOR_SIZE, 0);
+    buffer_cache_read((disk_sector_t)double_indirect->links[_indirect_size-1]
+      , (char *)&indirect, DISK_SECTOR_SIZE, 0);
     for (k = direct_size; k < _direct_size; k++)
     {
       if(!free_map_allocate(1,(disk_sector_t *)&indirect->links[k]))
         return false;
       buffer_cache_write((disk_sector_t)indirect->links[k],zeros, DISK_SECTOR_SIZE, 1,0);
-    }  
+    }
+    buffer_cache_write((disk_sector_t)double_indirect->links[_indirect_size-1]
+      , (char*)indirect, DISK_SECTOR_SIZE, 0,0);
+    
     free(indirect);
     free(double_indirect);
   }
@@ -263,7 +269,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   buffer_cache_read((disk_sector_t)double_indirect->links[0], (char *)indirect, DISK_SECTOR_SIZE, 0);
 
   indirect.links[0] = pos;
-  buffer_cache_write((disk_sector_t)double_indirect->links[0], indirect, DISK_SECTOR_SIZE, 0, 0);
+  buffer_cache_write((disk_sector_t)double_indirect->links[0], (char*)indirect, DISK_SECTOR_SIZE, 0,0);
   free(indirect);
   free(double_indirect);
   return true;   
