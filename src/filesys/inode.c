@@ -431,7 +431,7 @@ void inode_free_map_release(size_t length, struct inode_disk *disk_inode)
       buffer_cache_read((disk_sector_t)double_indirect.links[j], (char *)&indirect, DISK_SECTOR_SIZE, 0);
       for (k = 0; k < direct_size ; k++)
       {
-        printf("In inode_free_map_release i :%d, j:%d, k:%d \n",i,j,k);
+        // printf("In inode_free_map_release i :%d, j:%d, k:%d \n",i,j,k);
         if( i == 0 && j == 0 && k == 0)
           continue;
         free_map_release((disk_sector_t)indirect.links[k],1);
@@ -579,8 +579,7 @@ inode_close (struct inode *inode)
         {
           inode_free_map_release(length, &inode->data);
           free_map_release (inode->sector, 1);
-          // free_map_release (inode->data.start,
-          //                   bytes_to_sectors (inode->data.length)); 
+
         }
 
       free (inode); 
