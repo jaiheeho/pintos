@@ -258,7 +258,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
           buffer_cache_read((disk_sector_t)double_indirect->links[j], (char *)indirect, DISK_SECTOR_SIZE, 0);
           k = direct_size;
           if (indirect_size == _indirect_size)
-            -k = direct_size;
+            _k = direct_size;
           _k = DISK_SECTOR_SIZE;
           start = false;
         }
