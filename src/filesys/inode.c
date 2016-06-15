@@ -186,11 +186,11 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   memset(zeros, 0, DISK_SECTOR_SIZE);
   bool start = true;
 
-  printf("size : %d new size : %d\n", size, pos);
-  printf("AT ADD; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+  // printf("size : %d new size : %d\n", size, pos);
+  // printf("AT ADD; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
     length, double_indirect_size, indirect_size, direct_size);
 
-  printf("AT ADD end; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+  // printf("AT ADD end; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
     _length, _double_indirect_size, _indirect_size, _direct_size);
 
 
@@ -620,25 +620,25 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   /* extend file*/
   int length = inode_length (inode);
 
-  printf("length :  %d\n",length);
+  // printf("length :  %d\n",length);
   if (length/DISK_SECTOR_SIZE < (size + offset)/DISK_SECTOR_SIZE || length == 0)
     inode_free_map_add (length, size + offset, &inode->data);
 
 
   length = size + offset;
-  printf("length : %d\n", length);
+  // printf("length : %d\n", length);
 
   while (size > 0) 
     {
       /* Sector to write, starting byte offset within sector. */
-      printf("write _at 1 : offset : %d \n", offset);
+      // printf("write _at 1 : offset : %d \n", offset);
       disk_sector_t sector_idx = byte_to_sector (inode, offset);
       int sector_ofs = offset % DISK_SECTOR_SIZE;
-      printf("write _at 2 : sector_idx : %d\n",sector_idx);
+      // printf("write _at 2 : sector_idx : %d\n",sector_idx);
 
       /* Bytes left in inode, bytes left in sector, lesser of the two. */
       off_t inode_left = length - offset;
-      printf("write _at 3 : inode_left : %d\n",inode_left);
+      // printf("write _at 3 : inode_left : %d\n",inode_left);
 
       int sector_left = DISK_SECTOR_SIZE - sector_ofs;
       int min_left = inode_left < sector_left ? inode_left : sector_left;
@@ -662,7 +662,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       offset += chunk_size;
       bytes_written += chunk_size;
     } 
-  print("write end\n")
+  // print("write end\n")
   return bytes_written;
 }
 
