@@ -218,7 +218,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
       free_map_allocate(1,&direct_sector);
       indirect->links[j] = direct_sector;
       printf("alloced: %d\n",direct_sector);
-      buffer_cache_write((disk_sector_t)indirect->links[j], zeros, DISK_SECTOR_SIZE, 0, 0 );
+      buffer_cache_write(direct_sector, zeros, DISK_SECTOR_SIZE, 0, 0 );
     }
     printf("here4\n");
     buffer_cache_write((disk_sector_t)double_indirect->links[i], (char*)indirect, DISK_SECTOR_SIZE, 0, 0);
@@ -228,7 +228,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
 
   }
 
-  // free(indirect);
+  free(indirect);
 
   double_indirect->length = pos;
   printf("AT ADD end; length : %d , indirect_size; %d, direct_size:%d \n",
@@ -436,10 +436,10 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   while (size > 0) 
     {
       /* Disk sector to read, starting byte offset within sector. */
-      printf("read _at 1 : offset : %d \n", offset);
+      // printf("read _at 1 : offset : %d \n", offset);
       disk_sector_t sector_idx = byte_to_sector (inode, offset);
       int sector_ofs = offset % DISK_SECTOR_SIZE;
-      printf("read _at 2 : sector_idx : %d\n",sector_idx);
+      // printf("read _at 2 : sector_idx : %d\n",sector_idx);
       /* Bytes left in inode, bytes left in sector, lesser of the two. */
       off_t inode_left = inode_length (inode) - offset;
       int sector_left = DISK_SECTOR_SIZE - sector_ofs;
