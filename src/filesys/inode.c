@@ -77,7 +77,7 @@ byte_to_sector (const struct inode *inode, off_t pos)
 
   int length = inode_length(inode);
 
-  // printf("in byte_to_sector :pos : %d, length%d\n",pos, length);
+  printf("in byte_to_sector :pos : %d, length%d\n",pos, length);
   if (pos < length)
   {
     length = pos / DISK_SECTOR_SIZE;
@@ -86,12 +86,12 @@ byte_to_sector (const struct inode *inode, off_t pos)
     int direct_size = (length % INDIRECT_MAX_SIZE) / (DISK_SECTOR_SIZE);
 
     memset(&indirect, 0, sizeof(struct inode_disk));
-    buffer_cache_read((disk_sector_t)inode->data.links[indirect_size], (char *)&indirect, DISK_SECTOR_SIZE, 0);
+    // buffer_cache_read((disk_sector_t)inode->data.links[indirect_size], (char *)&indirect, DISK_SECTOR_SIZE, 0);
     return (disk_sector_t) indirect.links[direct_size];
   }
   else
   {
-    // printf("hererer1\n");
+    printf("hererer1\n");
     return -1;
   }
 }
