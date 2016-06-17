@@ -136,11 +136,6 @@ inode_create (disk_sector_t sector, off_t length)
     success = inode_free_map_add(0, length, disk_inode);
     // struct inode_disk indirect;
     // struct inode_disk double_indirect;
-
-    // buffer_cache_read((disk_sector_t)disk_inode->links[0], (char *)&double_indirect, DISK_SECTOR_SIZE, 0);
-    // buffer_cache_read((disk_sector_t)double_indirect.links[0], (char *)&indirect, DISK_SECTOR_SIZE, 0);
-    // printf("inode creatdouble indirect : %d, indirect : %d, size : %d\n", disk_inode->links[0],double_indirect.links[0], indirect.links[0]);
-    // length = (int) indirect.links[0]; 
     disk_write (filesys_disk, sector, disk_inode);
   } 
   free (disk_inode);
@@ -175,13 +170,12 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   if (size  == 0)
     start = false;
 
-  // printf("size : %d new size : %d\n", size, pos);
-  // printf("AT ADD; length : %d, indirect_size; %d, direct_size:%d \n",
-  //   length, indirect_size, direct_size);
+  printf("size : %d new size : %d\n", size, pos);
+  printf("AT ADD; length : %d, indirect_size; %d, direct_size:%d \n",
+    length, indirect_size, direct_size);
 
-  // printf("AT ADD end; length : %d , indirect_size; %d, direct_size:%d \n",
-  //   _length, _indirect_size, _direct_size);
-
+  printf("AT ADD end; length : %d , indirect_size; %d, direct_size:%d \n",
+    _length, _indirect_size, _direct_size);
 
   for (i = indirect_size-1 ; i < _indirect_size; i ++)
   {
@@ -211,12 +205,12 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
       free_map_allocate(1,(disk_sector_t *)&indirect->links[j]);
       buffer_cache_write((disk_sector_t)indirect->links[j], zeros, DISK_SECTOR_SIZE, 0, 0 );
     }
-    buffer_cache_write((disk_sector_t)double_indirect->links[i], (char*)indirect, DISK_SECTOR_SIZE, 0,0);
+    buffer_cache_write((disk_sector_t)double_indirect->links[i], (char*)indirect, DISK_SECTOR_SIZE, 0, 0);
     free(indirect);
   }
-
   disk_inode->length = pos;
   return true;   
+
 }
 
 bool inode_free_map_allocate(size_t size, struct inode_disk *disk_inode)
@@ -301,6 +295,7 @@ void inode_free_map_release(size_t size, struct inode_disk *disk_inode)
     }
     free_map_release((disk_sector_t)double_indirect->links[i],1);
   }
+  free(indirect);
 }
 
  
