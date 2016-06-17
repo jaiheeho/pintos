@@ -221,7 +221,8 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
         printf("here6\n");
 
   }
-  free(indirect);
+  
+  // free(indirect);
 
   double_indirect->length = pos;
   printf("AT ADD end; length : %d , indirect_size; %d, direct_size:%d \n",
