@@ -150,7 +150,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   int direct_size = (length % (DISK_SECTOR_SIZE/4));
   if(length == 0)
   {
-    indirect_size = 0
+    indirect_size = 0;
   }
 
 
@@ -160,7 +160,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
 
   if(_length == 0)
   {
-    _indirect_size = 0
+    _indirect_size = 0;
   }
   struct inode_disk * indirect = NULL;
   struct inode_disk * double_indirect = disk_inode;
