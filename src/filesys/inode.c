@@ -87,7 +87,7 @@ byte_to_sector (const struct inode *inode, off_t pos)
 
     memset(&indirect, 0, sizeof(struct inode_disk));
     buffer_cache_read(inode->data.links[indirect_size], &indirect, DISK_SECTOR_SIZE, 0);
-    // printf("in byte_to_sector :  indirect.links[direct_size] :  %d\n",  indirect.links[direct_size]);
+    printf("in byte_to_sector :  indirect.links[direct_size] :  %d\n",  indirect.links[direct_size]);
     return (disk_sector_t) indirect.links[direct_size];
   }
   else
@@ -212,8 +212,11 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
 
     for (; j <_j ; j++)
     {
+      disk_sector_t direct_sector;
+
       printf("in add : i ,j: %d, %d\n",i,j);
-      free_map_allocate(1,(disk_sector_t *)&indirect->links[j]);
+      free_map_allocate(1,&direct_sector);
+      indirect->links[j] = direct_sector
       buffer_cache_write((disk_sector_t)indirect->links[j], zeros, DISK_SECTOR_SIZE, 0, 0 );
     }
     printf("here4\n");
