@@ -21,7 +21,7 @@
 struct inode_disk
   {
     disk_sector_t start;                /* First data sector. */
-    off_t length;                        File size in bytes. 
+    off_t length;                        /*File size in bytes. */
     unsigned magic;                     /* Magic number. */
     uint32_t unused[125];               /* Not used. */
   };
@@ -268,12 +268,10 @@ bool inode_free_map_allocate(size_t size, struct inode_disk *disk_inode)
 
 void inode_free_map_release(size_t size, struct inode_disk *disk_inode)
 {
-
   int _length = bytes_to_sectors(size);
 
   int _indirect_size = (_length / INDIRECT_MAX_SIZE)  + 1;
   int _direct_size = (_length % INDIRECT_MAX_SIZE)/(DISK_SECTOR_SIZE) +1;
-
 
   struct inode_disk * indirect = calloc (1, sizeof (struct inode_disk));
   struct inode_disk * double_indirect = disk_inode;
