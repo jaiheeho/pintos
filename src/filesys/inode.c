@@ -87,7 +87,6 @@ byte_to_sector (const struct inode *inode, off_t pos)
 
     memset(&indirect, 0, sizeof(struct inode_disk));
     buffer_cache_read((disk_sector_t)inode->data.links[indirect_size], (char *)&indirect, DISK_SECTOR_SIZE, 0);
-
     return (disk_sector_t) indirect.links[direct_size];
   }
   else
@@ -130,7 +129,7 @@ inode_create (disk_sector_t sector, off_t length)
   if (disk_inode != NULL)
   {     
 
-    // printf("inode creat:length of inode :%d \n", length);
+    printf("inode creat:length of inode :%d \n", length);
     // inode_free_map_add(0, length, disk_inode);
     success = inode_free_map_allocate (length, disk_inode);
     // struct inode_disk indirect;
@@ -153,12 +152,12 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode *inode)
   int length = bytes_to_sectors(size);
 
   int indirect_size = (length / INDIRECT_MAX_SIZE)  + 1;
-  int direct_size = (length % INDIRECT_MAX_SIZE)/(DISK_SECTOR_SIZE) +1;
+  int direct_size = (length % INDIRECT_MAX_SIZE)/ (DISK_SECTOR_SIZE) +1;
 
   int _length = bytes_to_sectors(pos);
 
   int _indirect_size = (_length / INDIRECT_MAX_SIZE)  + 1;
-  int _direct_size = (_length % INDIRECT_MAX_SIZE)/(DISK_SECTOR_SIZE) +1;
+  int _direct_size = (_length % INDIRECT_MAX_SIZE)/ (DISK_SECTOR_SIZE) +1;
 
   struct inode_disk * indirect = NULL;
   struct inode_disk * double_indirect = &inode->data;
@@ -172,12 +171,12 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode *inode)
   memset(zeros, 0, DISK_SECTOR_SIZE);
   bool start = true;
 
-  // printf("size : %d new size : %d\n", size, pos);
-  // printf("AT ADD; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
-  //   length, double_indirect_size, indirect_size, direct_size);
+  printf("size : %d new size : %d\n", size, pos);
+  printf("AT ADD; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+    length, double_indirect_size, indirect_size, direct_size);
 
-  // printf("AT ADD end; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
-  //   _length, _double_indirect_size, _indirect_size, _direct_size);
+  printf("AT ADD end; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+    _length, _double_indirect_size, _indirect_size, _direct_size);
 
 
   for (i = indirect_size-1 ; i < _indirect_size; i ++)
@@ -237,7 +236,7 @@ bool inode_free_map_allocate(size_t size, struct inode_disk *disk_inode)
   memset(zeros, 0, DISK_SECTOR_SIZE);
 
 
-  printf("AT ADD end; length : %d, indirect_size; %d, direct_size:%d \n",
+  printf("AT ALOC end; length : %d, indirect_size; %d, direct_size:%d \n",
     _length, _indirect_size, _direct_size);
 
   for (i = 0; i < _indirect_size; i ++)
