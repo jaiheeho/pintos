@@ -131,9 +131,8 @@ inode_create (disk_sector_t sector, off_t length)
   {     
 
     // printf("inode creat:length of inode :%d \n", length);
-    // inode_free_map_add(0, length, disk_inode);
-    success = inode_free_map_allocate (length, disk_inode);
-    // success = inode_free_map_allocate(length, disk_inode);
+    success = inode_free_map_add(0, length, disk_inode);
+    // success = inode_free_map_allocate (length, disk_inode);
     // struct inode_disk indirect;
     // struct inode_disk double_indirect;
     disk_write (filesys_disk, sector, disk_inode);
@@ -145,15 +144,12 @@ inode_create (disk_sector_t sector, off_t length)
 bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
 {
 
-  int length = bytes_to_sectors(size);
-
-  if (size == 0)
-    length = 1;
+  int length = size/DISK_SECTOR_SIZE + 1;
 
   int indirect_size = (length / (DISK_SECTOR_SIZE/4))+1;
   int direct_size = (length % (DISK_SECTOR_SIZE/4));
 
-  int _length = bytes_to_sectors(pos);
+  int _length = pos/DISK_SECTOR_SIZE + 1;
 
   int _indirect_size = (_length / (DISK_SECTOR_SIZE/4))+1;
   int _direct_size = (_length %  (DISK_SECTOR_SIZE/4));
