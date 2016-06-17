@@ -74,7 +74,6 @@ byte_to_sector (const struct inode *inode, off_t pos)
 {
   ASSERT (inode != NULL);
   struct inode_disk indirect;
-  struct inode_disk double_indirect;
 
   int length = inode_length(inode);
 
@@ -262,7 +261,7 @@ bool inode_free_map_allocate(size_t size, struct inode_disk *disk_inode)
     buffer_cache_write((disk_sector_t)double_indirect->links[i], (char*)indirect, DISK_SECTOR_SIZE, 0,0);
     free(indirect);
   }
-  inode_disk->length = size;
+  disk_inode->length = size;
   return true;   
 }
 
@@ -467,9 +466,6 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   // printf("length :  %d\n",length);
   if (length < size+offset)
     inode_free_map_add (length, size + offset, inode);
-
-  buffer_cache_write()
-
 
   length = inode_length (inode);
   // printf("length : %d\n", length);
