@@ -179,13 +179,13 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   printf("AT ADD end; length : %d , indirect_size; %d, direct_size:%d \n",
   _length, _indirect_size, _direct_size);
 
+  indirect = calloc (1, sizeof (struct inode_disk));
 
   for (i = indirect_size-1 ; i < _indirect_size; i ++)
   {
     disk_sector_t indirect_sector;
               printf("here2\n");
-
-    indirect = calloc (1, sizeof (struct inode_disk));
+    memset(indirect, 0, DISK_SECTOR_SIZE);
     if (start)
     {
       buffer_cache_read((disk_sector_t)double_indirect->links[i], (char *)indirect, DISK_SECTOR_SIZE, 0);
@@ -218,10 +218,11 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
     buffer_cache_write((disk_sector_t)double_indirect->links[i], (char*)indirect, DISK_SECTOR_SIZE, 0, 0);
         printf("here5\n");
 
-    free(indirect);
         printf("here6\n");
 
   }
+  free(indirect);
+
   double_indirect->length = pos;
   printf("AT ADD end; length : %d , indirect_size; %d, direct_size:%d \n",
   _length, _indirect_size, _direct_size);
