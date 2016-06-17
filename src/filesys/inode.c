@@ -238,7 +238,7 @@ bool inode_free_map_allocate(size_t size, struct inode_disk *disk_inode)
 
 
   printf("AT ADD end; length : %d, indirect_size; %d, direct_size:%d \n",
-    _length, , _indirect_size, _direct_size);
+    _length, _indirect_size, _direct_size);
 
   for (i = 0; i < _indirect_size; i ++)
   {
