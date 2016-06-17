@@ -52,7 +52,7 @@ struct inode
   };
 bool inode_free_map_allocate(size_t, struct inode_disk *);
 void inode_free_map_release(size_t, struct inode_disk *);
-bool inode_free_map_add(size_t, off_t, struct inode *);
+bool inode_free_map_add(size_t, off_t, struct inode_disk *);
 
 /* Returns the disk sector that contains byte offset POS within
    INODE.
@@ -132,7 +132,8 @@ inode_create (disk_sector_t sector, off_t length)
 
     // printf("inode creat:length of inode :%d \n", length);
     // inode_free_map_add(0, length, disk_inode);
-    success = inode_free_map_allocate (length, disk_inode);
+    // success = inode_free_map_allocate (length, disk_inode);
+    success = inode_free_map_add(0, length, disk_inode);
     // struct inode_disk indirect;
     // struct inode_disk double_indirect;
 
@@ -147,7 +148,7 @@ inode_create (disk_sector_t sector, off_t length)
   return success;
 }
 
-bool inode_free_map_add(size_t size, off_t pos, struct inode *inode)
+bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
 {
 
   int length = bytes_to_sectors(size);
@@ -161,7 +162,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode *inode)
   int _direct_size = (_length %  (DISK_SECTOR_SIZE/4));
 
   struct inode_disk * indirect = NULL;
-  struct inode_disk * double_indirect = &inode->data;
+  struct inode_disk * double_indirect = disk_inode;
   int i,j;
   int _j;
 
@@ -211,9 +212,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode *inode)
     free(indirect);
   }
 
-  inode->data.length = pos;
-
-  buffer_cache_write((disk_sector_t)inode->sector, (char*)double_indirect, DISK_SECTOR_SIZE, 0,0);
+  disk_inode->length = pos;
   return true;   
 }
 
@@ -460,7 +459,9 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
   // printf("length :  %d\n",length);
   if (length < size+offset)
-    inode_free_map_add (length, size + offset, inode);
+    inode_free_map_add (length, size + offset, &inode->data);
+
+  buffer_cache_write(inode->sector, &inode->data, DISK_SECTOR_SIZE, 0, 0);
 
   length = inode_length (inode);
   // printf("length : %d\n", length);
