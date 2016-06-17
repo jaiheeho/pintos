@@ -25,10 +25,11 @@ struct inode_disk
     unsigned magic;                     /* Magic number. */
     struct inode_indirect_disk * links[125];               /* Not used. */
   };
+  
 struct inode_indirect_disk
 {
   struct inode_indirect_disk * links[128];               /* Not used. */
-}
+};
 
 // struct inode_disk
 // {
@@ -76,7 +77,7 @@ static disk_sector_t
 byte_to_sector (const struct inode *inode, off_t pos) 
 {
   ASSERT (inode != NULL);
-  struct inode_disk indirect;
+  struct inode_indirect_disk indirect;
 
   int length = inode_length(inode);
 
