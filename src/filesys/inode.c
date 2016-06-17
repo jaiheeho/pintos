@@ -232,8 +232,8 @@ bool inode_free_map_allocate(size_t size, struct inode_disk *disk_inode)
   int i,j;
   int _j;
 
-  ASSERT(indirect_size < DISK_SECTOR_SIZE/4);
-  ASSERT(direct_size < DISK_SECTOR_SIZE/4);
+  ASSERT(_indirect_size < DISK_SECTOR_SIZE/4);
+  ASSERT(_direct_size < DISK_SECTOR_SIZE/4);
 
   char zeros[DISK_SECTOR_SIZE];
   memset(zeros, 0, DISK_SECTOR_SIZE);
@@ -278,8 +278,8 @@ void inode_free_map_release(size_t size, struct inode_disk *disk_inode)
   int i,j;
   int _j;
 
-  ASSERT(indirect_size < DISK_SECTOR_SIZE/4);
-  ASSERT(direct_size < DISK_SECTOR_SIZE/4);
+  ASSERT(_indirect_size < DISK_SECTOR_SIZE/4);
+  ASSERT(_direct_size < DISK_SECTOR_SIZE/4);
 
   char zeros[DISK_SECTOR_SIZE];
   memset(zeros, 0, DISK_SECTOR_SIZE);
