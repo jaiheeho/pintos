@@ -216,7 +216,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
 
       printf("in add : i ,j: %d, %d\n",i,j);
       free_map_allocate(1,&direct_sector);
-      indirect->links[j] = direct_sector
+      indirect->links[j] = direct_sector;
       buffer_cache_write((disk_sector_t)indirect->links[j], zeros, DISK_SECTOR_SIZE, 0, 0 );
     }
     printf("here4\n");
