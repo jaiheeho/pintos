@@ -25,7 +25,7 @@ struct inode_disk
     unsigned magic;                     /* Magic number. */
     struct inode_indirect_disk * links[125];               /* Not used. */
   };
-  
+
 struct inode_indirect_disk
 {
   struct inode_indirect_disk * links[128];               /* Not used. */
@@ -152,20 +152,10 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
 
   int indirect_size = (length / (DISK_SECTOR_SIZE/4))+1;
   int direct_size = (length % (DISK_SECTOR_SIZE/4));
-  if(length == 0)
-  {
-    indirect_size = 0;
-  }
-
 
   int _length = bytes_to_sectors(pos);
   int _indirect_size = (_length / (DISK_SECTOR_SIZE/4))+1;
   int _direct_size = (_length %  (DISK_SECTOR_SIZE/4));
-
-  if(_length == 0)
-  {
-    _indirect_size = 0;
-  }
 
   struct inode_indirect_disk * indirect = NULL;
   struct inode_disk * double_indirect = disk_inode;
