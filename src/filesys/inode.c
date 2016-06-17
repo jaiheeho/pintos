@@ -92,7 +92,7 @@ byte_to_sector (const struct inode *inode, off_t pos)
   }
   else
   {
-    printf("hererer1\n");
+    // printf("hererer1\n");
     return -1;
   }
 }
@@ -143,7 +143,6 @@ inode_create (disk_sector_t sector, off_t length)
     // length = (int) indirect.links[0]; 
     disk_write (filesys_disk, sector, disk_inode);
   } 
-
   free (disk_inode);
   return success;
 }
