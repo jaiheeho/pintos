@@ -428,11 +428,10 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
   /* extend file*/
   int length = inode_length (inode);
-  int newlength = size + offset;
 
   // printf("length :  %d\n",length);
-  if (length < newlength)
-    inode_free_map_add (length, newlength, &inode->data);
+  if (length < size + offset)
+    inode_free_map_add (length, size + offset, &inode->data);
 
   buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0, 0);
 
@@ -443,7 +442,6 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
     {
       /* Sector to write, starting byte offset within sector. */
       // printf("write _at 1 : offset : %d size : %d \n", offset, size);
-      disk_sector_t sector_idx = byte_to_sector (inode, offset);
       int sector_ofs = offset % DISK_SECTOR_SIZE;
       // printf("write _at 2 : sector_idx : %d\n",sector_idx);
 
@@ -461,6 +459,9 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       if (chunk_size <= 0)
         break;
 
+      inode->data.length += chunk_size;
+      disk_sector_t sector_idx = byte_to_sector (inode, offset);
+
       /* If the sector contains data before or after the chunk
    we're writing, then we need to read in the sector
    first.  Otherwise we start with a sector of all zeros. */
@@ -475,7 +476,6 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       offset += chunk_size;
       bytes_written += chunk_size;
     } 
-    inode->data.length = newlength;
     buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0 , 0);
   return bytes_written;
 }
