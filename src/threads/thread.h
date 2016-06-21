@@ -118,6 +118,11 @@ struct thread
     struct semaphore loading_safer;       /* semaphore that blocks parent proceess to complete loading procedure*/
     struct semaphore spt_safer_thread;
 
+    //for project 4
+    struct dir* pwd;
+
+
+
     ///WHERE WE ADDED END/////
 
     /* Shared between thread.c and synch.c. */

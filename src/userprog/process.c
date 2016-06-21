@@ -147,11 +147,14 @@ start_process (void *f_name)
   if (!success) {
     palloc_free_page (file_name);
     curr->is_loaded = 0;
+
     //if loading was unsuccessful remove thread from parent's child list and exit();
     list_remove(&curr->child_elem);
     /*for the loading safer (incase of parent waiting for child loading end*/
+
     sema_try_down(&curr->loading_safer);
     sema_up(&curr->loading_safer);
+
     thread_exit ();
   }
 
@@ -161,6 +164,14 @@ start_process (void *f_name)
   // fd starts from 2 since 0 and 1 is allocated for stdin & stdout.
   curr->fd_given = 2;
   curr->is_loaded = 1;
+
+
+  // proj4: set pwd
+  if(thread_current()->pwd == NULL)
+    {
+      thread_current()->pwd = dir_open_root();
+
+    }
 
   /* mmap_id recording*/
   curr->mmap_id_given = 1;
@@ -307,8 +318,22 @@ process_exit (void)
     free(f);  
   }
 
+  // proj3-2 : unmap all mmaps
+  struct list *mmap_table = &curr->mmap_table;
+  struct list_elem *iter;
+  struct mmap_descriptor *m;
+
+  if( curr->is_loaded == 1)
+    for(iter = list_begin(mmap_table); iter != list_tail(mmap_table);
+        iter = list_begin(mmap_table))
+      {
+        m = list_entry(iter, struct mmap_descriptor, elem);
+        munmap(m->mmap_id);
+      }
+
   /***** ADDED CODE *****/
   //Finally, wake up parent who waiting for this thread*/
+
   if (curr->is_wait_called){
     sema_up(&curr->sema_wait);
   }
@@ -323,17 +348,11 @@ process_exit (void)
   if (curr->parent_proc != NULL)
     list_remove (&curr->child_elem);
 
-  // proj3-2 : unmap all mmaps
-  struct list *mmap_table = &curr->mmap_table;
-  struct list_elem *iter;
-  struct mmap_descriptor *m;
-  for(iter = list_begin(mmap_table); iter != list_tail(mmap_table);
-      iter = list_begin(mmap_table))
+  //proj4 : free pwd
+  if(thread_current()->pwd != NULL)
     {
-      m = list_entry(iter, struct mmap_descriptor, elem);
-      munmap(m->mmap_id);
+      dir_close(thread_current()->pwd);
     }
-
   //finally free supplement page table for this process.
   sup_page_table_free(&curr->spt);
 
