@@ -250,9 +250,6 @@ void inode_free_map_release(size_t size, struct inode_disk *disk_inode)
     _indirect_size -=1;
   }
 
-  if (_length == 0)
-    _indirect_size =0;
-
   struct inode_indirect_disk * indirect = calloc (1, sizeof (struct inode_disk));
   struct inode_disk * double_indirect = disk_inode;
   int i,j;
