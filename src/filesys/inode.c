@@ -436,7 +436,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
     buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0, 0);
   }
 
-  newlength = size + offset;
+  int newlength = size + offset;
   // printf("length : %d\n", length);
 
   while (size > 0) 
