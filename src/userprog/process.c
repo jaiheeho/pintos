@@ -307,18 +307,7 @@ process_exit (void)
     free(f);  
   }
 
-  /***** ADDED CODE *****/
-  //Finally, wake up parent who waiting for this thread*/
-  if (curr->is_wait_called){
-    sema_up(&curr->sema_wait);
-  }
-  else {
-    //If, parent didn't call wait() for this process yet, wait for parent until parent calls exit() itself or calls wait()
-    if (curr->parent_proc != NULL){
-      sema_down(&curr->sema_wait);
-      sema_down(&curr->sema_wait);
-    }
-  }
+
   //Disconncect with its parent (i.e remove itself from children list of parent)
   if (curr->parent_proc != NULL)
     list_remove (&curr->child_elem);
@@ -334,6 +323,19 @@ process_exit (void)
       munmap(m->mmap_id);
     }
 
+  /***** ADDED CODE *****/
+  //Finally, wake up parent who waiting for this thread*/
+  if (curr->is_wait_called){
+    sema_up(&curr->sema_wait);
+  }
+  else {
+    //If, parent didn't call wait() for this process yet, wait for parent until parent calls exit() itself or calls wait()
+    if (curr->parent_proc != NULL){
+      sema_down(&curr->sema_wait);
+      sema_down(&curr->sema_wait);
+    }
+  }
+  
   //finally free supplement page table for this process.
   sup_page_table_free(&curr->spt);
 
