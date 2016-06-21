@@ -450,9 +450,6 @@ mmap (int fd, void *addr)
 
   // if (invalid_addr((void*)addr))
   //   return MAP_FAILED;
-  if ( (uint32_t)addr > (uint32_t)(PHYS_BASE - STACK_MAX) && (uint32_t)addr < (uint32_t)esp)
-    return MAP_FAILED;
-
   if((!is_user_vaddr(addr)) || (pg_ofs(addr) != 0) || (fd < 2) || addr < 0x08048000)
     {
       return MAP_FAILED;
