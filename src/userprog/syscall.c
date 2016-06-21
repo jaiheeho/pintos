@@ -193,8 +193,7 @@ pid_t
 exec (const char *cmd_line)
 {
   pid_t process_id;
-  void *addr = cmd_line;
-  if (!is_user_vaddr(addr) || addr <(void*)0x08048000 || addr == NULL)
+  if(invalid_addr((void*)cmd_line))
     exit(-1);
   process_id =  process_execute(cmd_line);
   return process_id;
