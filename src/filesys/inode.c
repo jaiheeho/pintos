@@ -85,11 +85,16 @@ byte_to_sector (const struct inode *inode, off_t pos)
   if (pos < length)
   {
     length = bytes_to_sectors(pos);
+    if (pos == 0)
+      length = 1; 
 
     int indirect_size = (length / (DISK_SECTOR_SIZE/4));
     int direct_size = (length % (DISK_SECTOR_SIZE/4))-1;
-    if(direct_size == 0)
+    if(direct_size == -1)
+    {
       direct_size = 127;
+      indirect_size -= 1;
+    }
 
     memset(&indirect, 0, sizeof(struct inode_disk));
     buffer_cache_read(inode->data.links[indirect_size],(char*) &indirect, DISK_SECTOR_SIZE, 0);
@@ -161,16 +166,10 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   int _direct_size = (_length %  (DISK_SECTOR_SIZE/4));
 
 
-
   if (_direct_size == 0)
   {
     _direct_size = 128;
     _indirect_size -=1;
-  }
-
-  if(_length == 0)
-  {
-    _indirect_size = 0;
   }
 
   struct inode_indirect_disk * indirect = NULL;
