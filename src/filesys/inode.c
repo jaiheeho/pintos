@@ -462,7 +462,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
         break;
 
       if (offset + chunk_size > length)
-        inode->data.length += offset + chunk_size;
+        inode->data.length = offset + chunk_size;
       disk_sector_t sector_idx = byte_to_sector (inode, offset);
 
       /* If the sector contains data before or after the chunk
