@@ -593,7 +593,7 @@ munmap (mapid_t mmap_id)
     }
     hash_delete(spt, e);
   }
-  buffer_cache_flush();
+  // buffer_cache_flush();
   file_close(m->file);
 
   list_remove(&m->elem);
