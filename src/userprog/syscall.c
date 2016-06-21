@@ -707,7 +707,7 @@ bool invalid_addr(void* addr){
     return true;
   if (addr == NULL)
     return true;
-  if ( addr > (void*)(PHYS_BASE - STACK_MAX) && addr < esp)
+  if ( (uint32_t)addr > (uint32_t)(PHYS_BASE - STACK_MAX) && (uint32_t)addr < (uint32_t)esp)
     return true;
   //Not within pagedir
   return false;
