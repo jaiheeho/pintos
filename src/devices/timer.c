@@ -192,6 +192,11 @@ timer_interrupt (struct intr_frame *args UNUSED)
     }
   }
 
+  if (timer_ticks() % (TIMER_FREQ*10) == 0)
+  {
+    buffer_cache_free();
+  }
+
   //unblock threads that has passed wakeup_time
   for(iter = list_begin(&sleep_list);
     iter != list_tail(&sleep_list); iter = list_begin(&sleep_list))

@@ -296,7 +296,8 @@ void buffer_cache_free()
 
   int iter = 0;
 
-  sema_down(&buffer_cache_global_lock);
+  if(!sema_try_down(&buffer_cache_global_lock))
+    return;
 
   for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
     {
