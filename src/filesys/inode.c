@@ -407,7 +407,9 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       offset += chunk_size;
       bytes_read += chunk_size;
     }
-  if (length/DISK_SECTOR_SIZE > offset/DISK_SECTOR_SIZE)
+
+  //read ahead one more block
+  if (bytes_to_sectors(length) > bytes_to_sectors(offset))
   {
     char read_ahead[DISK_SECTOR_SIZE];
     disk_sector_t sector_idx = byte_to_sector (inode, bytes_to_sectors(offset) * DISK_SECTOR_SIZE + 1);
