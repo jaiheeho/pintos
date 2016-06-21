@@ -63,13 +63,13 @@ sort_chunks (const char *subprocess, int exit_status)
       int j;
       CHECK ((handle = open (fn)) > 1, "open \"%s\"", fn);
       read (handle, temp, CHUNK_SIZE);
-      temp2 = buf1 + CHUNK_SIZE * i
+      temp2 = buf1 + CHUNK_SIZE * i;
       for (j = 0 ; j< CHUNK_SIZE; j++)
       {
         if (temp[j] != temp2[j])
           fail("fuch this");
       }
-      
+
       close(handle);
 
       /* Sort with subprocess. */
