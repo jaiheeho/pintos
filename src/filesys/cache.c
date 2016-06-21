@@ -121,7 +121,7 @@ int buffer_cache_write(disk_sector_t sector, char * buffer,
   if(found == true)
   {
     sema_down(&(buffer_cache[iter].lock));
-    buffer_cache[i].in_use = true;
+    buffer_cache[iter].in_use = true;
 
     if(buffer_cache[iter].occupied != false
        && buffer_cache[iter].sector != INVALID_SECTOR)
