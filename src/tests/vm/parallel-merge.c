@@ -68,39 +68,13 @@ sort_chunks (const char *subprocess, int exit_status)
       char fn[128];
       int handle;
 
-
-      char buf2[CHUNK_SIZE];
-
       CHECK (wait (children[i]) == exit_status, "wait for child %zu", i);
 
       /* Read chunk back from file. */
       quiet = true;
       snprintf (fn, sizeof fn, "buf%zu", i);
       CHECK ((handle = open (fn)) > 1, "open \"%s\"", fn);
-      read (handle, buf2, CHUNK_SIZE);
-
-      size_t histogram2[256];
-
-      int j;
-      for (j = 0; j < sizeof buf2; j++)
-        histogram[buf1[i*CHUNK_SIZE + j]]++;
-
-      size_t buf_idx;
-      size_t hist_idx;
-
-      buf_idx = 0;
-      for (hist_idx = 0; hist_idx < sizeof histogram2 / sizeof *histogram2;
-           hist_idx++)
-        {
-          while (histogram2[hist_idx]-- > 0) 
-            {
-              if (buf2[buf_idx] != hist_idx)
-                fail ("FUck herer %d:bad value %d in byte %zu", i, buf2[buf_idx], buf_idx);
-              buf_idx++;
-            } 
-        }
-
-
+      read (handle, buf1 + CHUNK_SIZE * i, CHUNK_SIZE);
       close (handle);
       quiet = false;
     }
