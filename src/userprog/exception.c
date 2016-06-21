@@ -150,8 +150,8 @@ page_fault (struct intr_frame *f)
   
   /***** ADDED CODE *****/
   printf("----------------------------------------------\n");
-  printf("faulted_addr: %0x\n", fault_addr);
-  printf("f->esp : %0x\n", f->esp);
+  printf("faulted_addr: %08x\n", fault_addr);
+  printf("f->esp : %08x\n", f->esp);
   printf("Errorcode : %d %d %d\n", not_present, write, user);
   // // printf("tid: %d\n", thread_current()->tid);
   
