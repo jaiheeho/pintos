@@ -145,6 +145,7 @@ start_process (void *f_name)
   /***** ADDED CODE *****/
   //Palloc_free_page has to be done to free memory for proc name.
   if (!success) {
+    printf("hererer\n");
     palloc_free_page (file_name);
     curr->is_loaded = 0;
     //if loading was unsuccessful remove thread from parent's child list and exit();
@@ -307,8 +308,6 @@ process_exit (void)
     free(f);  
   }
 
-
-
   // proj3-2 : unmap all mmaps
   struct list *mmap_table = &curr->mmap_table;
   struct list_elem *iter;
@@ -322,6 +321,7 @@ process_exit (void)
 
   /***** ADDED CODE *****/
   //Finally, wake up parent who waiting for this thread*/
+
   if (curr->is_wait_called){
     sema_up(&curr->sema_wait);
   }
@@ -335,6 +335,7 @@ process_exit (void)
   //Disconncect with its parent (i.e remove itself from children list of parent)
   if (curr->parent_proc != NULL)
     list_remove (&curr->child_elem);
+
   //finally free supplement page table for this process.
   sup_page_table_free(&curr->spt);
 
