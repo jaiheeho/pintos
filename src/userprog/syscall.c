@@ -12,7 +12,7 @@
 #include "userprog/pagedir.h" // ADDED HEADER
 #include "filesys/file.h" // ADDED HEADER
 #include "filesys/filesys.h" // ADDED HEADER
-#incldue "filesys/cache.h"
+#include "filesys/cache.h"
 #include "lib/user/syscall.h" // ADDED HEADER
 #include "devices/input.h" // ADDED HEADER
 #include "vm/page.h"// ADDED HEADER
