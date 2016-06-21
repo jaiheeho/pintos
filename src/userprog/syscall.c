@@ -138,6 +138,35 @@ syscall_handler (struct intr_frame *f UNUSED)
       get_args(f->esp, args, 1);
       munmap(args[0]);
       break;
+    case SYS_MKDIR:
+      get_args(f->esp, args, 1);
+      retval = mkdir(args[0]);
+      returnZ=true;
+      break;
+    case SYS_CHDIR:
+      get_args(f->esp, args, 1);
+      retval = chdir(args[0]);
+      returnZ=true;
+      break;
+   case SYS_READDIR:
+      get_args(f->esp, args, 2);
+      retval = readdir(args[0], args[1]);
+      returnZ=true;
+      break;
+   case SYS_ISDIR:
+      get_args(f->esp, args, 1);
+      retval = isdir(args[0]);
+      returnZ=true;
+      break;
+   case SYS_INUMBER:
+      get_args(f->esp, args, 1);
+      retval = inumber(args[0]);
+      returnZ=true;
+      break;
+
+
+
+
     }
   // if return value is needed, plug in the return value
   if(returnZ)
@@ -256,16 +285,25 @@ open(const char *file)
 {
 
   struct file *filestruct;
-  struct thread *curr = thread_current(); 
+  struct dir *dirstruct;
+  struct thread *curr = thread_current();
+  bool isdir = false;
+
   if(invalid_addr((void*)file))
     exit(-1);
   //open file with name (file)
   filestruct = filesys_open(file);
   //check whether open was successful
-  if (filestruct == NULL)
+  if ((filestruct = filesys_open(file)) == NULL)
   {
-    return -1;
+    if((dirstruct = filesys_open_directory(file)) == NULL)
+      {
+      	return -1;
+      }
+    else isdir = true;
   }
+  else isdir = false;
+
   //allocate memory
   struct file_descriptor *new_fd;
   new_fd = (struct file_descriptor *)malloc (sizeof (struct file_descriptor));
@@ -277,6 +315,7 @@ open(const char *file)
   //initialize new_fd
   new_fd->file = filestruct;
   new_fd->fd =  curr->fd_given ++;
+  new_fd->is_dir = isdir;
   list_push_back(&curr->file_descriptor_table, &new_fd->elem);
   return new_fd->fd;
 }
@@ -428,7 +467,10 @@ void close (int fd)
   if (!fdt)
     return;
   list_remove(&fdt->elem);
-  file_close(fdt->file);
+  if(fdt->is_dir == true)
+    dir_close(fdt->dir);
+  else
+    file_close(fdt->file);
   free(fdt);
 }
 
@@ -601,6 +643,91 @@ munmap (mapid_t mmap_id)
 
 }
 
+
+
+
+bool mkdir(const char *dir)
+{
+  //printf("syscall_mkdir: init: %s\n", dir);
+  bool success;
+  if(invalid_addr((void*)dir))
+    exit(-1);
+  success = filesys_create_directory(dir);
+  return success;
+}
+
+
+
+
+bool chdir(const char *dir)
+{
+  bool success;
+  if(invalid_addr((void*)dir))
+    exit(-1);
+  
+  struct dir* temp = thread_current()->pwd;
+  struct dir* temp2;
+  if((temp2 = filesys_open_directory(dir)) == NULL)
+    {
+      success =  false;
+    }
+  else
+    {
+      thread_current()->pwd = temp2;
+      dir_close(temp);
+      success =  true;
+    }
+
+  return success;
+}
+
+
+
+bool isdir(int fd)
+{
+  struct file_descriptor *f = get_struct_fd_struct(fd);
+  return f->is_dir;
+
+}
+
+int inumber(int fd)
+{
+  struct file_descriptor *f = get_struct_fd_struct(fd);
+
+  if(f == NULL)
+    return 0;
+
+  if(f->is_dir)
+    {
+      return dir_get_inum_of_dir(f->dir);
+    }
+  else
+    {
+      return file_get_inum_of_file(f->file);
+    }
+
+}
+
+bool readdir(int fd, char *name)
+{
+  struct file_descriptor *f = get_struct_fd_struct(fd);
+  
+  if(f == NULL)
+    return 0;
+  
+  if(f->is_dir)
+    {
+      return dir_readdir(f->dir, name);
+    }
+  else
+    {
+      return false;
+    }
+
+}
+
+
+
 struct mmap_descriptor* get_mmap_descriptor(int mmap_id)
 {
   struct thread* curr = thread_current();
@@ -619,6 +746,8 @@ struct mmap_descriptor* get_mmap_descriptor(int mmap_id)
   }
   return NULL;
 }
+
+
 
 /************************************************************************
 * FUNCTION : get_struct_file                                            *

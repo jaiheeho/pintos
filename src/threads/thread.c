@@ -128,6 +128,7 @@ thread_init (void)
   // initialize initial thread//
   initial_thread->recent_cpu = 0;
   initial_thread->nice = 0;
+  initial_thread->pwd = NULL;
   ///WHERE WE ADDED END/////
 }
 
@@ -236,6 +237,15 @@ thread_create (const char *name, int priority,
   sf = alloc_frame (t, sizeof *sf);
   sf->eip = switch_entry;
 
+
+  //proj4-3: inherit pwd before we move on
+  if(thread_start_complete == 1)
+    {
+      if(thread_current()->pwd != NULL)
+	t->pwd = dir_reopen(thread_current()->pwd);
+      else
+	t->pwd = dir_open_root();
+    }
   /* Add to run queue. */
   thread_unblock (t);
   return tid;

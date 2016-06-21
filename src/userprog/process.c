@@ -165,6 +165,14 @@ start_process (void *f_name)
   curr->fd_given = 2;
   curr->is_loaded = 1;
 
+
+  // proj4: set pwd
+  if(thread_current()->pwd == NULL)
+    {
+      thread_current()->pwd = dir_open_root();
+
+    }
+
   /* mmap_id recording*/
   curr->mmap_id_given = 1;
   list_init(&curr->mmap_table);
@@ -315,12 +323,6 @@ process_exit (void)
   struct list_elem *iter;
   struct mmap_descriptor *m;
 
-  // while (!list_empty (mmap_table) && curr->is_loaded == 1)
-  // {
-  //   iter = list_pop_front (mmap_table);
-  //   m = list_entry(iter, struct mmap_descriptor, elem);
-  //   munmap(m->mmap_id);
-  // }
   if( curr->is_loaded == 1)
     for(iter = list_begin(mmap_table); iter != list_tail(mmap_table);
         iter = list_begin(mmap_table))
@@ -346,6 +348,11 @@ process_exit (void)
   if (curr->parent_proc != NULL)
     list_remove (&curr->child_elem);
 
+  //proj4 : free pwd
+  if(thread_current()->pwd != NULL)
+    {
+      dir_close(thread_current()->pwd);
+    }
   //finally free supplement page table for this process.
   sup_page_table_free(&curr->spt);
 
