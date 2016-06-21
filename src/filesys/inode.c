@@ -166,7 +166,6 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   int _indirect_size = (_length / (DISK_SECTOR_SIZE/4))+1;
   int _direct_size = (_length %  (DISK_SECTOR_SIZE/4));
 
-
   if (_direct_size == 0)
   {
     _direct_size = 128;
