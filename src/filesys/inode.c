@@ -192,7 +192,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   // printf("AT ADD; length : %d, indirect_size; %d, direct_size:%d \n",
   //   length, indirect_size, direct_size);
   // printf("AT ADD end; length : %d , indirect_size; %d, direct_size:%d \n",
-  _length, _indirect_size, _direct_size);
+  // _length, _indirect_size, _direct_size);
   indirect = calloc (1, sizeof (struct inode_indirect_disk));
 
   if( !indirect )
