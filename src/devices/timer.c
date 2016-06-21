@@ -7,6 +7,7 @@
 #include "threads/io.h"
 #include "threads/synch.h"
 #include "threads/thread.h"
+#include "filesys/cache.h"
   
 /* See [8254] for hardware details of the 8254 timer chip. */
 
@@ -189,6 +190,11 @@ timer_interrupt (struct intr_frame *args UNUSED)
       update_priorities();
       intr_yield_on_return ();
     }
+  }
+
+  if (timer_ticks() % (10*TIMER_FREQ) == 0)
+  {
+    buffer_cache_free();
   }
 
   //unblock threads that has passed wakeup_time

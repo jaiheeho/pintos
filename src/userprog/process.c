@@ -138,9 +138,7 @@ start_process (void *f_name)
   sema_init(&curr->spt_safer_thread, 1);
 
   //addeed filesys_lock
-  sema_down(&filesys_global_lock);
   success = load (file_name, &if_.eip, &if_.esp);
-  sema_up(&filesys_global_lock);
   /***** END OF ADDED CODE *****/
 
   /* If load failed, quit. */
@@ -294,7 +292,6 @@ process_exit (void)
   }
 
   //allow write to executable by closing it in write deny part of proj2
-  sema_down(&filesys_global_lock);
   if (curr->executable){
     file_close(curr->executable);
   }
@@ -309,7 +306,6 @@ process_exit (void)
     file_close(f->file);
     free(f);  
   }
-  sema_up(&filesys_global_lock);
 
   /***** ADDED CODE *****/
   //Finally, wake up parent who waiting for this thread*/
