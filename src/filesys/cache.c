@@ -278,10 +278,10 @@ void buffer_cache_elem_free(disk_sector_t sector)
       sema_down(&(buffer_cache[iter].lock));
       
       //if necessary, write out to disk
-      if(buffer_cache[iter].is_dirty == true)
-        {
+      // if(buffer_cache[iter].is_dirty == true)
+      //   {
           disk_write(filesys_disk, buffer_cache[iter].sector, buffer_cache[iter].data);
-        }
+        // }
 	  
   	  buffer_cache_elem_init(iter);
   	  sema_up(&buffer_cache[iter].lock);
