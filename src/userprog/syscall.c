@@ -448,9 +448,6 @@ mmap (int fd, void *addr)
   // other crucial memories. However, this issue is self-handled in
   // numerous validity checkings that we do inside mmap().)
 
-  // if (invalid_addr((void*)addr))
-  //   return MAP_FAILED;
-
   if((!is_user_vaddr(addr)) || (pg_ofs(addr) != 0) || (fd < 2) || addr < 0x08048000)
     {
       return MAP_FAILED;
@@ -569,35 +566,33 @@ munmap (mapid_t mmap_id)
 
   // loop thru the mmaped region's pages and destroy sptes(and its underlying stuff)
   for(temp = m->start_addr; temp <= m->last_page ; temp += PGSIZE)
+  {
+      
+    struct hash_elem *e = found_hash_elem_from_spt(temp);
+    
+    if(e == NULL)
     {
-      
-      struct hash_elem *e = found_hash_elem_from_spt(temp);
-      
-      if(e == NULL)
-	{
-	  // wth? it cannot be!!
-	}
-      struct spte* target = hash_entry(e, struct spte, elem);
-      //lock the frame
-      target->frame_locked = true;
-      // if the page was present, we must write back to the file
-      if(target->present == true)
-	{
-	  // if the page is dirty, write back to file.
-	  if(pagedir_is_dirty(thread_current()->pagedir, target->user_addr))
+      // wth? it cannot be!!
+    }
+    struct spte* target = hash_entry(e, struct spte, elem);
+    //lock the frame
+    target->frame_locked = true;
+    // if the page was present, we must write back to the file
+    if(target->present == true)
+  	{
+  	  // if the page is dirty, write back to file.
+  	  if(pagedir_is_dirty(thread_current()->pagedir, target->user_addr))
 	    {
 	      file_write_at(m->file, target->user_addr,
 			    target->loading_info.page_read_bytes,
 			    target->loading_info.ofs);
 	    }
-	      // must free the frame
-	      frame_free(target->fte);
-	      pagedir_clear_page(thread_current()->pagedir, target->user_addr);
-	}
-      hash_delete(spt, e);
-
+      // must free the frame
+      frame_free(target->fte);
+      pagedir_clear_page(thread_current()->pagedir, target->user_addr);
     }
-
+    hash_delete(spt, e);
+  }
   file_close(m->file);
 
   list_remove(&m->elem);
