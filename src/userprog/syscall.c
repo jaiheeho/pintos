@@ -448,8 +448,8 @@ mmap (int fd, void *addr)
   // other crucial memories. However, this issue is self-handled in
   // numerous validity checkings that we do inside mmap().)
 
-  if (invalid_addr((void*)addr))
-    exit(-1);
+  // if (invalid_addr((void*)addr))
+  //   return MAP_FAILED;
 
   if((!is_user_vaddr(addr)) || (pg_ofs(addr) != 0) || (fd < 2) || addr < 0x08048000)
     {
