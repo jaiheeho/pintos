@@ -192,7 +192,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
     }
   }
 
-  if (timer_ticks() % (TIMER_FREQ*10) == 0)
+  if (timer_ticks() % (TIMER_FREQ) == 0)
   {
     buffer_cache_free();
   }
