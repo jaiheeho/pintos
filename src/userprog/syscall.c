@@ -19,6 +19,7 @@
 #include "vm/frame.h"
 #include <inttypes.h> // ADDED HEADER
 
+uint32_t esp;
 
 static void syscall_handler (struct intr_frame *);
 void get_args(void* esp, int *args, int argsnum);
@@ -52,6 +53,8 @@ syscall_handler (struct intr_frame *f UNUSED)
 
   uint32_t syscall_num;
   int args[12];
+
+  esp = f->esp;
   //check whether esp is vaild
   if (invalid_addr(f->esp))
     exit(-1);
@@ -306,6 +309,10 @@ int read (int fd, void *buffer, unsigned length)
 {
   uint32_t i;
   uint8_t* buf_char = (uint8_t *) buffer;
+
+  if (invalid((void*)buffer))
+    exit(-1);
+
   int retval;
   if(fd == 0)
   {
@@ -345,6 +352,9 @@ int write(int fd, const void *buffer, unsigned length)
 {
   int retval;
   uint8_t* buf_char = (uint8_t *) buffer; 
+
+  if (invalid((void*)buffer))
+    exit(-1);
   if(fd <= 0)
     {
       //error
@@ -696,6 +706,8 @@ bool invalid_addr(void* addr){
   if (addr <(void*)0x08048000)
     return true;
   if (addr == NULL)
+    return true;
+  if ( addr > (void*)(PHYS_BASE - STACK_MAX) && addr < esp)
     return true;
   //Not within pagedir
   return false;
