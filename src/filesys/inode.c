@@ -235,6 +235,9 @@ void inode_free_map_release(size_t size, struct inode_disk *disk_inode)
   int _indirect_size = (_length / (DISK_SECTOR_SIZE/4))+1;
   int _direct_size = (_length % (DISK_SECTOR_SIZE/4));
 
+  if (_length == 0)
+    _indirect_size =0;
+  
   struct inode_indirect_disk * indirect = calloc (1, sizeof (struct inode_disk));
   struct inode_disk * double_indirect = disk_inode;
   int i,j;
