@@ -1,12 +1,14 @@
 #include "filesys/filesys.h"
 #include <debug.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "filesys/file.h"
 #include "filesys/free-map.h"
 #include "filesys/inode.h"
 #include "filesys/directory.h"
 #include "devices/disk.h"
+#include "filesys/cache.h"
 
 /* The disk that contains the file system. */
 struct disk *filesys_disk;
@@ -23,11 +25,10 @@ filesys_init (bool format)
     PANIC ("hd0:1 (hdb) not present, file system initialization failed");
 
   inode_init ();
+  buffer_cache_init();
   free_map_init ();
-
   if (format) 
     do_format ();
-
   free_map_open ();
 }
 
@@ -69,11 +70,9 @@ filesys_open (const char *name)
 {
   struct dir *dir = dir_open_root ();
   struct inode *inode = NULL;
-
   if (dir != NULL)
     dir_lookup (dir, name, &inode);
   dir_close (dir);
-
   return file_open (inode);
 }
 

@@ -14,6 +14,9 @@
 //for proj3 
 #include "vm/frame.h"
 #include "vm/swap.h"
+//for proj4
+#include "filesys/cache.h"
+
 
 #ifdef USERPROG
 #include "userprog/process.h"

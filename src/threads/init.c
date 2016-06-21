@@ -35,6 +35,7 @@
 #include "devices/disk.h"
 #include "filesys/filesys.h"
 #include "filesys/fsutil.h"
+#include "filesys/cache.h"
 #endif
 
 /* Amount of physical memory, in 4 kB pages. */
@@ -114,7 +115,9 @@ main (void)
 #ifdef FILESYS
   /* Initialize file system. */
   disk_init ();
+  // buffer_cache_init();
   filesys_init (format_filesys);
+  //FOR BUFFERCACHE in Proj4//
   //where we added///
   //swap_table_init for proj3 in main thread
   swap_table_init();

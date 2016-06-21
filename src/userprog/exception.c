@@ -150,8 +150,8 @@ page_fault (struct intr_frame *f)
   
   /***** ADDED CODE *****/
   // printf("----------------------------------------------\n");
-  // printf("faulted_addr: %0x\n", fault_addr);
-  // printf("f->esp : %0x\n", f->esp);
+  // printf("faulted_addr: %08x\n", fault_addr);
+  // printf("f->esp : %08x\n", f->esp);
   // printf("Errorcode : %d %d %d\n", not_present, write, user);
   // // printf("tid: %d\n", thread_current()->tid);
   
@@ -164,10 +164,6 @@ page_fault (struct intr_frame *f)
   if (fault_addr == NULL || fault_addr >= PHYS_BASE
       || fault_addr < (void*)0x08048000 || (!not_present))
   {
-    if(!user)
-  	{
-  	  sema_up(&filesys_global_lock);
-  	}
     exit(-1);
   }
 
@@ -181,10 +177,10 @@ page_fault (struct intr_frame *f)
       //USER must not write below stack arbitrarily 
       struct hash_elem *e = found_hash_elem_from_spt(pg_round_down(fault_addr));
       if (user && e == NULL){
-        sema_up(&filesys_global_lock);
         exit(-1);
       }
       //else load page for writing
+      // printf("herer\n");
       if(!load_page_for_write(fault_addr))
         PANIC("Exceeded STACK_MAX");
     }
@@ -192,8 +188,6 @@ page_fault (struct intr_frame *f)
     {
       if(!load_page_for_read(fault_addr))
       {
-        if (!user)
-          sema_up(&filesys_global_lock);
         exit(-1);
       }
     }
@@ -207,8 +201,6 @@ page_fault (struct intr_frame *f)
   {
     if(!load_page_for_read(fault_addr))
     {
-      if (!user)
-        sema_up(&filesys_global_lock);
       exit(-1);
     }
   }
@@ -221,7 +213,7 @@ page_fault (struct intr_frame *f)
   if ( not_present && write )
   {
     //(1)
-    if((uint32_t)f->esp > (uint32_t)fault_addr)
+    if((uint32_t)f->esp > (uint32_t)fault_addr && !user)
     {
       //(1)-1
       if( (uint32_t)f->esp - (uint32_t)fault_addr <= (uint32_t)STACK_STRIDE)
@@ -231,16 +223,12 @@ page_fault (struct intr_frame *f)
       //(1)-2
       else
       {
-        if(!user)
-        {
-            sema_up(&filesys_global_lock);
-        }
         exit(-1);
       }
     }
     //(2)
     else
-    {
+    { 
       if(!load_page_for_write(fault_addr))
         PANIC("load page failed.");
     }
