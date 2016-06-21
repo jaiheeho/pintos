@@ -84,10 +84,12 @@ byte_to_sector (const struct inode *inode, off_t pos)
   // printf("in byte_to_sector :pos : %d, length%d\n",pos, length);
   if (pos < length)
   {
-    length = pos / DISK_SECTOR_SIZE;
+    length = bytes_to_sectors(pos);
 
     int indirect_size = (length / (DISK_SECTOR_SIZE/4));
-    int direct_size = (length % (DISK_SECTOR_SIZE/4));
+    int direct_size = (length % (DISK_SECTOR_SIZE/4))-1;
+    if(direct_size == 0)
+      direct_size = 127;
 
     memset(&indirect, 0, sizeof(struct inode_disk));
     buffer_cache_read(inode->data.links[indirect_size],(char*) &indirect, DISK_SECTOR_SIZE, 0);
@@ -158,6 +160,14 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   int _indirect_size = (_length / (DISK_SECTOR_SIZE/4))+1;
   int _direct_size = (_length %  (DISK_SECTOR_SIZE/4));
 
+
+
+  if (_direct_size == 0)
+  {
+    _direct_size = 128;
+    _indirect_size -=1;
+  }
+
   if(_length == 0)
   {
     _indirect_size = 0;
@@ -178,11 +188,11 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   if (size  == 0)
     start = false;
 
-  printf("size : %d new size : %d\n", size, pos);
-  printf("AT ADD; length : %d, indirect_size; %d, direct_size:%d \n",
-    length, indirect_size, direct_size);
-  printf("AT ADD end; length : %d , indirect_size; %d, direct_size:%d \n",
-  _length, _indirect_size, _direct_size);
+  // printf("size : %d new size : %d\n", size, pos);
+  // printf("AT ADD; length : %d, indirect_size; %d, direct_size:%d \n",
+  //   length, indirect_size, direct_size);
+  // printf("AT ADD end; length : %d , indirect_size; %d, direct_size:%d \n",
+  // _length, _indirect_size, _direct_size);
   indirect = calloc (1, sizeof (struct inode_indirect_disk));
   if( !indirect )
     return false;
@@ -235,9 +245,15 @@ void inode_free_map_release(size_t size, struct inode_disk *disk_inode)
   int _indirect_size = (_length / (DISK_SECTOR_SIZE/4))+1;
   int _direct_size = (_length % (DISK_SECTOR_SIZE/4));
 
+  if (_direct_size == 0)
+  {
+    _direct_size = 128;
+    _indirect_size -=1;
+  }
+
   if (_length == 0)
     _indirect_size =0;
-  
+
   struct inode_indirect_disk * indirect = calloc (1, sizeof (struct inode_disk));
   struct inode_disk * double_indirect = disk_inode;
   int i,j;
