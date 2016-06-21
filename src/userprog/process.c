@@ -321,13 +321,13 @@ process_exit (void)
   //   m = list_entry(iter, struct mmap_descriptor, elem);
   //   munmap(m->mmap_id);
   // }
-  // if( is_loaded == 1)
-  for(iter = list_begin(mmap_table); iter != list_tail(mmap_table);
-      iter = list_begin(mmap_table))
-    {
-      m = list_entry(iter, struct mmap_descriptor, elem);
-      munmap(m->mmap_id);
-    }
+  if( curr->is_loaded == 1)
+    for(iter = list_begin(mmap_table); iter != list_tail(mmap_table);
+        iter = list_begin(mmap_table))
+      {
+        m = list_entry(iter, struct mmap_descriptor, elem);
+        munmap(m->mmap_id);
+      }
 
   /***** ADDED CODE *****/
   //Finally, wake up parent who waiting for this thread*/
