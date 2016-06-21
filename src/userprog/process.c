@@ -315,19 +315,19 @@ process_exit (void)
   struct list_elem *iter;
   struct mmap_descriptor *m;
 
-  while (!list_empty (mmap_table) && curr->is_loaded == 1)
-  {
-    iter = list_pop_front (mmap_table);
-    m = list_entry(iter, struct mmap_descriptor, elem);
-    munmap(m->mmap_id);
-  }
-
-  // for(iter = list_begin(mmap_table); iter != list_tail(mmap_table);
-  //     iter = list_begin(mmap_table))
-  //   {
-  //     m = list_entry(iter, struct mmap_descriptor, elem);
-  //     munmap(m->mmap_id);
-  //   }
+  // while (!list_empty (mmap_table) && curr->is_loaded == 1)
+  // {
+  //   iter = list_pop_front (mmap_table);
+  //   m = list_entry(iter, struct mmap_descriptor, elem);
+  //   munmap(m->mmap_id);
+  // }
+  // if( is_loaded == 1)
+  for(iter = list_begin(mmap_table); iter != list_tail(mmap_table);
+      iter = list_begin(mmap_table))
+    {
+      m = list_entry(iter, struct mmap_descriptor, elem);
+      munmap(m->mmap_id);
+    }
 
   /***** ADDED CODE *****/
   //Finally, wake up parent who waiting for this thread*/
