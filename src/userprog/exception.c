@@ -164,7 +164,6 @@ page_fault (struct intr_frame *f)
   if (fault_addr == NULL || fault_addr >= PHYS_BASE
       || fault_addr < (void*)0x08048000 || (!not_present))
   {
-    buffer_cache_flush();
     exit(-1);
   }
 
@@ -178,7 +177,6 @@ page_fault (struct intr_frame *f)
       //USER must not write below stack arbitrarily 
       struct hash_elem *e = found_hash_elem_from_spt(pg_round_down(fault_addr));
       if (user && e == NULL){
-        buffer_cache_flush();
         exit(-1);
       }
       //else load page for writing
@@ -189,7 +187,6 @@ page_fault (struct intr_frame *f)
     {
       if(!load_page_for_read(fault_addr))
       {
-        buffer_cache_flush();
         exit(-1);
       }
     }
@@ -203,7 +200,6 @@ page_fault (struct intr_frame *f)
   {
     if(!load_page_for_read(fault_addr))
     {
-      buffer_cache_flush();
       exit(-1);
     }
   }
@@ -226,7 +222,6 @@ page_fault (struct intr_frame *f)
       //(1)-2
       else
       {
-        buffer_cache_flush();
         exit(-1);
       }
     }
