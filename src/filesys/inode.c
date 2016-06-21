@@ -261,12 +261,12 @@ void inode_free_map_release(size_t size, struct inode_disk *disk_inode)
   char zeros[DISK_SECTOR_SIZE];
   memset(zeros, 0, DISK_SECTOR_SIZE);
 
-  // printf("size : %d new size : %d\n", size, pos);
-  // printf("AT ADD; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
-  //   length, double_indirect_size, indirect_size, direct_size);
+  printf("size : %d new size : %d\n", size, pos);
+  printf("AT ADD; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+    length, double_indirect_size, indirect_size, direct_size);
 
-  // printf("AT ADD end; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
-  //   _length, _double_indirect_size, _indirect_size, _direct_size);
+  printf("AT ADD end; length : %d, double_indirect_size: %d, indirect_size; %d, direct_size:%d \n",
+    _length, _double_indirect_size, _indirect_size, _direct_size);
 
   for (i = 0; i < _indirect_size; i ++)
   {
