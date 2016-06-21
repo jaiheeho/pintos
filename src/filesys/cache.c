@@ -300,19 +300,20 @@ void buffer_cache_free()
     return;
 
   for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
-    {
-      if(buffer_cache[iter].sector != INVALID_SECTOR)
-	{	  
-	  sema_down(&(buffer_cache[iter].lock));
-	  
-	  //if necessary, write out to disk
-	  if(buffer_cache[iter].is_dirty == true)
-	    {
-	      disk_write(filesys_disk, buffer_cache[iter].sector, buffer_cache[iter].data);
-	    }
-	  sema_up(&buffer_cache[iter].lock);
-	}
-    }
+  {
+    if(buffer_cache[iter].sector != INVALID_SECTOR)
+  	{	  
+  	  if(sema_try_down(&(buffer_cache[iter].lock)))
+    	{ 
+    	  //if necessary, write out to disk
+    	  if(buffer_cache[iter].is_dirty == true)
+    	    {
+    	      disk_write(filesys_disk, buffer_cache[iter].sector, buffer_cache[iter].data);
+    	    }
+    	  sema_up(&buffer_cache[iter].lock);
+      }
+  	}
+  }
   sema_up(&buffer_cache_global_lock);
 }
 
