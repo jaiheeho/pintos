@@ -313,7 +313,6 @@ void buffer_cache_free()
 	}
     }
   sema_up(&buffer_cache_global_lock);
-
 }
 
 
