@@ -172,7 +172,7 @@ exit(int status)
   printf("%s: exit(%d)\n", thread_name(), status);
   struct thread *curr = thread_current();
   curr->exit_status=status;
-  if (statue == -1)
+  if (status == -1)
     buffer_cache_flush();
   thread_exit();
   NOT_REACHED ();
