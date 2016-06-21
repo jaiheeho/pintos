@@ -213,7 +213,7 @@ page_fault (struct intr_frame *f)
   if ( not_present && write )
   {
     //(1)
-    if((uint32_t)f->esp > (uint32_t)fault_addr)
+    if((uint32_t)f->esp > (uint32_t)fault_addr && !user)
     {
       //(1)-1
       if( (uint32_t)f->esp - (uint32_t)fault_addr <= (uint32_t)STACK_STRIDE)
