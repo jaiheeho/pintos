@@ -164,10 +164,10 @@ page_fault (struct intr_frame *f)
   if (fault_addr == NULL || fault_addr >= PHYS_BASE
       || fault_addr < (void*)0x08048000 || (!not_present))
   {
-    if(!user)
-  	{
-  	  sema_up(&filesys_global_lock);
-  	}
+   //  if(!user)
+  	// {
+  	//   sema_up(&filesys_global_lock);
+  	// }
     buffer_cache_flush();
     exit(-1);
   }
@@ -182,7 +182,7 @@ page_fault (struct intr_frame *f)
       //USER must not write below stack arbitrarily 
       struct hash_elem *e = found_hash_elem_from_spt(pg_round_down(fault_addr));
       if (user && e == NULL){
-        sema_up(&filesys_global_lock);
+        // sema_up(&filesys_global_lock);
         buffer_cache_flush();
         exit(-1);
       }
@@ -211,8 +211,8 @@ page_fault (struct intr_frame *f)
   {
     if(!load_page_for_read(fault_addr))
     {
-      if (!user)
-        sema_up(&filesys_global_lock);
+      // if (!user)
+      //   sema_up(&filesys_global_lock);
 
       buffer_cache_flush();
       exit(-1);
@@ -237,10 +237,10 @@ page_fault (struct intr_frame *f)
       //(1)-2
       else
       {
-        if(!user)
-        {
-            sema_up(&filesys_global_lock);
-        }
+        // if(!user)
+        // {
+        //     sema_up(&filesys_global_lock);
+        // }
         buffer_cache_flush();
         exit(-1);
       }
