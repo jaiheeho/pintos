@@ -407,6 +407,13 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       offset += chunk_size;
       bytes_read += chunk_size;
     }
+  if (length/DISK_SECTOR_SIZE > offset/DISK_SECTOR_SIZE)
+  {
+    char read_ahead[DISK_SECTOR_SIZE];
+    disk_sector_t sector_idx = byte_to_sector (inode, bytes_to_sectors(offset) * DISK_SECTOR_SIZE + 1);
+    buffer_cache_read(sector_idx, read_ahead , DISK_SECTOR_SIZE , 0);
+  }
+
   return bytes_read;
 }
 
@@ -461,6 +468,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       if (chunk_size <= 0)
         break;
 
+      //when file is extended 
       if (offset + chunk_size > length)
         inode->data.length = offset + chunk_size;
       disk_sector_t sector_idx = byte_to_sector (inode, offset);
