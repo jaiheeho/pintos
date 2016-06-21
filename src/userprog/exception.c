@@ -180,7 +180,7 @@ page_fault (struct intr_frame *f)
         exit(-1);
       }
       //else load page for writing
-      printf("herer\n");
+      // printf("herer\n");
       if(!load_page_for_write(fault_addr))
         PANIC("Exceeded STACK_MAX");
     }
