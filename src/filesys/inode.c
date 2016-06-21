@@ -431,11 +431,12 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
   // printf("length :  %d\n",length);
   if (length < size + offset)
+  {
     inode_free_map_add (length, size + offset, &inode->data);
+    buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0, 0);
+  }
 
-  buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0, 0);
-
-  length = inode_length (inode);
+  newlength = size + offset;
   // printf("length : %d\n", length);
 
   while (size > 0) 
@@ -446,7 +447,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       // printf("write _at 2 : sector_idx : %d\n",sector_idx);
 
       /* Bytes left in inode, bytes left in sector, lesser of the two. */
-      off_t inode_left = length - offset;
+      off_t inode_left = newlength - offset;
       // printf("write _at 3 : inode_left : %d\n",inode_left);
 
       int sector_left = DISK_SECTOR_SIZE - sector_ofs;
@@ -459,7 +460,8 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       if (chunk_size <= 0)
         break;
 
-      inode->data.length += chunk_size;
+      if (offset + chunk_size > length)
+        inode->data.length += offset + chunk_size;
       disk_sector_t sector_idx = byte_to_sector (inode, offset);
 
       /* If the sector contains data before or after the chunk
