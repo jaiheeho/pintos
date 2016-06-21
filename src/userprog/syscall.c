@@ -309,7 +309,9 @@ int read (int fd, void *buffer, unsigned length)
 {
   uint32_t i;
   uint8_t* buf_char = (uint8_t *) buffer;
+  // if ( (uint32_t)addr > (uint32_t)(PHYS_BASE - STACK_MAX) && (uint32_t)addr < (uint32_t)esp)
 
+  printf("%08x buffer , %08x exp, %08x PHYS_BASE - STACK_MAX\n",buffer,(PHYS_BASE - STACK_MAX),esp )
   if (invalid((void*)buffer))
     exit(-1);
 
