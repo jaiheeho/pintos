@@ -138,9 +138,7 @@ start_process (void *f_name)
   sema_init(&curr->spt_safer_thread, 1);
 
   //addeed filesys_lock
-  sema_down(&filesys_global_lock);
   success = load (file_name, &if_.eip, &if_.esp);
-  sema_up(&filesys_global_lock);
   /***** END OF ADDED CODE *****/
 
   /* If load failed, quit. */
@@ -149,11 +147,14 @@ start_process (void *f_name)
   if (!success) {
     palloc_free_page (file_name);
     curr->is_loaded = 0;
+
     //if loading was unsuccessful remove thread from parent's child list and exit();
     list_remove(&curr->child_elem);
     /*for the loading safer (incase of parent waiting for child loading end*/
+
     sema_try_down(&curr->loading_safer);
     sema_up(&curr->loading_safer);
+
     thread_exit ();
   }
 
@@ -294,7 +295,6 @@ process_exit (void)
   }
 
   //allow write to executable by closing it in write deny part of proj2
-  sema_down(&filesys_global_lock);
   if (curr->executable){
     file_close(curr->executable);
   }
@@ -309,10 +309,29 @@ process_exit (void)
     file_close(f->file);
     free(f);  
   }
-  sema_up(&filesys_global_lock);
+
+  // proj3-2 : unmap all mmaps
+  struct list *mmap_table = &curr->mmap_table;
+  struct list_elem *iter;
+  struct mmap_descriptor *m;
+
+  // while (!list_empty (mmap_table) && curr->is_loaded == 1)
+  // {
+  //   iter = list_pop_front (mmap_table);
+  //   m = list_entry(iter, struct mmap_descriptor, elem);
+  //   munmap(m->mmap_id);
+  // }
+  if( curr->is_loaded == 1)
+    for(iter = list_begin(mmap_table); iter != list_tail(mmap_table);
+        iter = list_begin(mmap_table))
+      {
+        m = list_entry(iter, struct mmap_descriptor, elem);
+        munmap(m->mmap_id);
+      }
 
   /***** ADDED CODE *****/
   //Finally, wake up parent who waiting for this thread*/
+
   if (curr->is_wait_called){
     sema_up(&curr->sema_wait);
   }
@@ -326,17 +345,6 @@ process_exit (void)
   //Disconncect with its parent (i.e remove itself from children list of parent)
   if (curr->parent_proc != NULL)
     list_remove (&curr->child_elem);
-
-  // proj3-2 : unmap all mmaps
-  struct list *mmap_table = &curr->mmap_table;
-  struct list_elem *iter;
-  struct mmap_descriptor *m;
-  for(iter = list_begin(mmap_table); iter != list_tail(mmap_table);
-      iter = list_begin(mmap_table))
-    {
-      m = list_entry(iter, struct mmap_descriptor, elem);
-      munmap(m->mmap_id);
-    }
 
   //finally free supplement page table for this process.
   sup_page_table_free(&curr->spt);
