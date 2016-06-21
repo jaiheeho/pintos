@@ -145,14 +145,16 @@ start_process (void *f_name)
   /***** ADDED CODE *****/
   //Palloc_free_page has to be done to free memory for proc name.
   if (!success) {
-    printf("hererer\n");
     palloc_free_page (file_name);
     curr->is_loaded = 0;
+
     //if loading was unsuccessful remove thread from parent's child list and exit();
     list_remove(&curr->child_elem);
     /*for the loading safer (incase of parent waiting for child loading end*/
+
     sema_try_down(&curr->loading_safer);
     sema_up(&curr->loading_safer);
+
     thread_exit ();
   }
 
@@ -312,12 +314,12 @@ process_exit (void)
   struct list *mmap_table = &curr->mmap_table;
   struct list_elem *iter;
   struct mmap_descriptor *m;
-  for(iter = list_begin(mmap_table); iter != list_tail(mmap_table);
-      iter = list_begin(mmap_table))
-    {
+  while (!list_empty (mmap_table) && curr->is_loaded == 1)
+  {
+    iter = list_pop_front (mmap_table);
       m = list_entry(iter, struct mmap_descriptor, elem);
       munmap(m->mmap_id);
-    }
+  }
 
   /***** ADDED CODE *****/
   //Finally, wake up parent who waiting for this thread*/
