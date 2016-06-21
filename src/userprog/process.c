@@ -308,9 +308,6 @@ process_exit (void)
   }
 
 
-  //Disconncect with its parent (i.e remove itself from children list of parent)
-  if (curr->parent_proc != NULL)
-    list_remove (&curr->child_elem);
 
   // proj3-2 : unmap all mmaps
   struct list *mmap_table = &curr->mmap_table;
@@ -335,7 +332,9 @@ process_exit (void)
       sema_down(&curr->sema_wait);
     }
   }
-  
+  //Disconncect with its parent (i.e remove itself from children list of parent)
+  if (curr->parent_proc != NULL)
+    list_remove (&curr->child_elem);
   //finally free supplement page table for this process.
   sup_page_table_free(&curr->spt);
 
