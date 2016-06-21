@@ -16,6 +16,7 @@ struct buffer_cache_elem {
   disk_sector_t sector;
   bool is_accessed;
   bool is_dirty;
+  bool in_use;
   char data[DISK_SECTOR_SIZE];
   struct semaphore lock;
 };
