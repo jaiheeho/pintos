@@ -162,7 +162,7 @@ page_fault (struct intr_frame *f)
   (4) page_fault is due to writing r/o page
   */
   if (fault_addr == NULL || fault_addr >= PHYS_BASE
-      || fault_addr < (void*)0x08048000 || (!not_present))
+      || fault_addr < (void*)0x08048000 || (!not_present) ||  ((uint32_t)PHYS_BASE - (uint32_t)f->esp > (uint32_t)STACK_MAX))
   {
     if(!user)
   	{
@@ -247,7 +247,7 @@ page_fault (struct intr_frame *f)
     }
     //(2)
     else
-    {
+    { 
       if(!load_page_for_write(fault_addr))
         PANIC("load page failed.");
     }
