@@ -139,6 +139,7 @@ inode_create (disk_sector_t sector, off_t length)
     // success = inode_free_map_allocate (length, disk_inode);
     // struct inode_disk indirect;
     // struct inode_disk double_indirect;
+    disk_inode->length = length;
     disk_write (filesys_disk, sector, disk_inode);
   } 
   free (disk_inode);
@@ -220,7 +221,6 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
     free(indirect);
 
   }
-  double_indirect->length = pos;
   // printf("AT ADD end; length : %d , indirect_size; %d, direct_size:%d \n",
   // _length, _indirect_size, _direct_size);
   return true;   
@@ -380,6 +380,9 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
   uint8_t *buffer = buffer_;
   off_t bytes_read = 0;
 
+  int length = inode_length (inode);
+  if (length )
+
   while (size > 0) 
     {
       /* Disk sector to read, starting byte offset within sector. */
@@ -388,7 +391,7 @@ inode_read_at (struct inode *inode, void *buffer_, off_t size, off_t offset)
       int sector_ofs = offset % DISK_SECTOR_SIZE;
       // printf("read _at 2 : sector_idx : %d\n",sector_idx);
       /* Bytes left in inode, bytes left in sector, lesser of the two. */
-      off_t inode_left = inode_length (inode) - offset;
+      off_t inode_left = length - offset;
       int sector_left = DISK_SECTOR_SIZE - sector_ofs;
       int min_left = inode_left < sector_left ? inode_left : sector_left;
 
@@ -425,10 +428,11 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
   /* extend file*/
   int length = inode_length (inode);
+  int newlength = size + offset;
 
   // printf("length :  %d\n",length);
-  if (length < size+offset)
-    inode_free_map_add (length, size + offset, &inode->data);
+  if (length < newlength)
+    inode_free_map_add (length, newlength, &inode->data);
 
   buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0, 0);
 
@@ -471,6 +475,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       offset += chunk_size;
       bytes_written += chunk_size;
     } 
+    inode->data.length = newlength;
     buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0 , 0);
   return bytes_written;
 }
