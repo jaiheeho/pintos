@@ -217,9 +217,7 @@ create (const char *file, unsigned initial_size){
   bool success;
   if(invalid_addr((void*)file))
     exit(-1);
-  // sema_down(&filesys_global_lock);
   success = filesys_create(file, initial_size);
-  // sema_up(&filesys_global_lock);
   return success;
 }
 
@@ -234,9 +232,7 @@ bool
 remove (const char *file)
 {
   bool success;
-  // sema_down(&filesys_global_lock);
   success = filesys_remove(file);
-  // sema_up(&filesys_global_lock);
   return success;
 }
 
@@ -256,13 +252,11 @@ open(const char *file)
   struct thread *curr = thread_current(); 
   if(invalid_addr((void*)file))
     exit(-1);
-  // sema_down(&filesys_global_lock);
   //open file with name (file)
   filestruct = filesys_open(file);
   //check whether open was successful
   if (filestruct == NULL)
   {
-    // sema_up(&filesys_global_lock);
     return -1;
   }
   //allocate memory
@@ -270,7 +264,6 @@ open(const char *file)
   new_fd = (struct file_descriptor *)malloc (sizeof (struct file_descriptor));
   if (!new_fd)
   {
-    // sema_up(&filesys_global_lock);
     return -1;
   }
 
@@ -278,7 +271,6 @@ open(const char *file)
   new_fd->file = filestruct;
   new_fd->fd =  curr->fd_given ++;
   list_push_back(&curr->file_descriptor_table, &new_fd->elem);
-  // sema_up(&filesys_global_lock);
   return new_fd->fd;
 }
 
@@ -295,9 +287,7 @@ int filesize(int fd)
   int size;
   if (!file)
     return -1;
-  // sema_down(&filesys_global_lock);
   size = file_length(file);
-  // sema_up(&filesys_global_lock);
   return size;
 }
 
@@ -329,16 +319,13 @@ int read (int fd, void *buffer, unsigned length)
   }
   else
   {
-    // sema_down(&filesys_global_lock);
     struct file *file = get_struct_file(fd);
     if (!file)
     {
-      // sema_up(&filesys_global_lock);
       return -1;  
     }
 
     retval = file_read(file, buffer, length);
-    // sema_up(&filesys_global_lock);
   }
   return retval;
 }
@@ -367,16 +354,13 @@ int write(int fd, const void *buffer, unsigned length)
     }
   else
     {
-      // sema_down(&filesys_global_lock);
       struct file *file = get_struct_file(fd);
       //if fd is bad 
       if (!file)
       {
-        // sema_up(&filesys_global_lock);
         return -1;
       }
       retval = file_write(file, buffer, length);
-      // sema_up(&filesys_global_lock);
     }
 
   return retval;
@@ -394,9 +378,7 @@ void seek (int fd, unsigned position)
   struct file *file = get_struct_file(fd);
   if (!file)
     return;
-  // sema_down(&filesys_global_lock);
   file_seek(file, position);
-  // sema_up(&filesys_global_lock);
 }
 
 /************************************************************************
@@ -412,9 +394,7 @@ unsigned tell (int fd)
   int off;
   if (!file)
     return -1;
-  // sema_down(&filesys_global_lock);
   off = file_tell(file);
-  // sema_up(&filesys_global_lock);
   return off;
 }
 
@@ -431,11 +411,9 @@ void close (int fd)
   fdt = get_struct_fd_struct(fd);
   if (!fdt)
     return;
-  // sema_down(&filesys_global_lock);
   list_remove(&fdt->elem);
   file_close(fdt->file);
   free(fdt);
-  // sema_up(&filesys_global_lock);
 }
 
 /************************************************************************
@@ -458,12 +436,10 @@ mmap (int fd, void *addr)
       return MAP_FAILED;
     }
 
-  // sema_down(&filesys_global_lock);
   struct file_descriptor *fdt;
   fdt = get_struct_fd_struct(fd); // get the struct file
   if(fdt == NULL)
     {
-      sema_up(&filesys_global_lock);
       return MAP_FAILED;
     }
   // reopen the file.This is needed, since we must not
@@ -473,7 +449,6 @@ mmap (int fd, void *addr)
   struct file *file_to_mmap = file_reopen(fdt->file); 
   if (!file_to_mmap)
   {
-    // sema_up(&filesys_global_lock);
     return MAP_FAILED;  
   }
 
@@ -483,12 +458,10 @@ mmap (int fd, void *addr)
   if (size == 0)
   {
     file_close(file_to_mmap);
-    // sema_up(&filesys_global_lock);
     return MAP_FAILED;  
   }
 
   // no need to hold the lock
-  // sema_up(&filesys_global_lock);
 
   //allocate memory
   struct mmap_descriptor *new_mmap;
@@ -593,11 +566,9 @@ munmap (mapid_t mmap_id)
 	  // if the page is dirty, write back to file.
 	  if(pagedir_is_dirty(thread_current()->pagedir, target->user_addr))
 	    {
-	      // sema_down(&filesys_global_lock);
 	      file_write_at(m->file, target->user_addr,
 			    target->loading_info.page_read_bytes,
 			    target->loading_info.ofs);
-	      // sema_up(&filesys_global_lock);
 	    }
 	      // must free the frame
 	      frame_free(target->fte);
@@ -607,10 +578,7 @@ munmap (mapid_t mmap_id)
 
     }
 
-  // sema_down(&filesys_global_lock);
   file_close(m->file);
-  // sema_up(&filesys_global_lock);
-
 
   list_remove(&m->elem);
   free(m);
