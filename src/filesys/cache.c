@@ -139,10 +139,8 @@ int buffer_cache_write(disk_sector_t sector, char * buffer,
   {
     iter = buffer_cache_allocate(sector, option);    
   }
-  printf("herer\n");
+  
   memcpy((buffer_cache[iter].data + off), buffer, size);
-    printf("herer2\n");
-
   buffer_cache[iter].is_accessed = true;
   buffer_cache[iter].is_dirty = true;
   buffer_cache[iter].in_use = false;
