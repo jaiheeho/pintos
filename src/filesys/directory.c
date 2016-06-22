@@ -5,6 +5,7 @@
 #include "filesys/filesys.h"
 #include "filesys/inode.h"
 #include "threads/malloc.h"
+#include "threads/thread.h"
 
 /* A directory. */
 struct dir 
@@ -19,6 +20,8 @@ struct dir_entry
     disk_sector_t inode_sector;         /* Sector number of header. */
     char name[NAME_MAX + 1];            /* Null terminated file name. */
     bool in_use;                        /* In use or free? */
+
+    bool is_dir;
   };
 
 /* Creates a directory with space for ENTRY_CNT entries in the
@@ -27,6 +30,7 @@ bool
 dir_create (disk_sector_t sector, size_t entry_cnt) 
 {
   return inode_create (sector, entry_cnt * sizeof (struct dir_entry));
+
 }
 
 /* Opens and returns the directory for the given INODE, of which
@@ -117,7 +121,7 @@ lookup (const struct dir *dir, const char *name,
    a null pointer.  The caller must close *INODE. */
 bool
 dir_lookup (const struct dir *dir, const char *name,
-            struct inode **inode) 
+            struct inode **inode, bool *is_dir) 
 {
   struct dir_entry e;
 
@@ -125,7 +129,10 @@ dir_lookup (const struct dir *dir, const char *name,
   ASSERT (name != NULL);
 
   if (lookup (dir, name, &e, NULL))
-    *inode = inode_open (e.inode_sector);
+    {
+      *inode = inode_open (e.inode_sector);
+      *is_dir = e.is_dir;
+    }
   else
     *inode = NULL;
 
@@ -139,7 +146,7 @@ dir_lookup (const struct dir *dir, const char *name,
    Fails if NAME is invalid (i.e. too long) or a disk or memory
    error occurs. */
 bool
-dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) 
+dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector, bool isdir) 
 {
   struct dir_entry e;
   off_t ofs;
@@ -147,6 +154,10 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector)
   
   ASSERT (dir != NULL);
   ASSERT (name != NULL);
+
+  //printf("dir_add: init, creating %s", name);
+  //if(isdir) printf("adding a directory\n");
+
 
   /* Check NAME for validity. */
   if (*name == '\0' || strlen (name) > NAME_MAX)
@@ -172,6 +183,7 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector)
   e.in_use = true;
   strlcpy (e.name, name, sizeof e.name);
   e.inode_sector = inode_sector;
+  e.is_dir = isdir;  //proj4-3
   success = inode_write_at (dir->inode, &e, sizeof e, ofs) == sizeof e;
 
  done:
@@ -184,6 +196,8 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector)
 bool
 dir_remove (struct dir *dir, const char *name) 
 {
+  //printf("dir_remove: init, removing %s\n", name);
+
   struct dir_entry e;
   struct inode *inode = NULL;
   bool success = false;
@@ -200,6 +214,15 @@ dir_remove (struct dir *dir, const char *name)
   inode = inode_open (e.inode_sector);
   if (inode == NULL)
     goto done;
+
+  // if it is a directory, and if it is open
+  // by some other guy, we cant delete
+
+  if((e.is_dir == true) && (inode_get_open_cnt(inode) > 1))
+    {
+      //printf("cp1: %d\n", inode_get_open_cnt(inode));
+      goto done;
+    }
 
   /* Erase directory entry. */
   e.in_use = false;
@@ -228,9 +251,57 @@ dir_readdir (struct dir *dir, char name[NAME_MAX + 1])
       dir->pos += sizeof e;
       if (e.in_use)
         {
-          strlcpy (name, e.name, NAME_MAX + 1);
-          return true;
+	  if((strcmp(e.name, ".")==0) ||
+	     (strcmp(e.name, "..") == 0))
+	    {
+	      continue;
+	    }
+	  else
+	    {
+	      strlcpy (name, e.name, NAME_MAX + 1);
+	      return true;
+	    }
         } 
     }
   return false;
+}
+
+
+/* Returns pwd. Does NOT reopen the directory. Must reopen manually*/
+struct dir* dir_get_pwd(void)
+{
+  return thread_current()->pwd;
+
+}
+
+disk_sector_t dir_get_inum_of_dir(struct dir* target)
+{
+  return inode_get_inum(target->inode);
+}
+
+
+bool dir_is_empty(struct dir* dir)
+{
+  struct dir_entry e;
+  size_t ofs;
+  
+  ASSERT (dir != NULL);
+
+
+  for (ofs = 0; inode_read_at (dir->inode, &e, sizeof e, ofs) == sizeof e;
+       ofs += sizeof e) 
+
+
+    if (e.in_use) 
+      {
+	if((strcmp(".", e.name) != 0) &&
+	   (strcmp("..", e.name) != 0))
+	  {
+	    //some unique entry is still in use
+	    return false;
+	  }
+	
+      }
+  return true;
+
 }

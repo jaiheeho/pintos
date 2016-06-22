@@ -47,4 +47,12 @@ void * get_kernel_addr(void*);
 struct mmap_descriptor* get_mmap_descriptor(int mmap_id);
 
 
+/*proj 4*/
+
+bool chdir(const char* dir);
+bool mkdir(const char* dir);
+bool readdir(int fd, char *name);
+bool isdir(int fd);
+int inumber(int fd);
+
 #endif /* userprog/syscall.h */

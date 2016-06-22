@@ -333,7 +333,7 @@ void buffer_cache_flush()
   //printf("buffer_cache_flush: init\n");
   int iter = 0;
 
-  sema_up(&buffer_cache_global_lock);
+  sema_up(&buffer_cache_global_lock); //???
 
   for(iter = 0; iter < BUFFER_CACHE_MAX; iter++)
     {

@@ -13,7 +13,9 @@ void process_activate (void);
 struct file_descriptor
 {
   struct file *file;
+  struct dir *dir;
   int fd;
+  bool is_dir;
   struct list_elem elem;
 };
 
