@@ -13,6 +13,7 @@
 #include "filesys/file.h" // ADDED HEADER
 #include "filesys/filesys.h" // ADDED HEADER
 #include "filesys/cache.h"
+#include "filesys/directory.h"
 #include "lib/user/syscall.h" // ADDED HEADER
 #include "devices/input.h" // ADDED HEADER
 #include "vm/page.h"// ADDED HEADER
@@ -206,7 +207,7 @@ exit(int status)
   curr->exit_status=status;
   if (status == -1)
     buffer_cache_flush();
-  
+
   thread_exit();
   NOT_REACHED ();
   // return exit status to kernel
