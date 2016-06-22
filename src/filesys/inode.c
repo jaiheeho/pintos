@@ -187,11 +187,11 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
   if (size  == 0)
     start = false;
 
-  // printf("size : %d new size : %d\n", size, pos);
-  // printf("AT ADD; length : %d, indirect_size; %d, direct_size:%d \n",
-  //   length, indirect_size, direct_size);
-  // printf("AT ADD end; length : %d , indirect_size; %d, direct_size:%d \n",
-  // _length, _indirect_size, _direct_size);
+  printf("size : %d new size : %d\n", size, pos);
+  printf("AT ADD; length : %d, indirect_size; %d, direct_size:%d \n",
+    length, indirect_size, direct_size);
+  printf("AT ADD end; length : %d , indirect_size; %d, direct_size:%d \n",
+  _length, _indirect_size, _direct_size);
   indirect = calloc (1, sizeof (struct inode_indirect_disk));
 
   if( !indirect )
@@ -460,9 +460,8 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   if (length < size + offset)
   {
     inode_free_map_add (length, size + offset, &inode->data);
-    newlength = size + offset;
-    inode->data.length = newlength;
     buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0, 0);
+    newlength = size + offset;
   }
 
   // printf("length : %d\n", length);
@@ -488,9 +487,9 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       if (chunk_size <= 0)
         break;
 
-      // //when file is extended 
-      // if (offset + chunk_size > length)
-      //   inode->data.length = offset + chunk_size;
+      //when file is extended 
+      if (offset + chunk_size > length)
+        inode->data.length = offset + chunk_size;
       disk_sector_t sector_idx = byte_to_sector (inode, offset);
 
       /* If the sector contains data before or after the chunk
