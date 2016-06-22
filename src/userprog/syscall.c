@@ -184,7 +184,6 @@ syscall_handler (struct intr_frame *f UNUSED)
 void
 halt (void) 
 {
-  buffer_cache_flush();
   power_off();
   NOT_REACHED ();
 }
