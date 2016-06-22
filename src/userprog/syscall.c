@@ -136,27 +136,27 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_MKDIR:
       get_args(f->esp, args, 1);
-      mkdir(args[0]);
+      retval = mkdir(args[0]);
       returnZ=true;
       break;
     case SYS_CHDIR:
       get_args(f->esp, args, 1);
-      chdir(args[0]);
+      retval = chdir(args[0]);
       returnZ=true;
       break;
    case SYS_READDIR:
       get_args(f->esp, args, 2);
-      readdir(args[0], args[1]);
+      retval = readdir(args[0], args[1]);
       returnZ=true;
       break;
    case SYS_ISDIR:
       get_args(f->esp, args, 1);
-      isdir(args[0]);
+      retval = isdir(args[0]);
       returnZ=true;
       break;
    case SYS_INUMBER:
       get_args(f->esp, args, 1);
-      inumber(args[0]);
+      retval = inumber(args[0]);
       returnZ=true;
       break;
 
@@ -664,7 +664,7 @@ munmap (mapid_t mmap_id)
 
 bool mkdir(const char *dir)
 {
-  printf("syscall_mkdir: init: %s\n", dir);
+  //printf("syscall_mkdir: init: %s\n", dir);
   bool success;
   if(invalid_addr((void*)dir))
     exit(-1);

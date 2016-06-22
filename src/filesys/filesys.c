@@ -72,14 +72,14 @@ filesys_create (const char *name, off_t initial_size)
 bool
 filesys_create_directory (const char *name) 
 {
-  printf("create_dir init: %s\n", name);
+  //printf("create_dir init: %s\n", name);
   char namebuf[64];
   disk_sector_t inode_sector = 0;
   struct dir *dir = filesys_navigate_to_target(name, namebuf);
   
-  printf("targetdir: %d\n",dir_get_inum_of_dir(dir));
+  //printf("targetdir: %d\n",dir_get_inum_of_dir(dir));
 
-  printf("namebuf: %s\n", namebuf);
+  //printf("namebuf: %s\n", namebuf);
 
   bool success = (dir != NULL
                   && free_map_allocate (1, &inode_sector)
@@ -234,14 +234,14 @@ struct dir* filesys_navigate_to_target(const char *path, char *name)
   if(parse_buf[0] == '/' || dir_get_pwd() == NULL)
     {
       //start from root
-      printf("navi: start from root\n");
+      //printf("navi: start from root\n");
       curdir = dir_open_root();
       target_dir = curdir;
     }
   else
     {
       //start from pwd
-      printf("navi: start from pwd");
+      //printf("navi: start from pwd");
       curdir = dir_reopen(dir_get_pwd());
       target_dir = curdir;
     }
