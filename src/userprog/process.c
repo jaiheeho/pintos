@@ -314,7 +314,10 @@ process_exit (void)
   {
     iter_fd = list_pop_front (fdt);
     f = list_entry(iter_fd, struct file_descriptor, elem);
-    file_close(f->file);
+    if(f->is_dir)
+      dir_close(f->dir);
+    else
+      file_close(f->file);
     free(f);  
   }
 

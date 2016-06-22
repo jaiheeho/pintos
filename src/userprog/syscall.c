@@ -291,8 +291,7 @@ open(const char *file)
 
   if(invalid_addr((void*)file))
     exit(-1);
-  //open file with name (file)
-  filestruct = filesys_open(file);
+
   //check whether open was successful
   if ((filestruct = filesys_open(file)) == NULL)
   {
@@ -313,7 +312,10 @@ open(const char *file)
   }
 
   //initialize new_fd
-  new_fd->file = filestruct;
+  if(!isdir)
+    new_fd->file = filestruct;
+  else
+    new_fd->dir = dirstruct;
   new_fd->fd =  curr->fd_given ++;
   new_fd->is_dir = isdir;
   list_push_back(&curr->file_descriptor_table, &new_fd->elem);
@@ -661,7 +663,7 @@ bool mkdir(const char *dir)
 
 bool chdir(const char *dir)
 {
-  printf("syscall_chdir: init, %s\n", dir);
+  //printf("syscall_chdir: init, %s\n", dir);
   bool success;
   if(invalid_addr((void*)dir))
     exit(-1);
@@ -693,18 +695,20 @@ bool isdir(int fd)
 
 int inumber(int fd)
 {
-  printf("syscall_inumber: init fd=%d\n");
+  //printf("syscall_inumber: init fd=%d\n", fd);
   struct file_descriptor *f = get_struct_fd_struct(fd);
 
   if(f == NULL)
     return 0;
-
+  
   if(f->is_dir)
     {
+      //printf("dir inum: %d\n", dir_get_inum_of_dir(f->dir));
       return dir_get_inum_of_dir(f->dir);
     }
   else
     {
+
       return file_get_inum_of_file(f->file);
     }
 

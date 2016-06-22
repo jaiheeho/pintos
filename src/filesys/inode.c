@@ -255,8 +255,9 @@ void inode_free_map_release(size_t size, struct inode_disk *disk_inode)
   int i,j;
   int _j;
 
-  ASSERT(_indirect_size < DISK_SECTOR_SIZE/4);
-  ASSERT(_direct_size < DISK_SECTOR_SIZE/4);
+  if(indirect == NULL)
+    printf("indirect is NULL!!!\n");
+
 
   char zeros[DISK_SECTOR_SIZE];
   memset(zeros, 0, DISK_SECTOR_SIZE);
@@ -541,3 +542,7 @@ disk_sector_t inode_get_inum(struct inode *inode)
   return inode->sector;
 }
 
+int inode_get_open_cnt(struct inode *inode)
+{
+  return inode->open_cnt;
+}

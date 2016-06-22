@@ -96,7 +96,8 @@ filesys_create_directory (const char *name)
       newinode = inode_open(inode_sector);
       newdir = dir_open(newinode);
       dir_add(newdir, ".", inode_sector, true);
-      dir_add(newdir, "..", dir_get_inum_of_dir(dir), true);   
+      dir_add(newdir, "..", dir_get_inum_of_dir(dir), true);  
+      dir_close(newdir);
     }
   dir_close (dir);
   
@@ -122,13 +123,29 @@ filesys_open (const char *name)
   //printf("dir: %d\n", dir);
   //printf("root inum: %d\n", dir_get_inum_of_dir(dir));
   if (dir != NULL)
-    dir_lookup (dir, namebuf, &inode, &isdir);
-  dir_close (dir);
+    {
+      dir_lookup (dir, namebuf, &inode, &isdir);
+      if(inode == NULL)
+	{
+	  dir_close(dir);
+	  return NULL;
+
+	}
+      dir_close (dir);
+    }
+  else
+    {
+      return NULL;
+    }
+
 
   if(isdir != true)
     return file_open(inode);
   else
-    return NULL;
+    {
+      inode_close(inode);
+      return NULL;
+    }
 }
 
 
@@ -159,6 +176,7 @@ filesys_open_directory (const char *name)
 bool
 filesys_remove (const char *name) 
 {
+  //printf("filesys_remove: init, %s\n", name);
   char namebuf[64];
   struct dir *dir = filesys_navigate_to_target(name, namebuf);
   struct inode *inode = NULL;
@@ -195,7 +213,8 @@ filesys_remove (const char *name)
 	  success = dir_remove (dir, namebuf); 
 	}
     }
-  else return false;
+  else
+    success = false;;
   
   dir_close(dir);
   

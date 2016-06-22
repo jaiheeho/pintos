@@ -215,6 +215,15 @@ dir_remove (struct dir *dir, const char *name)
   if (inode == NULL)
     goto done;
 
+  // if it is a directory, and if it is open
+  // by some other guy, we cant delete
+
+  if((e.is_dir == true) && (inode_get_open_cnt(inode) > 1))
+    {
+      //printf("cp1: %d\n", inode_get_open_cnt(inode));
+      goto done;
+    }
+
   /* Erase directory entry. */
   e.in_use = false;
   if (inode_write_at (dir->inode, &e, sizeof e, ofs) != sizeof e) 
@@ -242,8 +251,16 @@ dir_readdir (struct dir *dir, char name[NAME_MAX + 1])
       dir->pos += sizeof e;
       if (e.in_use)
         {
-          strlcpy (name, e.name, NAME_MAX + 1);
-          return true;
+	  if((strcmp(e.name, ".")==0) ||
+	     (strcmp(e.name, "..") == 0))
+	    {
+	      continue;
+	    }
+	  else
+	    {
+	      strlcpy (name, e.name, NAME_MAX + 1);
+	      return true;
+	    }
         } 
     }
   return false;
