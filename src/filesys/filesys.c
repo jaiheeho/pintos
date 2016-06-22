@@ -45,6 +45,7 @@ filesys_init (bool format)
 void
 filesys_done (void) 
 {
+  buffer_cache_flush();
   free_map_close ();
 }
 
