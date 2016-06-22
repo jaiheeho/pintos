@@ -2,6 +2,7 @@
 #include <debug.h>
 #include "filesys/inode.h"
 #include "threads/malloc.h"
+#include "devices/disk.h"
 
 /* An open file. */
 struct file 
@@ -165,4 +166,13 @@ file_tell (struct file *file)
 {
   ASSERT (file != NULL);
   return file->pos;
+}
+
+
+
+
+disk_sector_t file_get_inum_of_file(struct file *file)
+{
+  return inode_get_inum(file->inode);;
+
 }

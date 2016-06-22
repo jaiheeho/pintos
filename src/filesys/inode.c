@@ -505,3 +505,9 @@ inode_length (const struct inode *inode)
 {
   return inode->data.length;
 }
+
+disk_sector_t inode_get_inum(struct inode *inode)
+{
+  return inode->sector;
+}
+

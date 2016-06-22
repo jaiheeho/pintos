@@ -164,6 +164,14 @@ start_process (void *f_name)
   curr->fd_given = 2;
   curr->is_loaded = 1;
 
+
+  // proj4: set pwd
+  if(thread_current()->pwd == NULL)
+    {
+      thread_current()->pwd = dir_open_root();
+
+    }
+
   /* mmap_id recording*/
   curr->mmap_id_given = 1;
   list_init(&curr->mmap_table);
@@ -337,6 +345,13 @@ process_exit (void)
       m = list_entry(iter, struct mmap_descriptor, elem);
       munmap(m->mmap_id);
     }
+
+  //proj4 : free pwd
+  if(thread_current()->pwd != NULL)
+    {
+      dir_close(thread_current()->pwd);
+    }
+
 
   //finally free supplement page table for this process.
   sup_page_table_free(&curr->spt);

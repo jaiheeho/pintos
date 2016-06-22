@@ -22,9 +22,13 @@ void dir_close (struct dir *);
 struct inode *dir_get_inode (struct dir *);
 
 /* Reading and writing. */
-bool dir_lookup (const struct dir *, const char *name, struct inode **);
-bool dir_add (struct dir *, const char *name, disk_sector_t);
+bool dir_lookup (const struct dir *, const char *name, struct inode **, bool *);
+bool dir_add (struct dir *, const char *name, disk_sector_t, bool);
 bool dir_remove (struct dir *, const char *name);
 bool dir_readdir (struct dir *, char name[NAME_MAX + 1]);
+
+struct dir* dir_get_pwd(void);
+disk_sector_t dir_get_inum_of_dir(struct dir*);
+bool dir_is_empty(struct dir*);
 
 #endif /* filesys/directory.h */
