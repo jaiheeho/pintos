@@ -462,9 +462,12 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   // printf("length :  %d\n",length);
   if (length < size + offset)
   {
-    inode_free_map_add (length, size + offset, &inode->data);
-    buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0, 0);
     newlength = size + offset;
+    if (bytes_to_sectors(length) < bytes_to_sectors(newlength))
+    {
+      inode_free_map_add (length, size + offset, &inode->data);
+      buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0, 0);
+    }
   }
 
   // printf("length : %d\n", length);
