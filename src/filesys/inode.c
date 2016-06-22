@@ -214,6 +214,7 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
     else
     {
       free_map_allocate(1, &indirect_sector);
+      printf("indirect alloc: %d\n",indirect_sector);
       double_indirect->links[i] = indirect_sector;
       j = 0;
       _j = DISK_SECTOR_SIZE/4;
@@ -224,6 +225,8 @@ bool inode_free_map_add(size_t size, off_t pos, struct inode_disk *disk_inode)
     {
       disk_sector_t direct_sector;
       free_map_allocate(1,&direct_sector);
+      printf("direct alloc: %d\n",direct_sector);
+
       indirect->links[j] = direct_sector;
       buffer_cache_write(direct_sector, zeros, DISK_SECTOR_SIZE, 0, 0 );
     }
