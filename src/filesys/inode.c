@@ -460,8 +460,9 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
   if (length < size + offset)
   {
     inode_free_map_add (length, size + offset, &inode->data);
-    buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0, 0);
     newlength = size + offset;
+    inode->data.length = newlength;
+    buffer_cache_write(inode->sector, (char*)&inode->data, DISK_SECTOR_SIZE, 0, 0);
   }
 
   // printf("length : %d\n", length);
@@ -487,9 +488,9 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
       if (chunk_size <= 0)
         break;
 
-      //when file is extended 
-      if (offset + chunk_size > length)
-        inode->data.length = offset + chunk_size;
+      // //when file is extended 
+      // if (offset + chunk_size > length)
+      //   inode->data.length = offset + chunk_size;
       disk_sector_t sector_idx = byte_to_sector (inode, offset);
 
       /* If the sector contains data before or after the chunk
