@@ -397,7 +397,7 @@ int write(int fd, const void *buffer, unsigned length)
   if (invalid_addr((void*)buffer))
     exit(-1);
 
-  if ( (uint32_t)buffer > (uint32_t)(PHYS_BASE - STACK_MAX))
+  if ( (uint32_t)buffer < (uint32_t)(PHYS_BASE - STACK_MAX))
     exit(-1);
 
   printf("herere\n");
