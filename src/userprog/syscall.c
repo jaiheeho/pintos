@@ -397,7 +397,10 @@ int write(int fd, const void *buffer, unsigned length)
   if (invalid_addr((void*)buffer))
     exit(-1);
 
-  // printf("herere\n");
+  if ( (uint32_t)buffer > (uint32_t)(PHYS_BASE - STACK_MAX))
+    exit(-1);
+
+  printf("herere\n");
   if(fd <= 0)
     {
       //error
@@ -846,8 +849,6 @@ bool invalid_addr(void* addr){
     return true;
   if ( (uint32_t)addr > (uint32_t)(PHYS_BASE - STACK_MAX) && (uint32_t)addr < (uint32_t)esp)
     return true;
-
-  if ( (uint32_t)addr > (uint32_t)(PHYS_BASE - STACK_MAX))
   //Not within pagedir
   return false;
 }
