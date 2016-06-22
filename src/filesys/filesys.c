@@ -219,8 +219,17 @@ struct dir* filesys_navigate_to_target(const char *path, char *name)
 
   //printf("nav_to_target: init path= %s\n", path);
 
+  ASSERT(path != NULL);
+
+
   char parse_buf[64];
   strlcpy(parse_buf, path, 63);
+
+  if(strlen(path) == 0)
+    {
+      return NULL;
+    }
+
 
   struct dir *curdir = NULL;
   struct dir *target_dir = NULL;
@@ -248,8 +257,9 @@ struct dir* filesys_navigate_to_target(const char *path, char *name)
 
   if((token_ptr = strtok_r(parse_buf, "/", &strtok_r_ptr)) == NULL)
     {
-      dir_close(curdir);
-      return NULL;
+      // case: "/"
+      strlcpy(name, ".", 63);
+      return curdir;
     }
   else
     {

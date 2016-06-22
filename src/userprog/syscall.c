@@ -661,6 +661,7 @@ bool mkdir(const char *dir)
 
 bool chdir(const char *dir)
 {
+  printf("syscall_chdir: init, %s\n", dir);
   bool success;
   if(invalid_addr((void*)dir))
     exit(-1);
@@ -692,6 +693,7 @@ bool isdir(int fd)
 
 int inumber(int fd)
 {
+  printf("syscall_inumber: init fd=%d\n");
   struct file_descriptor *f = get_struct_fd_struct(fd);
 
   if(f == NULL)
