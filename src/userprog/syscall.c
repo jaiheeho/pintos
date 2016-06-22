@@ -204,8 +204,6 @@ exit(int status)
   printf("%s: exit(%d)\n", thread_name(), status);
   struct thread *curr = thread_current();
   curr->exit_status=status;
-  if (status == -1)
-    buffer_cache_flush();
   thread_exit();
   NOT_REACHED ();
   // return exit status to kernel
@@ -398,6 +396,8 @@ int write(int fd, const void *buffer, unsigned length)
 
   if (invalid_addr((void*)buffer))
     exit(-1);
+
+  printf("herere\n");
   if(fd <= 0)
     {
       //error
